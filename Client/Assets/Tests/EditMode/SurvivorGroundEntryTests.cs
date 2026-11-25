@@ -138,7 +138,7 @@ namespace Game.Tests
         /// <summary>正式时间轴与已确认的五点二秒分段爬出保持一致。</summary>
         [Test] public void HeavyCrawlUsesApprovedTiming()
         {Assert.That(SurvivorGroundEntryRules.TotalSeconds,Is.EqualTo(5.2f));Assert.That(SurvivorGroundEntryRules.ClipAge(1.6f),Is.EqualTo(2.9f).Within(.001));}
-        private sealed class View:IArcadeCombatViewPort
+        private sealed class View:ISurvivorCombatViewPort
         {
             public int HiddenQueries,GroundWrites;
             public bool IsArenaSpawnHidden(Vector2 p,float radius){HiddenQueries++;return false;}

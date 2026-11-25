@@ -10,7 +10,7 @@ namespace Game
     /// <summary>
     /// 按地图配置准备和释放掉落物表现，管理资源句柄及候选提交；不负责库存与掉落规则的权威状态。
     /// </summary>
-    public sealed class LootCtrl : IController, IArcadeLootPresentationPort
+    public sealed class LootCtrl : IController, ILootPresentationPort
     {
         public const float DisplayRange = 6f;
         private const float DisplayRangeSqr = DisplayRange * DisplayRange;

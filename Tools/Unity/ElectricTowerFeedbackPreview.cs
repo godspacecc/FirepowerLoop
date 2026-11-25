@@ -51,7 +51,7 @@ public static class ElectricTowerFeedbackPreview
             var holder=new GameObject("TEMP_ELECTRIC_HIT_PREVIEW");
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content/DocksElectricTower").gameObject;
             var heroPrefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
-            var type=typeof(ArcadeCombatViewController).Assembly.GetType("Game.ArcadeHazardPresentation");var sync=type.GetMethod("Sync");
+            var type=typeof(SurvivorCombatViewController).Assembly.GetType("Game.SurvivorHazardPresentation");var sync=type.GetMethod("Sync");
             for(int side=0;side<2;side++)
             {
                 var root=new GameObject(side==0?"CURRENT_FORMAL":"TEMP_CANDIDATE").transform;root.SetParent(holder.transform,false);root.localPosition=new Vector3(side==0?-3.7f:2.7f,0,0);

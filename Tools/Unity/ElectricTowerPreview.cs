@@ -46,7 +46,7 @@ public static class ElectricTowerPreview
             var holder=new GameObject("TEMP_TOWER_COMPARISON");
             var left=new GameObject("Current");left.transform.SetParent(holder.transform);left.transform.localPosition=new Vector3(-3.2f,0,0);
             var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content/ElectricTower").gameObject;
-            var type=typeof(ArcadeCombatViewController).Assembly.GetType("Game.ArcadeHazardPresentation");
+            var type=typeof(SurvivorCombatViewController).Assembly.GetType("Game.SurvivorHazardPresentation");
             current=Activator.CreateInstance(type,BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic,null,new object[]{left.transform,source},null);
             var sync=type.GetMethod("Sync");sync.Invoke(current,new object[]{new[]{p},0d});
             candidate=new GameObject(applied?"FORMAL_TOWER":"TEMP_CANDIDATE").transform;candidate.SetParent(holder.transform);candidate.localPosition=new Vector3(3.2f,0,0);

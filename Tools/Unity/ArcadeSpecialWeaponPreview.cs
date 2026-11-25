@@ -17,7 +17,7 @@ public static class ArcadeSpecialWeaponPreview
         var prior = SceneManager.GetActiveScene(); var oldRt = RenderTexture.active; var loader = ResourceLoader.Current;
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         RenderTexture target = null; Texture2D image = null; Material groundMaterial = null;
-        ArcadeCombatViewController view = null;
+        SurvivorCombatViewController view = null;
         try
         {
             SceneManager.SetActiveScene(scene); ResourceLoader.Use(new Loader());
@@ -48,10 +48,10 @@ public static class ArcadeSpecialWeaponPreview
                         foreach (var skin in piercing.GetComponentsInChildren<SkinnedMeshRenderer>(true)) skin.enabled = true;
                     }
                 }
-                view = new ArcadeCombatViewController(); var owner = new GameObject("BlastExamples");
+                view = new SurvivorCombatViewController(); var owner = new GameObject("BlastExamples");
                 Set(view, "root", owner); Set(view, "mapRoot", owner.transform);
                 Set(view, "lastExplosionSoundTime", float.MaxValue); Set(view, "lastSciFiExplosionSoundTime", float.MaxValue);
-                typeof(ArcadeCombatViewController).GetMethod("LoadContentAsync", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(view, new object[] { 15 });
+                typeof(SurvivorCombatViewController).GetMethod("LoadContentAsync", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(view, new object[] { 15 });
                 if (!before)
                 {
                     view.PlayProjectileExplosion(new Vector2(-4, 2), 1.35f);

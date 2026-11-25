@@ -17,14 +17,14 @@ namespace Game.Tests
         private const string Aggregate="Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab";
         private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
         private GameObject root;
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private ArcadeBossDefinition boss=new ArcadeBossDefinition("test", "",4,1,.8f,2,1,1,5,1.2f,5,1);
         private void Ready()
         {
-            root=new GameObject("FinalDragonContract");view=new ArcadeCombatViewController();
-            typeof(ArcadeCombatViewController).GetField("root",Hidden).SetValue(view,root);
-            typeof(ArcadeCombatViewController).GetField("mapRoot",Hidden).SetValue(view,root.transform);
-            typeof(ArcadeCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>(Aggregate).transform.Find("Content"));
+            root=new GameObject("FinalDragonContract");view=new SurvivorCombatViewController();
+            typeof(SurvivorCombatViewController).GetField("root",Hidden).SetValue(view,root);
+            typeof(SurvivorCombatViewController).GetField("mapRoot",Hidden).SetValue(view,root.transform);
+            typeof(SurvivorCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>(Aggregate).transform.Find("Content"));
             var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
             var layout=tables.TbArcadeRoundLayout.DataList.Select(ArcadeRoundLayoutParameters.FromConfig).First(p=>p.BossKind==4);
             view.ConfigureRoundBounds(19.5f,19.5f,.55f);view.SetRoundLayout(layout);
@@ -32,8 +32,8 @@ namespace Game.Tests
         private Transform Actor=>root.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="FinalDragonActor");
         private void Spawn(){Ready();Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);view.RecordRoundEnemyPosition(7,new Vector2(2,3));view.SetEnemyContent(7,0,4,false);Assert.That(Actor,Is.Not.Null,"终局仍是旧轮廓");}
         private void State(float age,ArcadeBossPhase phase,float remaining,Vector2 facing)
-        {var method=typeof(ArcadeCombatViewController).GetMethod("SetFinalDragonState");Assert.That(method,Is.Not.Null);method.Invoke(view,new object[]{7,age,phase,remaining,boss,facing});}
-        [TearDown] public void Cleanup(){if(view!=null)typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);if(root!=null)UnityEngine.Object.DestroyImmediate(root);view=null;root=null;}
+        {var method=typeof(SurvivorCombatViewController).GetMethod("SetFinalDragonState");Assert.That(method,Is.Not.Null);method.Invoke(view,new object[]{7,age,phase,remaining,boss,facing});}
+        [TearDown] public void Cleanup(){if(view!=null)typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);if(root!=null)UnityEngine.Object.DestroyImmediate(root);view=null;root=null;}
         [Test] public void FormalModelKeepsApprovedGeometryAndPersistentReferences()
         {
             var p=AssetDatabase.LoadAssetAtPath<GameObject>(Prefab);Assert.That(p,Is.Not.Null,"已采用小龙尚未正式保存");
@@ -66,7 +66,7 @@ namespace Game.Tests
         }
         [Test] public void MissingTemplateWaitsAndRecoversWithoutOrphans()
         {
-            Ready();var field=typeof(ArcadeCombatViewController).GetField("contentTemplates",Hidden);var formal=field.GetValue(view);field.SetValue(view,null);Assert.That(view.IsRoundLayoutReady,Is.False);view.RecordRoundEnemyPosition(7,new Vector2(2,3));view.SetEnemyContent(7,0,4,false);Assert.That(Actor,Is.Null);
+            Ready();var field=typeof(SurvivorCombatViewController).GetField("contentTemplates",Hidden);var formal=field.GetValue(view);field.SetValue(view,null);Assert.That(view.IsRoundLayoutReady,Is.False);view.RecordRoundEnemyPosition(7,new Vector2(2,3));view.SetEnemyContent(7,0,4,false);Assert.That(Actor,Is.Null);
             field.SetValue(view,formal);Assert.That(view.IsRoundLayoutReady,Is.True);view.SetEnemyContent(7,0,4,false);Assert.That(Actor.parent.localPosition,Is.EqualTo(new Vector3(2,0,3)));
         }
         [Test] public void RepeatedMovingSnapshotKeepsFrozenWalkingPose()
@@ -89,7 +89,7 @@ namespace Game.Tests
         [Test] public void RemovalAndMapReleaseKeepPersistentArtAlive()
         {
             Spawn();var mesh=Actor.GetComponentInChildren<MeshFilter>().sharedMesh;view.RemoveRoundEnemyContent(7);Assert.That(Actor,Is.Null);Assert.That(mesh!=null,Is.True);
-            view.SetEnemyContent(7,0,4,false);typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);Assert.That(root.transform.childCount,Is.Zero);Assert.That(mesh!=null&&EditorUtility.IsPersistent(mesh),Is.True);
+            view.SetEnemyContent(7,0,4,false);typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);Assert.That(root.transform.childCount,Is.Zero);Assert.That(mesh!=null&&EditorUtility.IsPersistent(mesh),Is.True);
         }
     }
 }

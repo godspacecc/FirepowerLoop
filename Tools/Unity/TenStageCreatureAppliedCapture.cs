@@ -23,7 +23,7 @@ public static class TenStageCreatureAppliedCapture
         if(!TenStageCreatureBake.Kinds.Contains(kind))throw new InvalidOperationException("错误角色");
         var before=SceneManager.GetActiveScene();var previousTarget=RenderTexture.active;var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
         var lights=Object.FindObjectsByType<Light>(FindObjectsSortMode.None).ToDictionary(l=>l,l=>l.enabled);foreach(var light in lights.Keys)light.enabled=false;
-        var owned=new List<Object>();Camera camera=null;RenderTexture target=null;Texture2D pixels=null;ArcadeCombatViewController controller=null;
+        var owned=new List<Object>();Camera camera=null;RenderTexture target=null;Texture2D pixels=null;SurvivorCombatViewController controller=null;
         try
         {
             SceneManager.SetActiveScene(scene);var world=new GameObject("FormalCreatureReadback");Ground(world.transform,owned);
@@ -32,7 +32,7 @@ public static class TenStageCreatureAppliedCapture
             camera=new GameObject("ReadbackCamera",typeof(Camera)).GetComponent<Camera>();camera.enabled=false;camera.orthographic=true;camera.cullingMask=1<<Layer;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.12f,.16f,.18f);camera.farClipPlane=160;camera.nearClipPlane=.02f;
             target=new RenderTexture(Width,Height,24);pixels=new Texture2D(Width,Height,TextureFormat.RGB24,false);camera.targetTexture=target;
             var hero=CreateHero(owned);hero.Root.transform.position=new Vector3(-2.1f,0,1.5f);hero.Root.transform.rotation=Quaternion.Euler(0,180,0);SampleHero(hero);
-            controller=new ArcadeCombatViewController();var type=typeof(ArcadeCombatViewController);type.GetField("root",Hidden).SetValue(controller,world);type.GetField("mapRoot",Hidden).SetValue(controller,world.transform);
+            controller=new SurvivorCombatViewController();var type=typeof(SurvivorCombatViewController);type.GetField("root",Hidden).SetValue(controller,world);type.GetField("mapRoot",Hidden).SetValue(controller,world.transform);
             type.GetField("contentTemplates",Hidden).SetValue(controller,AssetDatabase.LoadAssetAtPath<GameObject>(TenStageCreatureBake.Aggregate).transform.Find("Content"));
             var tables=new Tables(n=>new Luban.ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
             var layout=tables.TbArcadeRoundLayout.DataList.Select(ArcadeRoundLayoutParameters.FromConfig).First(p=>kind==2?p.BossKind==2&&p.ArenaConfigNumber==10:p.SpecialKind==kind);
@@ -76,7 +76,7 @@ public static class TenStageCreatureAppliedCapture
         }
         finally
         {
-            if(controller!=null)typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(controller,null);
+            if(controller!=null)typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(controller,null);
             if(camera!=null)camera.targetTexture=null;RenderTexture.active=previousTarget;if(target!=null){target.Release();Object.DestroyImmediate(target);}if(pixels!=null)Object.DestroyImmediate(pixels);
             foreach(var pair in lights)if(pair.Key!=null)pair.Key.enabled=pair.Value;
             SceneManager.SetActiveScene(before);EditorSceneManager.CloseScene(scene,true);foreach(var obj in owned)if(obj!=null&&!EditorUtility.IsPersistent(obj))Object.DestroyImmediate(obj);

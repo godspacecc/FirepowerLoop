@@ -1,7 +1,7 @@
 import pathlib,re,argparse
 parser=argparse.ArgumentParser();parser.add_argument('--testClass',required=True,choices=['ArcadeRoundViewContractChecks']);parser.add_argument('--maxTests',required=True,type=int);parser.add_argument('--includePassingTests',required=True,choices=['true']);args=parser.parse_args()
 assert args.maxTests>=3,'maximum must allow three declared API contract checks'
-p=pathlib.Path('Client/Assets/Game/Scripts/Controller/Arcade/ArcadeCombatViewController.RoundContent.cs')
+p=pathlib.Path('Client/Assets/Game/Scripts/Controller/Survivor/SurvivorCombatViewController.RoundContent.cs')
 s=p.read_text(encoding='utf-8-sig') if p.exists() else ''
 assert re.search(r'public\s+void\s+SetRoundLayout\(',s),'Controller is missing round layout preparation API'
 print('PASS Round layout preparation API')

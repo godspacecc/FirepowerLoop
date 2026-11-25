@@ -24,7 +24,7 @@ public static class ElectricTowerFeedbackApplied
         public GameObject Hero;
         public Renderer[] HeroRenderers;
         public object Presentation;
-                public ArcadeCombatViewController View;
+                public SurvivorCombatViewController View;
         public bool HitPlayed;
     }
 
@@ -52,7 +52,7 @@ public static class ElectricTowerFeedbackApplied
             var holder=new GameObject("TEMP_ELECTRIC_HIT_PREVIEW");
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content/DocksElectricTower").gameObject;
             var heroPrefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
-            var type=typeof(ArcadeCombatViewController).Assembly.GetType("Game.ArcadeHazardPresentation");var sync=type.GetMethod("Sync");
+            var type=typeof(SurvivorCombatViewController).Assembly.GetType("Game.SurvivorHazardPresentation");var sync=type.GetMethod("Sync");
             for(int side=0;side<2;side++)
             {
                 var root=new GameObject(side==0?"CURRENT_FORMAL":"FORMAL_FEEDBACK_APPLIED").transform;root.SetParent(holder.transform,false);root.localPosition=new Vector3(side==0?-3.7f:2.7f,0,0);
@@ -67,8 +67,8 @@ public static class ElectricTowerFeedbackApplied
                 foreach(var canvas in pair.Hero.GetComponentsInChildren<Canvas>(true))canvas.enabled=false;
                 if(side==1)
                 {
-                    pair.View=new ArcadeCombatViewController();
-                    void Set(string name,object value)=>typeof(ArcadeCombatViewController).GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(pair.View,value);
+                    pair.View=new SurvivorCombatViewController();
+                    void Set(string name,object value)=>typeof(SurvivorCombatViewController).GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(pair.View,value);
                     Set("root",root.gameObject);Set("mapRoot",root);Set("contentArena",21);Set("contentTemplates",prefab.transform.parent);
                     Set("contentHazards",new[]{p});Set("electricHitDefinitions",new[]{p});
                 }
@@ -99,8 +99,8 @@ public static class ElectricTowerFeedbackApplied
                     pair.Hero.SetActive(time<HitTime+.20f||time>=8.0f);
                     if(pair.View!=null)
                     {
-                        typeof(ArcadeCombatViewController).GetField("electricHitDefinitions",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(pair.View,new[]{p});
-                        if(frame==170){typeof(ArcadeCombatViewController).GetMethod("ReleaseElectricTowerFeedback",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(pair.View,null);pair.HitPlayed=false;}
+                        typeof(SurvivorCombatViewController).GetField("electricHitDefinitions",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(pair.View,new[]{p});
+                        if(frame==170){typeof(SurvivorCombatViewController).GetMethod("ReleaseElectricTowerFeedback",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(pair.View,null);pair.HitPlayed=false;}
                         if(hitAge>=0&&!pair.HitPlayed){pair.View.PlayElectricTowerHit(p.Id,new Vector2(heroPosition.x,heroPosition.z));pair.HitPlayed=true;}
                         if(hitAge>=0)pair.View.TickPlayerFeedback(frame<170?.05f:.0125f);
                     }

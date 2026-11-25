@@ -26,7 +26,7 @@ public static class ArcadeBrightThemePreview
         var priorArchitecture=architectureField.GetValue(null);var priorLanguage=languageCache.GetValue(null);
         var priorLoader=ResourceLoader.Current;var priorScene=SceneManager.GetActiveScene();var priorRt=RenderTexture.active;
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
-        ArcadeCombatViewController view=null;RenderTexture rt=null, atlas=null;Texture2D tex=null, atlasPixels=null;
+        SurvivorCombatViewController view=null;RenderTexture rt=null, atlas=null;Texture2D tex=null, atlasPixels=null;
         var files=new List<string>();
         try
         {
@@ -47,7 +47,7 @@ public static class ArcadeBrightThemePreview
             string directory=Path.GetFullPath(Path.Combine(Application.dataPath,"../Temp/BrightThemePreview/"+stage));Directory.CreateDirectory(directory);
             foreach(var p in catalog.RoundLayouts.Where(p=>p.RoundNumber==1&&p.ArenaConfigNumber!=1))
             {
-                view=new ArcadeCombatViewController();var root=new GameObject("FullRoutePreview_"+p.Id);Set(view,"root",root);
+                view=new SurvivorCombatViewController();var root=new GameObject("FullRoutePreview_"+p.Id);Set(view,"root",root);
                 view.ConfigureRoundBounds(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
                 if(p.ArenaConfigNumber==1)
                 {

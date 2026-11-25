@@ -26,7 +26,7 @@ public static class ArcadeFullRoutePreview
         var priorArchitecture=architectureField.GetValue(null);var priorLanguage=languageCache.GetValue(null);
         var priorLoader=ResourceLoader.Current;var priorScene=SceneManager.GetActiveScene();var priorRt=RenderTexture.active;
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
-        ArcadeCombatViewController view=null;RenderTexture rt=null;Texture2D tex=null;
+        SurvivorCombatViewController view=null;RenderTexture rt=null;Texture2D tex=null;
         var files=new List<string>();
         try
         {
@@ -46,7 +46,7 @@ public static class ArcadeFullRoutePreview
             string directory=Path.GetFullPath(Path.Combine(Application.dataPath,"../Temp/FullRoutePreview"));Directory.CreateDirectory(directory);
             foreach(var p in catalog.RoundLayouts.Where(p=>arenaFilter==0||p.ArenaConfigNumber==arenaFilter))
             {
-                view=new ArcadeCombatViewController();var root=new GameObject("FullRoutePreview_"+p.Id);Set(view,"root",root);
+                view=new SurvivorCombatViewController();var root=new GameObject("FullRoutePreview_"+p.Id);Set(view,"root",root);
                 view.ConfigureRoundBounds(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
                 if(p.ArenaConfigNumber==1)
                 {

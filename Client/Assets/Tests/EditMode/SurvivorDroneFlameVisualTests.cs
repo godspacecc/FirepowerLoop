@@ -18,18 +18,18 @@ namespace Game.Tests
             try
             {
                 const BindingFlags hidden=BindingFlags.Instance|BindingFlags.NonPublic;
-                var view=new ArcadeCombatViewController();
-                var entryType=typeof(ArcadeCombatViewController).GetNestedType("EffectVisualEntry",BindingFlags.NonPublic);
+                var view=new SurvivorCombatViewController();
+                var entryType=typeof(SurvivorCombatViewController).GetNestedType("EffectVisualEntry",BindingFlags.NonPublic);
                 var entry=Activator.CreateInstance(entryType,true);
                 entryType.GetField("DisplayName").SetValue(entry,"survivor.drone");
-                var entries=(IDictionary)typeof(ArcadeCombatViewController).GetField("effectVisuals",hidden).GetValue(view);
+                var entries=(IDictionary)typeof(SurvivorCombatViewController).GetField("effectVisuals",hidden).GetValue(view);
                 entries.Add("powerup:1:"+(int)global::ArcadePowerupBehavior.Drone,entry);
                 var nozzle=body.transform.Find("FlameRetrofit").gameObject;
                 var flame=nozzle.GetComponentInChildren<ParticleSystem>(true);
                 Assert.That(nozzle.activeSelf,Is.False);
                 view.SetDroneFlame(true,Vector2.zero,Vector2.up,false,0);
                 entryType.GetField("Instance").SetValue(entry,body);
-                typeof(ArcadeCombatViewController).GetMethod("BindDroneNozzle",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new[]{entry});
+                typeof(SurvivorCombatViewController).GetMethod("BindDroneNozzle",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new[]{entry});
                 Assert.That(nozzle.activeSelf,Is.True,"加载完成后恢复改装状态");
                 Assert.That(flame.particleCount,Is.Zero);
                 view.SetDroneFlame(true,Vector2.zero,Vector2.up,true,.2f);

@@ -62,15 +62,15 @@ namespace Game.Tests
         }
         [Test] public void RemoteDeathStaysAtRenderedLocationUntilRevive()
         {
-            var controller=new ArcadeCombatViewController();const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
+            var controller=new SurvivorCombatViewController();const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
             var map=new GameObject("RemoteTestMap");actor.transform.SetParent(map.transform,false);
             var remote=new OnlineRemotePlayerViewCtrl(actor);
             try
             {
-                typeof(ArcadeCombatViewController).GetField("mapRoot",flags).SetValue(controller,map.transform);
-                var type=typeof(ArcadeCombatViewController).GetNestedType("RemotePlayerEntry",BindingFlags.NonPublic);var entry=Activator.CreateInstance(type);
+                typeof(SurvivorCombatViewController).GetField("mapRoot",flags).SetValue(controller,map.transform);
+                var type=typeof(SurvivorCombatViewController).GetNestedType("RemotePlayerEntry",BindingFlags.NonPublic);var entry=Activator.CreateInstance(type);
                 type.GetField("PlayerId").SetValue(entry,9L);type.GetField("Visible").SetValue(entry,true);type.GetField("View").SetValue(entry,remote);
-                ((IDictionary)typeof(ArcadeCombatViewController).GetField("remotePlayers",flags).GetValue(controller)).Add(9L,entry);
+                ((IDictionary)typeof(SurvivorCombatViewController).GetField("remotePlayers",flags).GetValue(controller)).Add(9L,entry);
                 remote.Snap(new Vector3(4,0,3),0);
                 controller.SetRemotePlayer(9,Vector2.zero,Vector2.up,false,false,0,100);controller.TickPlayerFeedback(.1f);
                 Assert.AreEqual(new Vector3(4,0,3),actor.transform.localPosition,"死亡不能追向预备复活位置");
@@ -90,11 +90,11 @@ namespace Game.Tests
         }
         [Test] public void LocalInitialDeadSnapshotDoesNotReplayAndLaterDeathStillPlays()
         {
-            var controller=new ArcadeCombatViewController();const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
+            var controller=new SurvivorCombatViewController();const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
             using var motor=new PlayerViewCtrl(view,1,1,new ViewCtrlRegistry(),new UnityViewInstanceProvider());
             var map=new GameObject("LocalDamageTestMap");
-            typeof(ArcadeCombatViewController).GetField("playerMotor",flags).SetValue(controller,motor);
-            typeof(ArcadeCombatViewController).GetField("mapRoot",flags).SetValue(controller,map.transform);
+            typeof(SurvivorCombatViewController).GetField("playerMotor",flags).SetValue(controller,motor);
+            typeof(SurvivorCombatViewController).GetField("mapRoot",flags).SetValue(controller,map.transform);
             try
             {
             controller.SetPlayer(new Vector2(3,4),Vector2.up,false,false);

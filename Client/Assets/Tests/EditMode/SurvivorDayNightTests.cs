@@ -7,7 +7,7 @@ namespace Game.Tests
     /// <summary>昼夜投影必须循环、冻结并归还原场景灯光，不能污染其它模式。</summary>
     public sealed class SurvivorDayNightTests
     {
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private GameObject root, originalObject;
         private Light original, oldSun;
         private const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -17,8 +17,8 @@ namespace Game.Tests
             originalObject = new GameObject("ExistingDayLight", typeof(Light));
             original = originalObject.GetComponent<Light>(); original.type = LightType.Directional;
             original.intensity = .77f; RenderSettings.sun = original;
-            root = new GameObject("DayNightTestRoot"); view = new ArcadeCombatViewController();
-            typeof(ArcadeCombatViewController).GetField("root", Hidden).SetValue(view, root);
+            root = new GameObject("DayNightTestRoot"); view = new SurvivorCombatViewController();
+            typeof(SurvivorCombatViewController).GetField("root", Hidden).SetValue(view, root);
         }
         [TearDown] public void Cleanup()
         {
@@ -26,10 +26,10 @@ namespace Game.Tests
         }
         private void Sample(double seconds)
         {
-            var method = typeof(ArcadeCombatViewController).GetMethod("SetSurvivorTime");
+            var method = typeof(SurvivorCombatViewController).GetMethod("SetSurvivorTime");
             Assert.That(method, Is.Not.Null, "缺少本局时间到昼夜表现的入口");
             method.Invoke(view, new object[] {seconds});
-            var visibility=typeof(ArcadeCombatViewController).GetMethod("SetSurvivorVisibility");
+            var visibility=typeof(SurvivorCombatViewController).GetMethod("SetSurvivorVisibility");
             Assert.That(visibility,Is.Not.Null,"缺少亮区投影入口");
             float night=(float)(.5-.5*System.Math.Cos(seconds/360*System.Math.PI*2));
             visibility.Invoke(view,new object[]{night,24-12*night,new Vector2(3,4)});
@@ -84,7 +84,7 @@ namespace Game.Tests
             try
             {
                 QualitySettings.renderPipeline=source;
-                typeof(ArcadeCombatViewController).GetMethod("PrepareSurvivorLightingPipeline",Hidden).Invoke(view,null);
+                typeof(SurvivorCombatViewController).GetMethod("PrepareSurvivorLightingPipeline",Hidden).Invoke(view,null);
                 Assert.That(QualitySettings.renderPipeline,Is.Not.SameAs(source));
                 view.End();Assert.That(QualitySettings.renderPipeline,Is.SameAs(source));
             }

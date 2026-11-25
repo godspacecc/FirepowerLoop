@@ -16,14 +16,14 @@ namespace Game.Tests
     public sealed class BarrelExplosionEffectsTests
     {
         const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
-        ArcadeCombatViewController view;GameObject root;
+        SurvivorCombatViewController view;GameObject root;
         Transform Kit=>AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content");
         object Get(string name){var field=view.GetType().GetField(name,Hidden);Assert.That(field,Is.Not.Null,"桶专属运行态缺失："+name);return field.GetValue(view);}
         void Set(string name,object value){var field=view.GetType().GetField(name,Hidden);Assert.That(field,Is.Not.Null,"桶专属入口缺失："+name);field.SetValue(view,value);}
         void Call(string method,params object[] args){var m=view.GetType().GetMethod(method,Hidden|BindingFlags.Public);Assert.That(m,Is.Not.Null,"桶专属表现缺失："+method);m.Invoke(view,args);}
         [SetUp] public void Setup()
         {
-            root=new GameObject("BarrelExplosionOwner");view=new ArcadeCombatViewController();Set("root",root);view.ConfigureRoundBounds(19.5f,19.5f,.55f);
+            root=new GameObject("BarrelExplosionOwner");view=new SurvivorCombatViewController();Set("root",root);view.ConfigureRoundBounds(19.5f,19.5f,.55f);
             var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
             view.SetRoundLayout(ArcadeRoundLayoutParameters.FromConfig(tables.TbArcadeRoundLayout.DataList.First(p=>p.ArenaConfigNumber==3&&p.RoundNumber==1)));
         }

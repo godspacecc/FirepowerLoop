@@ -99,7 +99,7 @@ namespace Game.Tests
         }
         [Test] public void AllGroundDropNamesAreEmptyAtTheArcadeProjectionSource()
         {
-            var resolve=typeof(ArcadeCombatViewController).GetMethod("ResolveDropDisplayName",BindingFlags.Static|BindingFlags.NonPublic);
+            var resolve=typeof(SurvivorCombatViewController).GetMethod("ResolveDropDisplayName",BindingFlags.Static|BindingFlags.NonPublic);
             foreach(var drop in catalog.Drops)
                 Assert.That(resolve.Invoke(null,new object[]{drop}),Is.EqualTo(string.Empty),drop.Id);
         }

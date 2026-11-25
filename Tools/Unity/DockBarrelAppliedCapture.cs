@@ -19,12 +19,12 @@ public static class DockBarrelAppliedCapture
         if(Application.isPlaying||Application.dataPath.Replace('\\','/')!="E:/GitHub/FirepowerLoop/Client/Assets")throw new Exception("仅本工程编辑态");
         var prior=SceneManager.GetActiveScene();var oldTarget=RenderTexture.active;var loader=ResourceLoader.Current;
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);SceneManager.SetActiveScene(scene);
-        ArcadeCombatViewController view=null;RenderTexture target=null;Texture2D image=null;
+        SurvivorCombatViewController view=null;RenderTexture target=null;Texture2D image=null;
         try
         {
             ResourceLoader.Use(new FormalLoader());
-            var root=new GameObject("AppliedDockBarrelCapture");view=new ArcadeCombatViewController();var flags=BindingFlags.Instance|BindingFlags.NonPublic;
-            void Field(string key,object value)=>typeof(ArcadeCombatViewController).GetField(key,flags).SetValue(view,value);
+            var root=new GameObject("AppliedDockBarrelCapture");view=new SurvivorCombatViewController();var flags=BindingFlags.Instance|BindingFlags.NonPublic;
+            void Field(string key,object value)=>typeof(SurvivorCombatViewController).GetField(key,flags).SetValue(view,value);
             Field("root",root);Field("contentTemplates",AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
             var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
             Field("earlyStage",ArcadeEarlyStageParameters.FromConfig(tables.TbArcadeEarlyStage.Get(21)));
@@ -64,7 +64,7 @@ public static class DockBarrelAppliedCapture
             SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);
         }
     }
-    private sealed class EnemyPort:IArcadeEnemyPresentationPort
+    private sealed class EnemyPort:IEnemyPresentationPort
     {
         public Transform Root;
         public bool TryGetEnemyPresentationRoot(int id,out Transform value){value=Root;return value!=null;}

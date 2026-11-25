@@ -22,7 +22,7 @@ namespace Game.Tests
         private static readonly string[] WallNames = { "NorthBoundary", "SouthBoundary", "EastBoundary", "WestBoundary" };
         private Scene scene, priorScene;
         private MapContext map;
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private ArcadeConfigCatalogDefinition catalog;
         private IResourceLoader previousLoader;
         private FormalLoader loader;
@@ -41,7 +41,7 @@ namespace Game.Tests
             map.SetMapContentActive(true);
             baseRenderers = map.GetComponentsInChildren<Renderer>(true).Where(r => WallNames.Contains(r.name) || r.name == "Ground").ToArray();
             Assert.That(baseRenderers.Length, Is.EqualTo(5), "正式共享底图应含四面旧墙及底板");
-            view = new ArcadeCombatViewController();
+            view = new SurvivorCombatViewController();
         }
 
         [TearDown]
@@ -52,8 +52,8 @@ namespace Game.Tests
             if (scene.IsValid() && scene.isLoaded) EditorSceneManager.CloseScene(scene, true);
         }
 
-        private void Set(string name, object value) => typeof(ArcadeCombatViewController).GetField(name, Hidden).SetValue(view, value);
-        private void Invoke(string name, params object[] args) => typeof(ArcadeCombatViewController).GetMethod(name, Hidden).Invoke(view, args);
+        private void Set(string name, object value) => typeof(SurvivorCombatViewController).GetField(name, Hidden).SetValue(view, value);
+        private void Invoke(string name, params object[] args) => typeof(SurvivorCombatViewController).GetMethod(name, Hidden).Invoke(view, args);
         private void Start(ArcadeRoundLayoutParameters layout)
         {
             view.End(); root = new GameObject("BoundaryRegressionRuntime"); root.transform.SetParent(map.DynamicObjectRoot, false);

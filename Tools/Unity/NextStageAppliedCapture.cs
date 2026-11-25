@@ -16,8 +16,8 @@ using Object=UnityEngine.Object;
 public static class NextStageAppliedCapture
 {
     const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
-    static ArcadeCombatViewController view;static GameObject root;static Camera camera;
-    static void Field(string name,object value)=>typeof(ArcadeCombatViewController).GetField(name,Hidden).SetValue(view,value);
+    static SurvivorCombatViewController view;static GameObject root;static Camera camera;
+    static void Field(string name,object value)=>typeof(SurvivorCombatViewController).GetField(name,Hidden).SetValue(view,value);
     public static string Graveyard()=>Capture(23);
     public static string Temple()=>Capture(24);
     public static string Marketplace()=>Capture(25);
@@ -31,7 +31,7 @@ public static class NextStageAppliedCapture
             var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
             var stage=tables.TbArcadeEarlyStage.DataList.Select(ArcadeEarlyStageParameters.FromConfig).Single(s=>s.ArenaConfigNumber==arena);
             var layout=tables.TbArcadeRoundLayout.DataList.Select(ArcadeRoundLayoutParameters.FromConfig).First(p=>p.ArenaConfigNumber==arena);
-            view=new ArcadeCombatViewController();root=new GameObject("ControllerAppliedCapture");Field("root",root);Field("earlyStage",stage);view.ConfigureRoundBounds(stage.HalfWidth,stage.HalfHeight,.55f);view.SetRoundLayout(layout);
+            view=new SurvivorCombatViewController();root=new GameObject("ControllerAppliedCapture");Field("root",root);Field("earlyStage",stage);view.ConfigureRoundBounds(stage.HalfWidth,stage.HalfHeight,.55f);view.SetRoundLayout(layout);
             if(!view.IsRoundLayoutReady)throw new InvalidOperationException(view.RoundLayoutLoadError??"正式资源未齐");
             RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;RenderSettings.ambientLight=new Color(.52f,.55f,.53f);RenderSettings.fog=false;
             var sun=new GameObject("CaptureSun",typeof(Light)).GetComponent<Light>();sun.type=LightType.Directional;sun.intensity=1.05f;sun.shadows=LightShadows.Soft;sun.transform.rotation=Quaternion.Euler(48,-28,0);sun.cullingMask=1<<29;
@@ -82,12 +82,12 @@ public static class NextStageAppliedCapture
                 view.TickPlayerFeedback(1f/12);foreach(var transform in root.GetComponentsInChildren<Transform>(true))transform.gameObject.layer=29;
                 Save(folder+"/frames/"+frame.ToString("D3")+".png");
             }
-            File.WriteAllText(folder+"/source.txt","实际 ArcadeCombatViewController.SetEnemyContent/SetEnemy/SetNextStageEnemyState/RemoveEnemy 与 TickPlayerFeedback + 正式资源隔离采样；不是自然对局或真人双端。集市普通群敌使用正式Prefab和其自带移动片段逐帧采样；唯一暗影通过Controller。TimeScale未修改。");
+            File.WriteAllText(folder+"/source.txt","实际 SurvivorCombatViewController.SetEnemyContent/SetEnemy/SetNextStageEnemyState/RemoveEnemy 与 TickPlayerFeedback + 正式资源隔离采样；不是自然对局或真人双端。集市普通群敌使用正式Prefab和其自带移动片段逐帧采样；唯一暗影通过Controller。TimeScale未修改。");
             return folder;
         }
         finally
         {
-            if(view!=null)typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);view=null;
+            if(view!=null)typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);view=null;
             RenderTexture.active=oldRT;SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);ResourceLoader.Use(previous);root=null;camera=null;
         }
     }

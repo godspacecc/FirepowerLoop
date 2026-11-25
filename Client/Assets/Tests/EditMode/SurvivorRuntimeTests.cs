@@ -751,7 +751,7 @@ namespace Game.Tests
                 var camera=cameraObject.AddComponent<Camera>();camera.enabled=true;camera.orthographic=orthographic;
                 camera.orthographicSize=10;camera.fieldOfView=90;camera.aspect=1;
                 camera.transform.position=new Vector3(0,10,0);camera.transform.rotation=Quaternion.Euler(90,0,0);
-                var method=typeof(ArcadeCombatViewController).GetMethod("IsSpawnHiddenByCamera",BindingFlags.Static|BindingFlags.NonPublic);
+                var method=typeof(SurvivorCombatViewController).GetMethod("IsSpawnHiddenByCamera",BindingFlags.Static|BindingFlags.NonPublic);
                 bool Hidden(Vector2 p)=>(bool)method.Invoke(null,new object[]{camera,map.transform,p,.5f,new Plane[6]});
                 Assert.That(Hidden(Vector2.zero),Is.False);
                 Assert.That(Hidden(new Vector2(10.6f,0)),Is.False,"画面边缘外仍保留身体与镜头移动余量");
@@ -1034,16 +1034,16 @@ namespace Game.Tests
             var rootObject=new GameObject("ExperienceNameTest");
             try
             {
-                var port=new ExperienceLootSpy();var presentation=new ArcadeCombatViewController();
-                typeof(ArcadeCombatViewController).GetField("mapRoot",Flags).SetValue(presentation,rootObject.transform);
-                typeof(ArcadeCombatViewController).GetField("lootPresentation",Flags).SetValue(presentation,port);
+                var port=new ExperienceLootSpy();var presentation=new SurvivorCombatViewController();
+                typeof(SurvivorCombatViewController).GetField("mapRoot",Flags).SetValue(presentation,rootObject.transform);
+                typeof(SurvivorCombatViewController).GetField("lootPresentation",Flags).SetValue(presentation,port);
                 presentation.SetExperienceDrop(1,config.ExperienceVisualPrefabAddress,Vector2.zero,3);
                 Assert.That(port.Name,Is.Empty);Assert.That(port.Amount,Is.EqualTo(3));
                 Assert.That(port.Address,Is.EqualTo(config.ExperienceVisualPrefabAddress));
             }
             finally{UnityEngine.Object.DestroyImmediate(rootObject);}
         }
-        private sealed class ExperienceLootSpy:IArcadeLootPresentationPort
+        private sealed class ExperienceLootSpy:ILootPresentationPort
         {
             public string Name,Address;public int Amount;
             public bool TrySetDrop(int id,Vector3 position,string name,int amount,out string error){Name=name;Amount=amount;error=null;return true;}
@@ -1210,7 +1210,7 @@ namespace Game.Tests
             Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"));
             Assert.AreEqual(new Vector2(12,8),Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Values.Single().Position);
         }
-        private sealed class TestView:IArcadeCombatViewPort
+        private sealed class TestView:ISurvivorCombatViewPort
         {
             public int PlayerHitCount,EnemyHitCount;
             public Vector2 PlayerHitPush,EnemyHitPush;

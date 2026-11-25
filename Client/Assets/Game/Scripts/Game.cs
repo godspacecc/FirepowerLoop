@@ -15,7 +15,7 @@ namespace Game
         private INetworkRuntime networkRuntime;
         private OnlineAccountLifecycleController networkLifecycle;
         private OnlineAccountSystem onlineAccountSystem;
-        private ArcadeCombatViewController arcadeCombatView;
+        private SurvivorCombatViewController survivorCombatView;
 
         protected override void Init()
         {
@@ -87,16 +87,16 @@ namespace Game
             projectileCtrl = new ProjectileCtrl(this);
             enemyCtrl = new EnemyCtrl(this);
             lootCtrl = new LootCtrl(this);
-            arcadeCombatView = new ArcadeCombatViewController();
+            survivorCombatView = new SurvivorCombatViewController();
         }
 
         private void RegisterControllerPorts()
         {
             RegisterUtility<IPlayerRuntimePortProvider>(playerCtrl);
-            RegisterUtility<IArcadeProjectilePresentationPort>(projectileCtrl);
-            RegisterUtility<IArcadeEnemyPresentationPort>(enemyCtrl);
-            RegisterUtility<IArcadeLootPresentationPort>(lootCtrl);
-            RegisterUtility<IArcadeCombatViewPort>(arcadeCombatView);
+            RegisterUtility<IProjectilePresentationPort>(projectileCtrl);
+            RegisterUtility<IEnemyPresentationPort>(enemyCtrl);
+            RegisterUtility<ILootPresentationPort>(lootCtrl);
+            RegisterUtility<ISurvivorCombatViewPort>(survivorCombatView);
         }
 
         private void RegisterSystems()
@@ -145,7 +145,7 @@ namespace Game
             enemyCtrl?.ReleaseAll(); enemyCtrl = null;
             playerCtrl?.ReleaseAll(); playerCtrl = null;
             projectileCtrl?.ReleaseAll(); projectileCtrl = null;
-            arcadeCombatView?.Dispose(); arcadeCombatView = null;
+            survivorCombatView?.Dispose(); survivorCombatView = null;
             GetUtility<ViewCtrlRegistry>()?.DisposeAll();
         }
     }

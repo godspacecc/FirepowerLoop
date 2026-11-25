@@ -22,7 +22,7 @@ namespace Game.Tests
             var capped=ArcadeEnemyDropRules.Chance(.2f,int.MaxValue,int.MaxValue,100,10,.5f);
             Assert.That(capped,Is.EqualTo(.5f));
             Assert.That(capped*config.GoldDropMultiplier,Is.EqualTo(.005f).Within(.000001));
-            var source=File.ReadAllText(Path.Combine(Application.dataPath,"Game/Scripts/System/Arcade/SurvivorSystem.Gold.cs"));
+            var source=File.ReadAllText(Path.Combine(Application.dataPath,"Game/Scripts/System/Survivor/SurvivorSystem.Gold.cs"));
             Assert.That(source,Does.Contain("r.EnemyDropMaxChance)*config.GoldDropMultiplier"));
             var member=typeof(global::SurvivorRuleConfig).GetField("GoldDropMultiplier");
             foreach(var value in new[]{-.1f,1.1f,float.NaN,float.PositiveInfinity}) {

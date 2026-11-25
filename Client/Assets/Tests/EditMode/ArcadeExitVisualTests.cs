@@ -19,7 +19,7 @@ namespace Game.Tests
         private IResourceLoader previousLoader;
         private object previousLanguages;
         private readonly FieldInfo languageCache = typeof(LocalizationLanguages).GetField("cachedConfig", BindingFlags.Static | BindingFlags.NonPublic);
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private GameObject root;
 
         [SetUp] public void Setup()
@@ -39,7 +39,7 @@ namespace Game.Tests
             architecture.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(() => new Tables(name =>
                 new Luban.ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes"))))));
             root = new GameObject("ExitVisualTest");
-            view = new ArcadeCombatViewController();
+            view = new SurvivorCombatViewController();
             Set("root", root);
             Set("contentArena", 1);
             Set("contentTemplates", Bank().transform.Find("Content"));
@@ -55,7 +55,7 @@ namespace Game.Tests
             languageCache.SetValue(null, previousLanguages);
         }
 
-        private void Set(string name, object value) => typeof(ArcadeCombatViewController).GetField(name, Hidden).SetValue(view, value);
+        private void Set(string name, object value) => typeof(SurvivorCombatViewController).GetField(name, Hidden).SetValue(view, value);
         private static GameObject Bank() => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab");
 
         private sealed class TestLoader : IResourceLoader

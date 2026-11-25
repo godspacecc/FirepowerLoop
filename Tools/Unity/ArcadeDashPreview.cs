@@ -55,7 +55,7 @@ public static class ArcadeDashPreview
             profile=ScriptableObject.CreateInstance<VolumeProfile>();volume.sharedProfile=profile;volume.isGlobal=true;volume.priority=100;
             var bloom=profile.Add<Bloom>(true);bloom.threshold.Override(.9f);bloom.intensity.Override(.5f);
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Art/Arcade/VFX/Dash/Dash.prefab");
-            var type=typeof(Game.ArcadeCombatViewController).Assembly.GetType("Game.ArcadeDashPresentation");
+            var type=typeof(Game.SurvivorCombatViewController).Assembly.GetType("Game.SurvivorDashPresentation");
             effect=(IDisposable)Activator.CreateInstance(type,root.transform,prefab.transform);
             var play=type.GetMethod("Set");var tick=type.GetMethod("Tick");
             camera.targetTexture=rt;

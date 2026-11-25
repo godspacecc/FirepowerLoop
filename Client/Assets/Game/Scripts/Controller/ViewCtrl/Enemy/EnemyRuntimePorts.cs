@@ -23,7 +23,7 @@ namespace Game
     }
 
     /// <summary>街机仅复用敌人 Prefab 与表现生命周期；生命、移动和死亡结论仍由 ArcadeCombatSystem 权威维护。</summary>
-    public interface IArcadeEnemyPresentationPort : IUtility
+    public interface IEnemyPresentationPort : IUtility
     {
         /// <summary>附魔快照与波纹只属于表现，不持有规则层数。</summary>
         void SetSurvivorEnchantment(int id,SurvivorEnchantSnapshot snapshot) { }

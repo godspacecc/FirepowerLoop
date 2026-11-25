@@ -10,7 +10,7 @@ namespace Game
     /// <summary>
     /// 管理街机投射物 Prefab、表现池与地图资源事务，命中由街机规则裁决。
     /// </summary>
-    public sealed partial class ProjectileCtrl : IController, IArcadeProjectilePresentationPort
+    public sealed partial class ProjectileCtrl : IController, IProjectilePresentationPort
     {
         private readonly IArchitecture architecture;
         private readonly Dictionary<int, ProjectileView> activeViews = new Dictionary<int, ProjectileView>();

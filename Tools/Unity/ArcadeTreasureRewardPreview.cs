@@ -27,7 +27,7 @@ public static class ArcadeTreasureRewardPreview
         var oldArchitecture = singleton.GetValue(null); var oldLanguages = languages.GetValue(null); var oldLoader = ResourceLoader.Current;
         var oldAmbient = RenderSettings.ambientMode; var oldAmbientLight = RenderSettings.ambientLight;
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        var view = new ArcadeCombatViewController(); var drops = new PreviewDrops();
+        var view = new SurvivorCombatViewController(); var drops = new PreviewDrops();
         try
         {
             SceneManager.SetActiveScene(scene); Directory.CreateDirectory(Folder);
@@ -68,7 +68,7 @@ public static class ArcadeTreasureRewardPreview
                 Capture(camera, id == "arcade.treasure.first" ? "treasure-room.png" : "armory.png");
                 if (id == "arcade.treasure.first")
                 {
-                    typeof(ArcadeCombatViewController).GetMethod("EmitTreasurePickupFlash", Hidden).Invoke(view, new object[] { new Vector2(-1, -2) });
+                    typeof(SurvivorCombatViewController).GetMethod("EmitTreasurePickupFlash", Hidden).Invoke(view, new object[] { new Vector2(-1, -2) });
                     var flash = root.GetComponentsInChildren<ParticleSystem>().First(p => p.name == "TreasurePickupFlash");
                     flash.Simulate(.06f, false, false, false); Layer(root.transform); Capture(camera, "pickup-flash.png");
                 }
@@ -84,7 +84,7 @@ public static class ArcadeTreasureRewardPreview
             SceneManager.SetActiveScene(prior); EditorSceneManager.CloseScene(scene, true);
         }
     }
-    private static void Set(object view, string name, object value) => typeof(ArcadeCombatViewController).GetField(name, Hidden).SetValue(view, value);
+    private static void Set(object view, string name, object value) => typeof(SurvivorCombatViewController).GetField(name, Hidden).SetValue(view, value);
     private static void Layer(Transform root) { root.gameObject.layer = 30; foreach (Transform child in root) Layer(child); }
     private static void Light(string name, Color color, float intensity, Vector3 euler)
     { var light = new GameObject(name, typeof(Light)).GetComponent<Light>(); light.type = LightType.Directional; light.color = color; light.intensity = intensity; light.transform.eulerAngles = euler; light.cullingMask = 1 << 30; }
@@ -120,7 +120,7 @@ public static class ArcadeTreasureRewardPreview
         public void Release(ResourceLoadHandle handle) { }
     }
     /// <summary>仅预览用适配器：以正式拾取 View 装配配置模型，记录网格高度；不产生领域物品。</summary>
-    private sealed class PreviewDrops : IArcadeLootPresentationPort
+    private sealed class PreviewDrops : ILootPresentationPort
     {
         public Transform Root;
         public readonly List<string> Bounds = new();

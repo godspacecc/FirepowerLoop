@@ -16,16 +16,16 @@ namespace Game.Tests
         private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
         private const string Aggregate="Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab";
         private GameObject root;
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private ArcadeRoundLayoutParameters layout;
         private static string Name(int kind)=>kind==6?"Spider":kind==10?"Ghoul":kind==17?"RedMangler":"ZRex";
         private Transform Actor=>root.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="AdoptedCreatureActor");
         private void Ready(int kind)
         {
-            root=new GameObject("TenStageCreatureContract");view=new ArcadeCombatViewController();
-            typeof(ArcadeCombatViewController).GetField("root",Hidden).SetValue(view,root);
-            typeof(ArcadeCombatViewController).GetField("mapRoot",Hidden).SetValue(view,root.transform);
-            typeof(ArcadeCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>(Aggregate).transform.Find("Content"));
+            root=new GameObject("TenStageCreatureContract");view=new SurvivorCombatViewController();
+            typeof(SurvivorCombatViewController).GetField("root",Hidden).SetValue(view,root);
+            typeof(SurvivorCombatViewController).GetField("mapRoot",Hidden).SetValue(view,root.transform);
+            typeof(SurvivorCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>(Aggregate).transform.Find("Content"));
             var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
             layout=tables.TbArcadeRoundLayout.DataList.Select(ArcadeRoundLayoutParameters.FromConfig).First(p=>kind==2?p.BossKind==2&&p.ArenaConfigNumber==10:p.SpecialKind==kind);
             view.ConfigureRoundBounds(19.5f,19.5f,.55f);view.SetRoundLayout(layout);
@@ -34,12 +34,12 @@ namespace Game.Tests
         {Ready(kind);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);view.RecordRoundEnemyPosition(7,new Vector2(2,3));view.SetEnemyContent(7,kind==2?0:kind,kind==2?2:0,false);Assert.That(Actor,Is.Not.Null,"已采用演员仍未接入");}
         private void State(float age,float windup=0,float remaining=0,float recovery=0)
         {
-            var method=typeof(ArcadeCombatViewController).GetMethod("SetAdoptedCreatureState");Assert.That(method,Is.Not.Null,"缺少权威姿态入口");
+            var method=typeof(SurvivorCombatViewController).GetMethod("SetAdoptedCreatureState");Assert.That(method,Is.Not.Null,"缺少权威姿态入口");
             method.Invoke(view,new object[]{7,age,Vector2.right,windup,remaining,recovery});
         }
         private Vector3 Foot(int kind)=>Actor.Find(kind==6?"Body/Leg-1_2/Joint":"Body/LegL/Foot").localPosition;
         [TearDown] public void Cleanup()
-        {if(view!=null)typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);if(root!=null)UnityEngine.Object.DestroyImmediate(root);root=null;view=null;}
+        {if(view!=null)typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);if(root!=null)UnityEngine.Object.DestroyImmediate(root);root=null;view=null;}
 
         [TestCase(6)][TestCase(10)][TestCase(17)][TestCase(2)]
         public void AdoptedGeometryAndClipsArePersistentAndNeverAnimateActorRoot(int kind)
@@ -112,11 +112,11 @@ namespace Game.Tests
         [TestCase(6)][TestCase(10)][TestCase(17)][TestCase(2)]
         public void MissingTemplateRecoveryRemovalAndMapReleaseKeepSharedArtAlive(int kind)
         {
-            Ready(kind);var field=typeof(ArcadeCombatViewController).GetField("contentTemplates",Hidden);var template=field.GetValue(view);field.SetValue(view,null);Assert.That(view.IsRoundLayoutReady,Is.False);
+            Ready(kind);var field=typeof(SurvivorCombatViewController).GetField("contentTemplates",Hidden);var template=field.GetValue(view);field.SetValue(view,null);Assert.That(view.IsRoundLayoutReady,Is.False);
             view.RecordRoundEnemyPosition(7,new Vector2(2,3));view.SetEnemyContent(7,kind==2?0:kind,kind==2?2:0,false);Assert.That(Actor,Is.Null);
             field.SetValue(view,template);view.SetEnemyContent(7,kind==2?0:kind,kind==2?2:0,false);Assert.That(Actor,Is.Not.Null);var mesh=Actor.GetComponentInChildren<MeshFilter>().sharedMesh;
             State(3);view.RemoveRoundEnemyContent(7);Assert.That(Actor,Is.Null);view.SetEnemyContent(7,kind==2?0:kind,kind==2?2:0,false);State(.1f);Assert.That(Actor,Is.Not.Null);
-            typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);Assert.That(root.transform.childCount,Is.Zero);Assert.That(mesh!=null&&EditorUtility.IsPersistent(mesh),Is.True);
+            typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);Assert.That(root.transform.childCount,Is.Zero);Assert.That(mesh!=null&&EditorUtility.IsPersistent(mesh),Is.True);
         }
     }
 }

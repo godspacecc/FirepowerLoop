@@ -12,7 +12,7 @@ using Object=UnityEngine.Object;
 /// <summary>已确认射线正式弹体、短尾和只读电弧隔离实拍；轨迹手动采样，伤害另由定向检查验证。</summary>
 public static class PurpleRayAppliedPreview
 {
-    static ArcadeCombatViewController view;static Transform root;static Camera camera;static readonly List<Material> materials=new List<Material>();
+    static SurvivorCombatViewController view;static Transform root;static Camera camera;static readonly List<Material> materials=new List<Material>();
     static Material purple;static int Layer=30;static string folder;
     public static string Run()
     {
@@ -22,7 +22,7 @@ public static class PurpleRayAppliedPreview
         {
             SceneManager.SetActiveScene(scene);folder=Path.GetFullPath("Temp/PurpleRayApplied-20261022");Directory.CreateDirectory(folder);
             root=new GameObject("TEMP_PURPLE_RAY_APPLIED").transform;purple=Mat(new Color(.8f,.3f,1));
-            view=new ArcadeCombatViewController();typeof(ArcadeCombatViewController).GetField("root",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(view,root.gameObject);
+            view=new SurvivorCombatViewController();typeof(SurvivorCombatViewController).GetField("root",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(view,root.gameObject);
             var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.transform.SetParent(root);floor.transform.position=Vector3.down*.15f;floor.transform.localScale=new Vector3(25,.2f,19);floor.GetComponent<Renderer>().sharedMaterial=Mat(new Color(.14f,.22f,.24f));
             var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"),root);
             hero.transform.position=new Vector3(-5,0,-1.5f);hero.transform.rotation=Quaternion.Euler(0,90,0);
@@ -103,7 +103,7 @@ public static class PurpleRayAppliedPreview
         }
         finally
         {
-            if(view!=null)typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).Invoke(view,null);view=null;
+            if(view!=null)typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).Invoke(view,null);view=null;
             if(camera!=null)camera.targetTexture=null;RenderTexture.active=previous;SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);
             foreach(var m in materials)if(m!=null)Object.DestroyImmediate(m);materials.Clear();
         }

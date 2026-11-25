@@ -13,7 +13,7 @@ namespace Game.Tests
         [Test]
         public void RemainingWeapons_ResolveImportedFireClips()
         {
-            var resolve = typeof(ArcadeCombatViewController).GetMethod("ResolveFireSoundName",
+            var resolve = typeof(SurvivorCombatViewController).GetMethod("ResolveFireSoundName",
                 BindingFlags.Static | BindingFlags.NonPublic);
             Assert.That(resolve, Is.Not.Null, "街机表现端需要按武器选择试听音效");
 
@@ -35,7 +35,7 @@ namespace Game.Tests
         [Test]
         public void FastWeapons_LimitRepeatedShotSounds()
         {
-            var canPlay = typeof(ArcadeCombatViewController).GetMethod("CanPlayFireSound",
+            var canPlay = typeof(SurvivorCombatViewController).GetMethod("CanPlayFireSound",
                 BindingFlags.Static | BindingFlags.NonPublic);
             Assert.That(canPlay, Is.Not.Null, "高速武器需要限制长尾音效叠加");
 

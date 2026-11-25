@@ -24,7 +24,7 @@ public static class ArcadeIslandRoundPreview
         var priorArchitecture=architectureField.GetValue(null);var priorLanguage=languageCache.GetValue(null);
         var priorLoader=ResourceLoader.Current;var priorScene=SceneManager.GetActiveScene();var priorRt=RenderTexture.active;
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
-        ArcadeCombatViewController view=null;RenderTexture rt=null;Texture2D tex=null;
+        SurvivorCombatViewController view=null;RenderTexture rt=null;Texture2D tex=null;
         var files=new List<string>();
         try
         {
@@ -45,7 +45,7 @@ public static class ArcadeIslandRoundPreview
             string directory=Path.GetFullPath(Path.Combine(Application.dataPath,"../Temp/IslandRoundPreview"));Directory.CreateDirectory(directory);
             for(int round=1;round<=4;round++)
             {
-                view=new ArcadeCombatViewController();var root=new GameObject("IslandRoundPreview_"+round);
+                view=new SurvivorCombatViewController();var root=new GameObject("IslandRoundPreview_"+round);
                 Set(view,"root",root);
                 Call(view,"CreateArenaCollision",1,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ArcadeIslandLayout.GetObstacles(round,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight));
                 Call(view,"LoadContentAsync",1);view.SetIslandRound(round);view.SetOpening(opening,round==4);

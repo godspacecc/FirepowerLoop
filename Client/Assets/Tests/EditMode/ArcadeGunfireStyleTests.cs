@@ -117,21 +117,21 @@ namespace Game.Tests
         [Test]
         public void SurfaceSparkUsesSharedBoundedPoolAndResetsForBodyHit()
         {
-            var root = new GameObject("surface-spark-owner"); var view = new ArcadeCombatViewController();
+            var root = new GameObject("surface-spark-owner"); var view = new SurvivorCombatViewController();
             var flags = BindingFlags.NonPublic | BindingFlags.Instance;
-            typeof(ArcadeCombatViewController).GetField("root", flags).SetValue(view, root);
-            typeof(ArcadeCombatViewController).GetField("mapRoot", flags).SetValue(view, root.transform);
+            typeof(SurvivorCombatViewController).GetField("root", flags).SetValue(view, root);
+            typeof(SurvivorCombatViewController).GetField("mapRoot", flags).SetValue(view, root.transform);
             var template = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content/BulletImpact").GetComponent<ParticleSystem>();
-            typeof(ArcadeCombatViewController).GetField("bulletImpactTemplate", flags).SetValue(view, template);
+            typeof(SurvivorCombatViewController).GetField("bulletImpactTemplate", flags).SetValue(view, template);
             try
             {
-                var surface = typeof(ArcadeCombatViewController).GetMethod("PlayProjectileSurfaceImpact");
+                var surface = typeof(SurvivorCombatViewController).GetMethod("PlayProjectileSurfaceImpact");
                 Assert.That(surface, Is.Not.Null, "墙面接触需有独立表现入口");
                 for (int i = 0; i < 13; i++) surface.Invoke(view, new object[] { new Vector2(2, 3), Vector2.right });
                 var particles = root.GetComponentsInChildren<ParticleSystem>();
                 Assert.That(particles.Length, Is.EqualTo(12));
                 Assert.That(particles[1].shape.shapeType, Is.EqualTo(ParticleSystemShapeType.Cone));
-                typeof(ArcadeCombatViewController).GetMethod("PlayBulletImpact", flags).Invoke(view, new object[] { Vector2.zero });
+                typeof(SurvivorCombatViewController).GetMethod("PlayBulletImpact", flags).Invoke(view, new object[] { Vector2.zero });
                 Assert.That(particles[1].shape.shapeType, Is.EqualTo(ParticleSystemShapeType.Sphere), "共池复用必须恢复命中敌人的球形火星");
                 Assert.That(particles[1].transform.localRotation, Is.EqualTo(Quaternion.identity));
             }

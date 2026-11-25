@@ -16,19 +16,19 @@ namespace Game.Tests
     {
         private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
         private GameObject root;
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private ArcadeHazardParameters[] definitions;
         [SetUp] public void Setup()
         {
             var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));
             Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);
             definitions=catalog.Arenas.Single(a=>a.ArenaNumber==21).Hazards.ToArray();
-            root=new GameObject("DockTowerTest");view=new ArcadeCombatViewController();
+            root=new GameObject("DockTowerTest");view=new SurvivorCombatViewController();
             Field("root",root);Field("contentArena",21);
             Field("contentTemplates",AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
         }
         [TearDown] public void Cleanup(){view.End();if(root!=null)Object.DestroyImmediate(root);}
-        private void Field(string name,object value)=>typeof(ArcadeCombatViewController).GetField(name,Hidden).SetValue(view,value);
+        private void Field(string name,object value)=>typeof(SurvivorCombatViewController).GetField(name,Hidden).SetValue(view,value);
         private Transform Named(string name)=>root.GetComponentsInChildren<Transform>(true).SingleOrDefault(t=>t.name==name);
         private LineRenderer[] Lines(string name)=>root.GetComponentsInChildren<LineRenderer>(true).Where(l=>l.name==name).ToArray();
 
@@ -92,7 +92,7 @@ namespace Game.Tests
             {
                 Field("contentTemplates",null);view.SetHazards(definitions,5.3);
                 Assert.That(Named("塔顶聚电核"),Is.Null);
-                typeof(ArcadeCombatViewController).GetMethod("LoadContentAsync",Hidden).Invoke(view,new object[]{21});
+                typeof(SurvivorCombatViewController).GetMethod("LoadContentAsync",Hidden).Invoke(view,new object[]{21});
                 Assert.That(Named("塔顶聚电核"),Is.Not.Null);Assert.That(Named("塔顶聚电核").gameObject.activeSelf,Is.True);
                 Assert.That(root.GetComponentsInChildren<Transform>(true).Count(t=>t.name.StartsWith("Hazard_")),Is.EqualTo(1));
                 Assert.That(root.GetComponentsInChildren<LineRenderer>(true).Count(l=>l.name=="DangerBoundary"),Is.Zero,"加载完成后应释放旧临时机关");

@@ -116,7 +116,7 @@ namespace Game.Tests
         {
             var root=Create();var map=new GameObject("ElementControllerTest");var architecture=new Game();
             var survivor=new SurvivorModel{Active=true};architecture.RegisterModel(survivor);architecture.RegisterModel(new AppStateModel());architecture.GetModel<AppStateModel>().CurrentState.Value=AppState.Playing;
-            architecture.RegisterUtility<IViewInstanceProvider>(new Instances());var enemy=new EnemyCtrl(architecture);var bridge=new ArcadeCombatViewController();const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
+            architecture.RegisterUtility<IViewInstanceProvider>(new Instances());var enemy=new EnemyCtrl(architecture);var bridge=new SurvivorCombatViewController();const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
             try
             {
                 UIHelper.ResetForTests();var view=root.GetComponent<EnemyView>();view.SetNavigationEnabled(false);
@@ -124,7 +124,7 @@ namespace Game.Tests
                 var type=typeof(EnemyCtrl).GetNestedType("ArcadeEnemyPresentationEntry",BindingFlags.NonPublic);
                 var entry=Activator.CreateInstance(type,new object[]{42,"test",view,100,root.transform.position,0,false});
                 ((System.Collections.IDictionary)typeof(EnemyCtrl).GetField("arcadeEnemies",flags).GetValue(enemy)).Add(42,entry);
-                typeof(ArcadeCombatViewController).GetField("enemyPresentation",flags).SetValue(bridge,enemy);
+                typeof(SurvivorCombatViewController).GetField("enemyPresentation",flags).SetValue(bridge,enemy);
                 bridge.SetEnemyElementState(42,!death,death);var f=Feedback(root);var ps=Particles(f,death?"ElementFrost":"ElementFire");
                 var tick=typeof(EnemyCtrl).GetMethod("TickArcadeFeedback",flags);for(int i=0;i<3;i++)tick.Invoke(enemy,new object[]{.2f,0f});Assert.That(ps.particleCount,Is.GreaterThan(0));float time=ps.time;
                 survivor.Paused=true;tick.Invoke(enemy,new object[]{1f,1f});Assert.That(ps.time,Is.EqualTo(time));

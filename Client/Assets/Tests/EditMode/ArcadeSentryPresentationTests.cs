@@ -81,24 +81,24 @@ namespace Game.Tests
                 "鸡头应位于 Prefab 正前方，避免背对实际射击方向");
         }
 
-        private static void Sync(ArcadeCombatViewController view, ArcadePowerupBehavior behavior, Vector2 direction)
+        private static void Sync(SurvivorCombatViewController view, ArcadePowerupBehavior behavior, Vector2 direction)
         {
             var definition = new ArcadePowerupDefinition("test", behavior, "test-address", false,
                 new Vector3(0f, 0.5f, 0f), 0f, 1, 0.2f, 5f, 10f, 0);
-            var method = typeof(ArcadeCombatViewController).GetMethod("SetPowerup",
+            var method = typeof(SurvivorCombatViewController).GetMethod("SetPowerup",
                 new[] { typeof(long), typeof(ArcadePowerupDefinition), typeof(Vector2), typeof(Vector2) });
             Assert.That(method, Is.Not.Null, "强化表现尚未接收哨塔的实际发射方向");
             method.Invoke(view, new object[] { 7L, definition, new Vector2(2f, 3f), direction });
         }
 
         private static void WithEffect(ArcadePowerupBehavior behavior,
-            Action<ArcadeCombatViewController, GameObject, object> assertion)
+            Action<SurvivorCombatViewController, GameObject, object> assertion)
         {
             var root = new GameObject("sentry-test-root");
             var instance = new GameObject("effect");
             instance.transform.SetParent(root.transform, false);
-            var view = new ArcadeCombatViewController();
-            var type = typeof(ArcadeCombatViewController).GetNestedType("EffectVisualEntry", BindingFlags.NonPublic);
+            var view = new SurvivorCombatViewController();
+            var type = typeof(SurvivorCombatViewController).GetNestedType("EffectVisualEntry", BindingFlags.NonPublic);
             var entry = Activator.CreateInstance(type, true);
             var key = $"powerup:7:{(int)behavior}";
             Set(entry, "Key", key);

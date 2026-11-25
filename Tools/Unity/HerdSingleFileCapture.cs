@@ -19,7 +19,7 @@ public static class HerdSingleFileCapture
     {
         if(EditorApplication.isPlaying||EditorApplication.isCompiling)throw new InvalidOperationException("仅编辑态录制");
         var prior=SceneManager.GetActiveScene();var oldLoader=ResourceLoader.Current;var oldRT=RenderTexture.active;
-        var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);object fixture=null;Type fixtureType=null;ArcadeCombatViewController view=null;
+        var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);object fixture=null;Type fixtureType=null;SurvivorCombatViewController view=null;
         string folder=Path.GetFullPath("Temp/HerdSingleFile-20261023");Directory.CreateDirectory(folder);Directory.CreateDirectory(folder+"/frames");
         try
         {
@@ -31,8 +31,8 @@ public static class HerdSingleFileCapture
             runtimeType.GetField("PlayerPosition").SetValue(runtime,new Vector2(-29,-17));runtimeType.GetField("PlayerInvulnerability").SetValue(runtime,100f);
             var catalog=(ArcadeConfigCatalogDefinition)system.GetType().GetField("catalog",Hidden).GetValue(system);
             var stage=catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==22);
-            ResourceLoader.Use(new Loader());view=new ArcadeCombatViewController();var root=new GameObject("ConfirmedFarmIntegration");
-            typeof(ArcadeCombatViewController).GetField("root",Hidden).SetValue(view,root);typeof(ArcadeCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);
+            ResourceLoader.Use(new Loader());view=new SurvivorCombatViewController();var root=new GameObject("ConfirmedFarmIntegration");
+            typeof(SurvivorCombatViewController).GetField("root",Hidden).SetValue(view,root);typeof(SurvivorCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);
             view.ConfigureRoundBounds(stage.HalfWidth,stage.HalfHeight,.55f);view.SetRoundLayout(catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==22&&p.RoundNumber==1));
             if(!view.IsRoundLayoutReady)throw new InvalidOperationException(view.RoundLayoutLoadError??"场地未就绪");
             var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"),root.transform);

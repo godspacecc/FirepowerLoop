@@ -35,7 +35,7 @@ public static class TenStageEnvironmentReadback
         var prior = SceneManager.GetActiveScene();
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         var owned = new List<Object>(); var oldTarget = RenderTexture.active;
-        Camera camera = null; RenderTexture target = null; Texture2D pixels = null; ArcadeCombatViewController view = null;
+        Camera camera = null; RenderTexture target = null; Texture2D pixels = null; SurvivorCombatViewController view = null;
         try
         {
             SceneManager.SetActiveScene(scene);
@@ -60,9 +60,9 @@ public static class TenStageEnvironmentReadback
                 string themeFolder = Path.Combine(Folder, layout.ArenaConfigNumber == 7 ? "Fort" : layout.ArenaConfigNumber == 10 ? "Koi" : "Nest");
                 Directory.CreateDirectory(themeFolder);
                 var formal = new GameObject("TEMP_Formal_" + layout.Id);
-                view = new ArcadeCombatViewController(); typeof(ArcadeCombatViewController).GetField("root", Hidden).SetValue(view, formal);
-                typeof(ArcadeCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
-                typeof(ArcadeCombatViewController).GetField("earlyStage",Hidden).SetValue(view,catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==layout.ArenaConfigNumber));
+                view = new SurvivorCombatViewController(); typeof(SurvivorCombatViewController).GetField("root", Hidden).SetValue(view, formal);
+                typeof(SurvivorCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
+                typeof(SurvivorCombatViewController).GetField("earlyStage",Hidden).SetValue(view,catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==layout.ArenaConfigNumber));
                 view.ConfigureRoundBounds(hw, hh, radius); view.SetRoundLayout(layout);
                 if (!view.IsRoundLayoutReady) throw new InvalidOperationException(view.RoundLayoutLoadError);
                 SetLayer(formal);

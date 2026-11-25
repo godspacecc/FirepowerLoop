@@ -35,7 +35,7 @@ namespace Game.Tests
                 }
             }finally{Object.DestroyImmediate(go);}
         }
-        private sealed class LootSpy:IArcadeLootPresentationPort
+        private sealed class LootSpy:ILootPresentationPort
         {
             public int GroundCalls;public float Height;public bool Success=true;
             public bool TrySetDrop(int id,Vector3 position,string name,int amount,out string error){error=null;return Success;}
@@ -44,14 +44,14 @@ namespace Game.Tests
         }
         [Test] public void GroundingRoutesOnlySuccessfulSurvivorDropsToMapHeight()
         {
-            var root=new GameObject("GroundRouteTest");var port=new LootSpy();var view=new ArcadeCombatViewController();
+            var root=new GameObject("GroundRouteTest");var port=new LootSpy();var view=new SurvivorCombatViewController();
             const BindingFlags hidden=BindingFlags.Instance|BindingFlags.NonPublic;
             try{
                 root.transform.position=Vector3.up*3;
-                typeof(ArcadeCombatViewController).GetField("mapRoot",hidden).SetValue(view,root.transform);
-                typeof(ArcadeCombatViewController).GetField("lootPresentation",hidden).SetValue(view,port);
+                typeof(SurvivorCombatViewController).GetField("mapRoot",hidden).SetValue(view,root.transform);
+                typeof(SurvivorCombatViewController).GetField("lootPresentation",hidden).SetValue(view,port);
                 view.SetDrop(1,default,Vector2.zero);Assert.That(port.GroundCalls,Is.Zero);
-                typeof(ArcadeCombatViewController).GetField("survivorEnvironmentAddress",hidden).SetValue(view,"SurvivorFarmVisual");
+                typeof(SurvivorCombatViewController).GetField("survivorEnvironmentAddress",hidden).SetValue(view,"SurvivorFarmVisual");
                 view.SetDrop(2,default,Vector2.zero);Assert.That(port.GroundCalls,Is.EqualTo(1));Assert.That(port.Height,Is.EqualTo(3));
                 view.SetExperienceDrop(3,"SurvivorExperienceCrystal",Vector2.zero,2);Assert.That(port.GroundCalls,Is.EqualTo(2));
                 port.Success=false;view.SetDrop(4,default,Vector2.zero);view.SetExperienceDrop(5,"SurvivorExperienceCrystal",Vector2.zero,2);

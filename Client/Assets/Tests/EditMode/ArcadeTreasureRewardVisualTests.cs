@@ -17,7 +17,7 @@ namespace Game.Tests
     public sealed class ArcadeTreasureRewardVisualTests
     {
         private const BindingFlags Flags = BindingFlags.Instance | BindingFlags.NonPublic;
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private GameObject root;
         private ArcadeTreasureRoomParameters room;
         private Transform templates;
@@ -38,7 +38,7 @@ namespace Game.Tests
                 "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content");
             var tables = new Tables(name => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes"))));
             room = ArcadeTreasureRoomParameters.FromConfig(tables.TbArcadeTreasureRoom.Get("arcade.treasure.first"));
-            view = new ArcadeCombatViewController();
+            view = new SurvivorCombatViewController();
             Set("root", root); Set("mapRoot", root.transform); Set("contentTemplates", templates);
         }
 
@@ -167,10 +167,10 @@ namespace Game.Tests
         }
 
         private ParticleSystem[] Flashes() => root.GetComponentsInChildren<ParticleSystem>().Where(p => p.name == "TreasurePickupFlash").ToArray();
-        private void Set(string name, object value) => typeof(ArcadeCombatViewController).GetField(name, Flags).SetValue(view, value);
+        private void Set(string name, object value) => typeof(SurvivorCombatViewController).GetField(name, Flags).SetValue(view, value);
         private void Invoke(string name, params object[] args)
         {
-            var method = typeof(ArcadeCombatViewController).GetMethod(name, Flags);
+            var method = typeof(SurvivorCombatViewController).GetMethod(name, Flags);
             Assert.That(method, Is.Not.Null, name); method.Invoke(view, args);
         }
 

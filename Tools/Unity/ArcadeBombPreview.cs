@@ -43,7 +43,7 @@ public static class ArcadeBombPreview
             profile=ScriptableObject.CreateInstance<VolumeProfile>();volume.sharedProfile=profile;volume.isGlobal=true;volume.priority=100;
             var bloom=profile.Add<Bloom>(true);bloom.threshold.Override(.9f);bloom.intensity.Override(.5f);
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Art/Arcade/VFX/Bomb/BombBlast.prefab");
-            var type=typeof(Game.ArcadeCombatViewController).Assembly.GetType("Game.ArcadeBombBlastPresentation");
+            var type=typeof(Game.SurvivorCombatViewController).Assembly.GetType("Game.SurvivorBombBlastPresentation");
             effect=(IDisposable)Activator.CreateInstance(type,root.transform,prefab.transform);
             var play=type.GetMethod("Play");var tick=type.GetMethod("Tick");
             camera.targetTexture=rt;

@@ -43,7 +43,7 @@ public static class ArcadeIslandWadingPreview
             camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.06f, .17f, .22f);
             var lightObject = new GameObject("WadingPreviewLight", typeof(Light)); SceneManager.MoveGameObjectToScene(lightObject, scene);
             var light = lightObject.GetComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.6f; light.transform.rotation = Quaternion.Euler(50, -30, 0);
-            var type = typeof(ArcadeCombatViewController).Assembly.GetType("Game.ArcadeIslandWadingPresentation");
+            var type = typeof(SurvivorCombatViewController).Assembly.GetType("Game.SurvivorIslandWadingPresentation");
             effect = (IDisposable)Activator.CreateInstance(type, root.transform, region, Shader.Find("FirepowerLoop/BombAdditive"), true, null);
             var set = type.GetMethod("Set"); var tick = type.GetMethod("Tick");
             var count = type.GetProperty("ActivePulseCount");

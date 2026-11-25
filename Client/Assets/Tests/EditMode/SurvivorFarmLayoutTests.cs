@@ -75,12 +75,12 @@ namespace Game.Tests
         /// <summary>规则与实际CharacterController接触使用同一份已采用足迹，不能只改视觉。</summary>
         [Test] public void RuntimeObstacleCollidersUseDedicatedFarmFootprints()
         {
-            var root=new GameObject("FarmCollisionCheck");var view=new ArcadeCombatViewController();var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
+            var root=new GameObject("FarmCollisionCheck");var view=new SurvivorCombatViewController();var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
             try{
                 var provider=new LubanRuntimeConfigProvider(Tables);Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);
-                typeof(ArcadeCombatViewController).GetField("root",flags).SetValue(view,root);typeof(ArcadeCombatViewController).GetField("earlyStage",flags).SetValue(view,catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==22));
+                typeof(SurvivorCombatViewController).GetField("root",flags).SetValue(view,root);typeof(SurvivorCombatViewController).GetField("earlyStage",flags).SetValue(view,catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==22));
                 var layout=Layout();var obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();
-                typeof(ArcadeCombatViewController).GetMethod("CreateArenaCollision",flags).Invoke(view,new object[]{22,30.5f,30.5f,obstacles});
+                typeof(SurvivorCombatViewController).GetMethod("CreateArenaCollision",flags).Invoke(view,new object[]{22,30.5f,30.5f,obstacles});
                 for(int i=0;i<obstacles.Length;i++){
                     var c=root.transform.Find("Obstacle_"+(i+1)).GetComponent<BoxCollider>();var o=obstacles[i];Assert.That(c.enabled,Is.True);
                     Assert.That(c.transform.localPosition.x,Is.EqualTo(o.Center.x));Assert.That(c.transform.localPosition.z,Is.EqualTo(o.Center.y));Assert.That(c.size.x,Is.EqualTo(o.HalfExtents.x*2));Assert.That(c.size.z,Is.EqualTo(o.HalfExtents.y*2));

@@ -11,7 +11,7 @@ namespace Game
     /// 为街机敌人准备与复用表现对象，不创建旧战斗或 AI 权威状态。
     /// 负责候选提交与失败回滚，不决定地图出生配置或重新生成导航数据。
     /// </summary>
-    public sealed partial class EnemyCtrl : IController, IArcadeEnemyPresentationPort
+    public sealed partial class EnemyCtrl : IController, IEnemyPresentationPort
     {
         internal const float ArcadeHealthBarRevealSeconds = 2.5f;
         private readonly IArchitecture architecture;

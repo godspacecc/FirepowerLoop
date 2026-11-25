@@ -27,7 +27,7 @@ public static class OnlineWeaponFeedbackPreview
         try
         {
             var root=new GameObject("ExistingFeedbackClones");
-            var view=new Game.ArcadeCombatViewController();
+            var view=new Game.SurvivorCombatViewController();
             var type=view.GetType();const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
             type.GetField("root",flags).SetValue(view,root);
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab");

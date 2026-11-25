@@ -49,7 +49,7 @@ namespace Game.Tests
             var stage = new GameObject("SharedStage");
             var otherMap = GameObject.CreatePrimitive(PrimitiveType.Cube);
             otherMap.name = "EastBoundary";
-            var controller = new ArcadeCombatViewController();
+            var controller = new SurvivorCombatViewController();
             try
             {
                 var wall = AddStagePrimitive(stage, "EastBoundary");
@@ -71,7 +71,7 @@ namespace Game.Tests
         public void Island_ReleaseRestoresOriginalVisibilityAfterRepeatedHide()
         {
             var stage = new GameObject("SharedStage");
-            var controller = new ArcadeCombatViewController();
+            var controller = new SurvivorCombatViewController();
             try
             {
                 var visible = AddStagePrimitive(stage, "NorthBoundary").GetComponent<Renderer>();
@@ -117,15 +117,15 @@ namespace Game.Tests
         {
             var stage = new GameObject("SharedStage");
             var root = new GameObject("ContentRuntime");
-            var view = new ArcadeCombatViewController();
+            var view = new SurvivorCombatViewController();
             try
             {
                 var ground = AddStagePrimitive(stage, "Ground").GetComponent<Renderer>();
                 var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                typeof(ArcadeCombatViewController).GetField("root", flags).SetValue(view, root);
-                typeof(ArcadeCombatViewController).GetField("contentArena", flags).SetValue(view, 2);
+                typeof(SurvivorCombatViewController).GetField("root", flags).SetValue(view, root);
+                typeof(SurvivorCombatViewController).GetField("contentArena", flags).SetValue(view, 2);
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
-                typeof(ArcadeCombatViewController).GetField("contentTemplates", flags).SetValue(view, prefab.transform.Find("Content"));
+                typeof(SurvivorCombatViewController).GetField("contentTemplates", flags).SetValue(view, prefab.transform.Find("Content"));
                 SetStage(view, stage.transform);
                 Invoke(view, "SyncContentEnvironment");
                 Assert.That(ground.enabled, Is.False);
@@ -140,14 +140,14 @@ namespace Game.Tests
             }
             finally { view.End(); UnityEngine.Object.DestroyImmediate(root); UnityEngine.Object.DestroyImmediate(stage); }
         }
-        private static void SetStage(ArcadeCombatViewController controller, Transform stage)
+        private static void SetStage(SurvivorCombatViewController controller, Transform stage)
         {
-            var field = typeof(ArcadeCombatViewController).GetField("islandBaseArenaRoot", BindingFlags.Instance | BindingFlags.NonPublic);
+            var field = typeof(SurvivorCombatViewController).GetField("islandBaseArenaRoot", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.That(field, Is.Not.Null); field.SetValue(controller, stage);
         }
-        private static void Invoke(ArcadeCombatViewController controller, string method)
+        private static void Invoke(SurvivorCombatViewController controller, string method)
         {
-            var member = typeof(ArcadeCombatViewController).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic);
+            var member = typeof(SurvivorCombatViewController).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.That(member, Is.Not.Null); member.Invoke(controller, null);
         }
     }

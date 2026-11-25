@@ -14,20 +14,20 @@ namespace Game.Tests
     /// <summary>只替换异步磁盘边界，实际正式Prefab/Controller负责准备、失败和过期释放。</summary>
     public sealed class ArcadeEarlyStageLoadingTests
     {
-        private ArcadeCombatViewController view;private GameObject root;private Loader loader;private IResourceLoader previous;
+        private SurvivorCombatViewController view;private GameObject root;private Loader loader;private IResourceLoader previous;
         private ArcadeConfigCatalogDefinition catalog;private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
         [SetUp] public void Setup()
         {
             var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));
             Assert.That(provider.TryGetArcadeCatalog(out catalog,out var error),Is.True,error);
-            previous=ResourceLoader.Current;loader=new Loader();ResourceLoader.Use(loader);view=new ArcadeCombatViewController();root=new GameObject("early-map");typeof(ArcadeCombatViewController).GetField("root",Hidden).SetValue(view,root);
+            previous=ResourceLoader.Current;loader=new Loader();ResourceLoader.Use(loader);view=new SurvivorCombatViewController();root=new GameObject("early-map");typeof(SurvivorCombatViewController).GetField("root",Hidden).SetValue(view,root);
         }
         private void Start(int id)
         {
             var p=catalog.EarlyStages.First(p=>p.ArenaConfigNumber==id);view.ConfigureRoundBounds(p.HalfWidth,p.HalfHeight,.55f);
-            typeof(ArcadeCombatViewController).GetField("earlyStage",Hidden)?.SetValue(view,p);view.SetRoundLayout(catalog.RoundLayouts.First(p=>p.ArenaConfigNumber==id));
+            typeof(SurvivorCombatViewController).GetField("earlyStage",Hidden)?.SetValue(view,p);view.SetRoundLayout(catalog.RoundLayouts.First(p=>p.ArenaConfigNumber==id));
         }
-        private void Release()=>typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);
+        private void Release()=>typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);
         [TearDown] public void Cleanup(){Release();UnityEngine.Object.DestroyImmediate(root);ResourceLoader.Use(previous);}
         [Test] public void FarmWaitsForEnvironmentAndCowBeforePublishingReadiness()
         {
@@ -41,7 +41,7 @@ namespace Game.Tests
         {
             var config=SurvivorConfiguration.FromTables(new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));
             var stage=catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==22);view.ConfigureRoundBounds(stage.HalfWidth,stage.HalfHeight,.55f);
-            typeof(ArcadeCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);view.SetSurvivorEnvironment(config.EnvironmentPrefabAddress);view.SetRoundLayout(config.Layout);
+            typeof(SurvivorCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);view.SetSurvivorEnvironment(config.EnvironmentPrefabAddress);view.SetRoundLayout(config.Layout);
             Assert.That(loader.Pending.Count,Is.EqualTo(1));Assert.That(loader.Paths.Single(),Is.EqualTo(config.EnvironmentPrefabAddress));Assert.That(view.IsRoundLayoutReady,Is.False);
             loader.Finish(0);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);Assert.That(root.GetComponentsInChildren<MeshRenderer>(true).Length,Is.EqualTo(16));
             Assert.That(root.GetComponentsInChildren<ArcadeHerdVisual>(true),Is.Empty);Release();Assert.That(loader.Released.Count,Is.EqualTo(1));
@@ -51,11 +51,11 @@ namespace Game.Tests
         {
             var config=SurvivorConfiguration.FromTables(new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));
             var stage=catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==22);view.ConfigureRoundBounds(stage.HalfWidth,stage.HalfHeight,.55f);
-            typeof(ArcadeCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);view.SetSurvivorEnvironment(config.EnvironmentPrefabAddress);view.SetRoundLayout(config.Layout);
+            typeof(SurvivorCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);view.SetSurvivorEnvironment(config.EnvironmentPrefabAddress);view.SetRoundLayout(config.Layout);
             Release();loader.Finish(0);Assert.That(view.IsRoundLayoutReady,Is.False);Assert.That(root.transform.childCount,Is.Zero);
             view.SetRoundLayout(config.Layout);LogAssert.Expect(LogType.Error,new System.Text.RegularExpressions.Regex(".*已确认场地准备失败.*"));loader.Finish(1,true);
             view.SetRoundLayout(config.Layout);Assert.That(loader.Paths.All(p=>p==config.EnvironmentPrefabAddress),Is.True);loader.Finish(2);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);
-            view.End();Assert.That(typeof(ArcadeCombatViewController).GetField("survivorEnvironmentAddress",Hidden).GetValue(view),Is.Null);Assert.That(loader.Released.Count,Is.EqualTo(3));
+            view.End();Assert.That(typeof(SurvivorCombatViewController).GetField("survivorEnvironmentAddress",Hidden).GetValue(view),Is.Null);Assert.That(loader.Released.Count,Is.EqualTo(3));
         }
         [Test] public void DockUsesConfirmedPrefabAndReleasesItsHandleOnce()
         {
@@ -74,9 +74,9 @@ namespace Game.Tests
         }
         [Test] public void ExpandedFarmHasPhysicalGroundSupportAndNoTemporaryObstacleArtRequest()
         {
-            var stage=catalog.EarlyStages.First(p=>p.ArenaConfigNumber==22);typeof(ArcadeCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);
+            var stage=catalog.EarlyStages.First(p=>p.ArenaConfigNumber==22);typeof(SurvivorCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);
             var layout=catalog.RoundLayouts.First(p=>p.ArenaConfigNumber==22);var obstacles=layout.Obstacles.Select(p=>new ArcadeObstacleDefinition(p.X,p.Y,p.HalfWidth,p.HalfHeight)).ToArray();
-            typeof(ArcadeCombatViewController).GetMethod("CreateArenaCollision",Hidden).Invoke(view,new object[]{22,30.5f,30.5f,obstacles});
+            typeof(SurvivorCombatViewController).GetMethod("CreateArenaCollision",Hidden).Invoke(view,new object[]{22,30.5f,30.5f,obstacles});
             var ground=root.transform.Find("EarlyStageGround");Assert.That(ground,Is.Not.Null,"扩大后的正式主角需要实际地面支撑");Assert.That(ground.GetComponent<BoxCollider>().size.x,Is.EqualTo(61));Assert.That(loader.Pending,Is.Empty,"新环境不加载通用临时障碍美术");
         }
         [Test] public void NewMapReplacesOldInvisibleWallsAndRestoresTheirOriginalEnabledState()
@@ -85,7 +85,7 @@ namespace Game.Tests
             var oldWall=new GameObject("EastBoundary",typeof(BoxCollider));oldWall.transform.SetParent(map.transform,false);
             var oldDisabled=new GameObject("WestBoundary",typeof(BoxCollider));oldDisabled.transform.SetParent(map.transform,false);oldDisabled.GetComponent<Collider>().enabled=false;
             var ownedWall=new GameObject("EastBoundary",typeof(BoxCollider));ownedWall.transform.SetParent(root.transform,false);
-            typeof(ArcadeCombatViewController).GetField("islandBaseArenaRoot",Hidden).SetValue(view,map.transform);
+            typeof(SurvivorCombatViewController).GetField("islandBaseArenaRoot",Hidden).SetValue(view,map.transform);
             try
             {
                 Start(22);Assert.That(oldWall.GetComponent<Collider>().enabled,Is.True,"准备期间仍保留旧场地");loader.Finish(0);loader.Finish(1);
@@ -96,7 +96,7 @@ namespace Game.Tests
         }
         [Test] public void HerdSnapshotWaitsForTemplateAndRebindsAfterHiddenMap()
         {
-            Start(22);var method=typeof(ArcadeCombatViewController).GetMethod("SetHerds");Assert.That(method,Is.Not.Null,"牛群只读投影入口尚未接入");
+            Start(22);var method=typeof(SurvivorCombatViewController).GetMethod("SetHerds");Assert.That(method,Is.Not.Null,"牛群只读投影入口尚未接入");
             var cows=new[]{new ArcadeHerdSnapshot(7,1,ArcadeHerdPhase.Charging,-20,-14,1,0,.2)};
             method.Invoke(view,new object[]{7L,cows});Assert.That(root.GetComponentsInChildren<ArcadeHerdVisual>(true),Is.Empty);
             loader.Finish(0);loader.Finish(1);var visual=root.GetComponentsInChildren<ArcadeHerdVisual>(true).Single();Assert.That(visual.transform.localPosition.x,Is.EqualTo(-20));
@@ -106,7 +106,7 @@ namespace Game.Tests
         }
         [Test] public void OldMapHerdSnapshotCannotReplaceCurrentCows()
         {
-            Start(22);loader.Finish(0);loader.Finish(1);var method=typeof(ArcadeCombatViewController).GetMethod("SetHerds");Assert.That(method,Is.Not.Null);
+            Start(22);loader.Finish(0);loader.Finish(1);var method=typeof(SurvivorCombatViewController).GetMethod("SetHerds");Assert.That(method,Is.Not.Null);
             method.Invoke(view,new object[]{7L,new[]{new ArcadeHerdSnapshot(7,1,ArcadeHerdPhase.Windup,-33,-14,1,0,0)}});
             method.Invoke(view,new object[]{6L,new[]{new ArcadeHerdSnapshot(6,2,ArcadeHerdPhase.Windup,33,-14,-1,0,0)}});
             Assert.That(root.GetComponentsInChildren<ArcadeHerdVisual>(true).Single().transform.localPosition.x,Is.EqualTo(-33));

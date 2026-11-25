@@ -13,16 +13,16 @@ namespace Game.Tests
     public sealed class ArcadeDronePresentationTests
     {
         private const BindingFlags Flags=BindingFlags.Instance|BindingFlags.NonPublic|BindingFlags.Public;
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private GameObject root;
         private Loader loader;
         private IResourceLoader previous;
         private ArcadePowerupDefinition definition;
-        private IDictionary Entries=>(IDictionary)typeof(ArcadeCombatViewController).GetField("effectVisuals",Flags).GetValue(view);
+        private IDictionary Entries=>(IDictionary)typeof(SurvivorCombatViewController).GetField("effectVisuals",Flags).GetValue(view);
         [SetUp]public void Setup()
         {
-            root=new GameObject("drone-presentation-test");view=new ArcadeCombatViewController();
-            typeof(ArcadeCombatViewController).GetField("root",Flags).SetValue(view,root);
+            root=new GameObject("drone-presentation-test");view=new SurvivorCombatViewController();
+            typeof(SurvivorCombatViewController).GetField("root",Flags).SetValue(view,root);
             previous=ResourceLoader.Current;loader=new Loader();ResourceLoader.Use(loader);
             definition=new ArcadePowerupDefinition("arcade.support.drone",ArcadePowerupBehavior.Drone,"Prefabs/SceneObjects/ArcadeTimedDroneVisual",false,new Vector3(0,1.35f,0),0,0,0,0,0,0);
         }
@@ -92,7 +92,7 @@ namespace Game.Tests
         }
         private void Unit(long owner,int unit,Vector2 position)
         {
-            var method=typeof(ArcadeCombatViewController).GetMethod("SetDroneUnit",Flags);
+            var method=typeof(SurvivorCombatViewController).GetMethod("SetDroneUnit",Flags);
             Assert.That(method,Is.Not.Null,"第二架无人机需要独立的正式表现入口");
             method.Invoke(view,new object[]{owner,unit,definition,position,Vector2.up,0,3});
         }

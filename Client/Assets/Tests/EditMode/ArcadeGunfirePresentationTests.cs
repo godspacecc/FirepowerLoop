@@ -64,18 +64,18 @@ namespace Game.Tests
         {
             var kit = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab");
             var root = new GameObject("gunfire-test-owner");
-            var view = new ArcadeCombatViewController();
+            var view = new SurvivorCombatViewController();
             Set(view, "root", root);
             Set(view, "bulletImpactTemplate", kit.transform.Find("Content/BulletImpact").GetComponent<ParticleSystem>());
             try
             {
-                var play = typeof(ArcadeCombatViewController).GetMethod("PlayBulletImpact", BindingFlags.NonPublic | BindingFlags.Instance);
+                var play = typeof(SurvivorCombatViewController).GetMethod("PlayBulletImpact", BindingFlags.NonPublic | BindingFlags.Instance);
                 Assert.That(play, Is.Not.Null);
                 for (int i = 0; i < 40; i++) play.Invoke(view, new object[] { new Vector2(i, 2f) });
-                var pool = (IList)typeof(ArcadeCombatViewController).GetField("bulletImpactPool", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(view);
+                var pool = (IList)typeof(SurvivorCombatViewController).GetField("bulletImpactPool", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(view);
                 Assert.That(pool.Count, Is.EqualTo(12));
                 Assert.That(root.transform.childCount, Is.EqualTo(12));
-                typeof(ArcadeCombatViewController).GetMethod("ClearBulletImpacts", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(view, null);
+                typeof(SurvivorCombatViewController).GetMethod("ClearBulletImpacts", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(view, null);
                 Assert.That(pool.Count, Is.Zero);
                 Assert.That(root.transform.childCount, Is.Zero);
             }
@@ -99,16 +99,16 @@ namespace Game.Tests
         {
             var previous = ResourceLoader.Current;
             var root = new GameObject("late-arena-gunfire-owner");
-            var view = new ArcadeCombatViewController();
+            var view = new SurvivorCombatViewController();
             Set(view, "root", root);
             ResourceLoader.Use(new GunfireAssetLoader());
             try
             {
-                typeof(ArcadeCombatViewController).GetMethod("LoadContentAsync", BindingFlags.Instance | BindingFlags.NonPublic)
+                typeof(SurvivorCombatViewController).GetMethod("LoadContentAsync", BindingFlags.Instance | BindingFlags.NonPublic)
                     .Invoke(view, new object[] { 15 });
-                Assert.That(typeof(ArcadeCombatViewController).GetField("contentEnvironment", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(view), Is.Null,
+                Assert.That(typeof(SurvivorCombatViewController).GetField("contentEnvironment", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(view), Is.Null,
                     "公共模板可准备，但后续竞技场不应创建前三场的环境覆盖实例");
-                typeof(ArcadeCombatViewController).GetMethod("PlayBulletImpact", BindingFlags.Instance | BindingFlags.NonPublic)
+                typeof(SurvivorCombatViewController).GetMethod("PlayBulletImpact", BindingFlags.Instance | BindingFlags.NonPublic)
                     .Invoke(view, new object[] { Vector2.zero });
                 Assert.That(root.GetComponentsInChildren<ParticleSystem>().Length, Is.EqualTo(1), "后续竞技场仍需命中火星");
             }

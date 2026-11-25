@@ -36,9 +36,9 @@ public static class BurrowerHoundAppliedCapture
             foreach(int kind in new[]{4,5})
             {
                 string name=kind==4?"burrower":"hound";string frames=Path.Combine(Folder,name);Directory.CreateDirectory(frames);
-                var owner=new GameObject("TEMP_CreatureAppliedOwner");var view=new ArcadeCombatViewController();
-                typeof(ArcadeCombatViewController).GetField("root",Hidden).SetValue(view,owner);typeof(ArcadeCombatViewController).GetField("mapRoot",Hidden).SetValue(view,owner.transform);
-                typeof(ArcadeCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
+                var owner=new GameObject("TEMP_CreatureAppliedOwner");var view=new SurvivorCombatViewController();
+                typeof(SurvivorCombatViewController).GetField("root",Hidden).SetValue(view,owner);typeof(SurvivorCombatViewController).GetField("mapRoot",Hidden).SetValue(view,owner.transform);
+                typeof(SurvivorCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
                 var layout=tables.TbArcadeRoundLayout.DataList.Select(ArcadeRoundLayoutParameters.FromConfig).First(p=>p.ArenaConfigNumber==kind+1&&p.RoundNumber==1);
                 try
                 {
@@ -65,7 +65,7 @@ public static class BurrowerHoundAppliedCapture
                     File.WriteAllLines(Path.Combine(Folder,name+"-timeline.csv"),timeline);report.Add(name+"=192 frames @24fps; skillPeriod="+layout.SkillPeriod+" warning="+layout.SkillWarning);
                     Fidelity(root.Find("CreatureActor").GetComponent<ArcadeCreatureView>(),kind,owned,report);
                 }
-                finally{typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);Object.DestroyImmediate(owner);}
+                finally{typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);Object.DestroyImmediate(owner);}
             }
             File.WriteAllLines(Path.Combine(Folder,"capture.txt"),report);return string.Join("\n",report);
         }

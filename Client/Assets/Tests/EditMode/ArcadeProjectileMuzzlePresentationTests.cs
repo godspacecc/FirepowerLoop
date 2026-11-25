@@ -14,7 +14,7 @@ namespace Game.Tests
             var arena = new GameObject("arena");
             var motor = new RecordingMotor { Muzzle = new Vector3(0.3f, 1.1f, 0.9f) };
             var projectiles = new RecordingProjectiles();
-            var view = new ArcadeCombatViewController();
+            var view = new SurvivorCombatViewController();
             SetField(view, "mapRoot", arena.transform);
             SetField(view, "playerMotor", motor);
             SetField(view, "projectilePresentation", projectiles);
@@ -51,7 +51,7 @@ namespace Game.Tests
             var arena = new GameObject("arena");
             var motor = new RecordingMotor { Muzzle = new Vector3(0.3f, 1.1f, 0.9f) };
             var projectiles = new RecordingProjectiles();
-            var view = new ArcadeCombatViewController();
+            var view = new SurvivorCombatViewController();
             SetField(view, "mapRoot", arena.transform);
             SetField(view, "playerMotor", motor);
             SetField(view, "projectilePresentation", projectiles);
@@ -71,7 +71,7 @@ namespace Game.Tests
         private static void SetField(object target, string name, object value) =>
             target.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(target, value);
 
-        private sealed class RecordingProjectiles : IArcadeProjectilePresentationPort
+        private sealed class RecordingProjectiles : IProjectilePresentationPort
         {
             public Vector3 LastPosition { get; private set; }
             public bool TrySetProjectile(int id, Vector3 position, Vector3 direction, out string error)

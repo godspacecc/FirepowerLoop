@@ -48,7 +48,7 @@ public static class ArcadeContentPreview
                     }
                     if(name=="Babylon")
                     {
-                        var type=typeof(Game.ArcadeCombatViewController).Assembly.GetType("Game.ArcadeHazardPresentation");
+                        var type=typeof(Game.SurvivorCombatViewController).Assembly.GetType("Game.SurvivorHazardPresentation");
                         hazard=(IDisposable)Activator.CreateInstance(type,root.transform,kit.Find("ElectricTower").gameObject);
                         type.GetMethod("Sync").Invoke(hazard,new object[]{new[]{new FirepowerLoop.Arcade.ArcadeHazardParameters(1,1,-5,0,0,1.2f,0,0,4,1.5f,3,0,1,1,.05f),new FirepowerLoop.Arcade.ArcadeHazardParameters(2,1,5,0,0,1.2f,0,0,4,1.5f,3,0,1,1,.05f)},6d});
                     }

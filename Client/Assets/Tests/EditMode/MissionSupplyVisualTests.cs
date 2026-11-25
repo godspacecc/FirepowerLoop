@@ -10,7 +10,7 @@ namespace Game.Tests
         [Test] public void SupplyTemplateUsesApprovedCrateWithoutPickupCollider()
         {
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/TestResourcePickup.prefab");
-            var method=typeof(ArcadeCombatViewController).GetMethod("MissionSupplyTemplate",BindingFlags.NonPublic|BindingFlags.Static);
+            var method=typeof(SurvivorCombatViewController).GetMethod("MissionSupplyTemplate",BindingFlags.NonPublic|BindingFlags.Static);
             Assert.That(method,Is.Not.Null);
             var template=(GameObject)method.Invoke(null,new object[]{prefab});
             Assert.That(template.name,Is.EqualTo("WeaponDeliveryCrate"));

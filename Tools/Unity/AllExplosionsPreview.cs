@@ -51,7 +51,7 @@ public static class AllExplosionsPreview
                     supportBody=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/"+(kind==7?"ArcadeDropDecoy":"ArcadeDropBarrel")+".prefab"),root.transform,false);
                     supportBody.transform.localPosition=new Vector3(0,.4f,0);
                 }
-                var type=typeof(ArcadeCombatViewController).Assembly.GetType(kind==2?"Game.ArcadeBombBlastPresentation":"Game.EnemyExplosionDeathPresentation");
+                var type=typeof(SurvivorCombatViewController).Assembly.GetType(kind==2?"Game.SurvivorBombBlastPresentation":"Game.EnemyExplosionDeathPresentation");
                 if(kind==2)presentation=Activator.CreateInstance(type,Flags,null,new object[]{root.transform,content.transform.Find("Content/BombBlast")},null);
                 else if(kind==6)
                 {
@@ -73,9 +73,9 @@ public static class AllExplosionsPreview
                             if(template==null)throw new Exception("预览模板缺失: "+Names[kind]);
                             if(applied&&(kind==0||kind>=7))
                             {
-                                var view=new ArcadeCombatViewController();typeof(ArcadeCombatViewController).GetField("root",Flags).SetValue(view,root);
-                                typeof(ArcadeCombatViewController).GetField("projectileBlastTemplate",Flags).SetValue(view,template.transform);
-                                typeof(ArcadeCombatViewController).GetMethod("PlayProjectileBlast",Flags).Invoke(view,new object[]{Vector2.zero,kind==0?1.35f:kind==7?3.5f:2f,kind==0});
+                                var view=new SurvivorCombatViewController();typeof(SurvivorCombatViewController).GetField("root",Flags).SetValue(view,root);
+                                typeof(SurvivorCombatViewController).GetField("projectileBlastTemplate",Flags).SetValue(view,template.transform);
+                                typeof(SurvivorCombatViewController).GetMethod("PlayProjectileBlast",Flags).Invoke(view,new object[]{Vector2.zero,kind==0?1.35f:kind==7?3.5f:2f,kind==0});
                                 effect=root.transform.GetChild(root.transform.childCount-1).gameObject;
                             }
                             else{effect=Object.Instantiate(template,root.transform,false);effect.SetActive(true);effect.transform.localPosition=Vector3.up*(kind>=4&&kind<=5?.55f:.75f);}

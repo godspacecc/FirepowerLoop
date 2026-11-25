@@ -29,7 +29,7 @@ namespace Game.Tests
             try
             {
                 const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
-                var view=new ArcadeCombatViewController();var type=view.GetType();type.GetField("root",flags).SetValue(view,root);
+                var view=new SurvivorCombatViewController();var type=view.GetType();type.GetField("root",flags).SetValue(view,root);
                 var template=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content/ProjectileBlast");
                 type.GetField("projectileBlastTemplate",flags).SetValue(view,template);var play=type.GetMethod("PlayProjectileBlast",flags);
                 var original=template.Find("ImpactFlash").GetComponent<ParticleSystem>().main;

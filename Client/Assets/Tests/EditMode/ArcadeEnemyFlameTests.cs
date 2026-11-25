@@ -79,9 +79,9 @@ namespace Game.Tests
         [Test]
         public void DedicatedEnemyFlameDeathUsesSameTemplateAndReleasesWithMap()
         {
-            var owner=new GameObject("DedicatedEnemyFlameTest");var controller=new ArcadeCombatViewController();
+            var owner=new GameObject("DedicatedEnemyFlameTest");var controller=new SurvivorCombatViewController();
             const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
-            void Set(string name,object value)=>typeof(ArcadeCombatViewController).GetField(name,flags).SetValue(controller,value);
+            void Set(string name,object value)=>typeof(SurvivorCombatViewController).GetField(name,flags).SetValue(controller,value);
             try
             {
                 Set("root",owner);Set("roundEnemyRoot",owner);Set("roundLayoutReady",true);
@@ -96,12 +96,12 @@ namespace Game.Tests
             }
             finally
             {
-                typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",flags).Invoke(controller,null);
+                typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",flags).Invoke(controller,null);
                 Object.DestroyImmediate(owner);
             }
         }
 
-        private sealed class FlameTemplatePort:IArcadeEnemyPresentationPort
+        private sealed class FlameTemplatePort:IEnemyPresentationPort
         {
             public bool TryCreateFlameFeedback(Transform parent,out EnemyFlameFeedback feedback)
             {

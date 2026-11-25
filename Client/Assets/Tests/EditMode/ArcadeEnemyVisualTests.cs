@@ -482,13 +482,13 @@ namespace Game.Tests
             try
             {
                 map.transform.SetPositionAndRotation(new Vector3(7, 3, -11), Quaternion.Euler(0, 37, 0));
-                var controller = new ArcadeCombatViewController();
+                var controller = new SurvivorCombatViewController();
                 var recorder = new GroundingEnemyPort();
                 const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance |
                     System.Reflection.BindingFlags.NonPublic;
                 foreach (var entry in new[] { ("mapRoot", (object)map.transform),
                     ("playerMotor", new GroundingMotor()), ("enemyPresentation", recorder) })
-                    typeof(ArcadeCombatViewController).GetField(entry.Item1, flags).SetValue(controller, entry.Item2);
+                    typeof(SurvivorCombatViewController).GetField(entry.Item1, flags).SetValue(controller, entry.Item2);
 
                 var position = new Vector2(-2, 5);
                 controller.SetEnemy(1, EnemyIds[Array.IndexOf(PrefabNames, prefabName)], position, 20, 20);
@@ -526,7 +526,7 @@ namespace Game.Tests
             }
         }
 
-        private sealed class GroundingEnemyPort : IArcadeEnemyPresentationPort
+        private sealed class GroundingEnemyPort : IEnemyPresentationPort
         {
             public Vector3 Position;
             public bool TrySetEnemy(int id, string config, Vector3 position, Vector3 facing, int current,

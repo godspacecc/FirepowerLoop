@@ -71,7 +71,7 @@ namespace Game.Tests
         [TestCase(float.NaN)] [TestCase(float.PositiveInfinity)] [TestCase(-1f)] [TestCase(0f)]
         public void BadPulseConfigurationIsRejected(float interval)
         {Assert.Throws<ArgumentException>(()=>new SurvivorEnemyDefinition("a","b",0,120,new[]{100},1,1,1,Vector3.one,1,specialKind:"EnchantHealth",enchantInterval:interval,enchantRadius:6,enchantHealth:.2f,enchantSpeed:.1f,enchantStacks:5,enchantShieldGain:20,enchantShieldCap:100));}
-        private sealed class View:IArcadeCombatViewPort
+        private sealed class View:ISurvivorCombatViewPort
         {
             public bool Hidden=true,Visible=true;
             public bool ShieldIntact;

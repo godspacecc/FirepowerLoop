@@ -33,7 +33,7 @@ public static class HengePolishPreview
         var owned = new List<Object>();
         var oldTarget = RenderTexture.active;
         Camera camera = null; RenderTexture target = null; Texture2D pixels = null;
-        ArcadeCombatViewController view = null;
+        SurvivorCombatViewController view = null;
         try
         {
             SceneManager.SetActiveScene(scene);
@@ -63,7 +63,7 @@ public static class HengePolishPreview
             {
                 if (!layout.FitsArena(hw, hh, radius)) throw new InvalidOperationException("原布局通路检查失败");
                 var root = new GameObject("TEMP_HengeFormal_" + layout.Id);
-                view = new ArcadeCombatViewController(); typeof(ArcadeCombatViewController).GetField("root", Hidden).SetValue(view, root);
+                view = new SurvivorCombatViewController(); typeof(SurvivorCombatViewController).GetField("root", Hidden).SetValue(view, root);
                 view.ConfigureRoundBounds(hw, hh, radius); view.SetRoundLayout(layout);
                 if (!view.IsRoundLayoutReady) throw new InvalidOperationException(view.RoundLayoutLoadError);
                 SetLayer(root);

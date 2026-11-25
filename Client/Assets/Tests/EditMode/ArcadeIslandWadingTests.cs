@@ -21,7 +21,7 @@ namespace Game.Tests
         }
         private void Create(bool mobile = true, Camera camera = null)
         {
-            type = typeof(ArcadeCombatViewController).Assembly.GetType("Game.ArcadeIslandWadingPresentation");
+            type = typeof(SurvivorCombatViewController).Assembly.GetType("Game.SurvivorIslandWadingPresentation");
             Assert.NotNull(type, "正式涉水表现尚未接入");
             root = new GameObject("WadingTestMap");
             var shader = Shader.Find("FirepowerLoop/BombAdditive"); Assert.NotNull(shader);
@@ -89,8 +89,8 @@ namespace Game.Tests
         }
         [Test] public void FormalControllerMovesRemovesAndReleasesWadingEffects()
         {
-            Create(); var view = new ArcadeCombatViewController();
-            var field = typeof(ArcadeCombatViewController).GetField("islandWading", Private); Assert.NotNull(field);
+            Create(); var view = new SurvivorCombatViewController();
+            var field = typeof(SurvivorCombatViewController).GetField("islandWading", Private); Assert.NotNull(field);
             field.SetValue(view, effect);
             view.RecordRoundEnemyPosition(1, Water); view.RecordRoundEnemyPosition(1, Water + Vector2.up * .3f);
             view.TickPlayerFeedback(.25f); Assert.AreEqual(1, Count);

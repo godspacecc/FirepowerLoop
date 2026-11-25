@@ -167,14 +167,14 @@ namespace FirepowerLoop.Tests
                 var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "ArcadeShieldEffect.prefab"), root.transform);
                 var renderer = instance.GetComponentInChildren<Renderer>();
                 var originalColor = renderer.sharedMaterial.GetColor("_BaseColor");
-                var view = new ArcadeCombatViewController();
+                var view = new SurvivorCombatViewController();
                 var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
-                var type = typeof(ArcadeCombatViewController).GetNestedType("EffectVisualEntry", System.Reflection.BindingFlags.NonPublic);
+                var type = typeof(SurvivorCombatViewController).GetNestedType("EffectVisualEntry", System.Reflection.BindingFlags.NonPublic);
                 var entry = System.Activator.CreateInstance(type, true);
                 type.GetField("Instance", flags).SetValue(entry, instance);
                 var key = "powerup:7:" + (int)ArcadePowerupBehavior.Shield;
                 type.GetField("Key", flags).SetValue(entry, key);
-                var entries = (System.Collections.IDictionary)typeof(ArcadeCombatViewController).GetField("effectVisuals", flags).GetValue(view);
+                var entries = (System.Collections.IDictionary)typeof(SurvivorCombatViewController).GetField("effectVisuals", flags).GetValue(view);
                 entries.Add(key, entry);
                 view.PlayShieldBlock(7, Vector2.one);
                 var properties = new MaterialPropertyBlock();

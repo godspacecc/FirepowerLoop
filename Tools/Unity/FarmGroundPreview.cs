@@ -267,11 +267,11 @@ public static class FarmGroundPreview
                 var loader = new RoundLoader();
                 Game.ResourceLoader.Use(loader);
                 var root = new GameObject("FarmRound" + layout.RoundNumber);
-                var view = new Game.ArcadeCombatViewController();
+                var view = new Game.SurvivorCombatViewController();
                 try
                 {
-                    typeof(Game.ArcadeCombatViewController).GetField("root", hidden).SetValue(view, root);
-                    typeof(Game.ArcadeCombatViewController).GetField("earlyStage", hidden).SetValue(view, stage);
+                    typeof(Game.SurvivorCombatViewController).GetField("root", hidden).SetValue(view, root);
+                    typeof(Game.SurvivorCombatViewController).GetField("earlyStage", hidden).SetValue(view, stage);
                     view.ConfigureRoundBounds(stage.HalfWidth, stage.HalfHeight, .55f);
                     view.SetRoundLayout(layout);
                     if (loader.Pending.Count != 2) throw new InvalidOperationException("环境／牛模板请求数异常");

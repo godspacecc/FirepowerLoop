@@ -37,7 +37,7 @@ public static class HerdDustFeedbackPreview
         var prior = SceneManager.GetActiveScene(); var dirty = prior.isDirty; int sceneCount = SceneManager.sceneCount;
         var priorRT = RenderTexture.active;
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        Camera camera = null; RenderTexture rt = null; Texture2D pixels = null; ArcadeHerdFeedback formal=null;
+        Camera camera = null; RenderTexture rt = null; Texture2D pixels = null; SurvivorHerdFeedback formal=null;
         string folder = Path.GetFullPath(applied?"Temp/HerdDustFeedbackApplied-v1-20261023":"Temp/HerdDustFeedback-v1-20261023");
         Directory.CreateDirectory(folder + "/frames");
         try
@@ -76,7 +76,7 @@ public static class HerdDustFeedbackPreview
             camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.06f, .09f, .11f);
             var dust = applied?null:MakeDust(root); var stamps = MakeStamps();
             float now=0;var actualEvents=new List<string>{"time,x,z,cow,kind,pair"};
-            if(applied)formal=new ArcadeHerdFeedback(root,cows[0].DustMaterial,(name,position,scale)=>
+            if(applied)formal=new SurvivorHerdFeedback(root,cows[0].DustMaterial,(name,position,scale)=>
             {
                 int kind=name.Contains("Hoof")?0:name.EndsWith("Scrape")?1:name.EndsWith("Impact")?2:3;
                 int tone=name.EndsWith("Hoof2")?1:name.EndsWith("Hoof3")?2:name.EndsWith("Hoof4")?3:0;

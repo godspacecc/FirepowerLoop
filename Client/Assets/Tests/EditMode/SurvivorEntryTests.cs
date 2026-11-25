@@ -13,13 +13,13 @@ namespace Game.Tests
     /// <summary>入场失败必须发生在地图及闯关状态变更之前。</summary>
     public sealed class SurvivorEntryTests
     {
-        private static async Task<ArcadeSceneFlowResult> Start(Game architecture, CancellationToken token)
+        private static async Task<SurvivorSceneFlowResult> Start(Game architecture, CancellationToken token)
         {
             var type = typeof(SurvivorModel).Assembly.GetType("Game.SurvivorSceneFlowSystem");
             Assert.That(type, Is.Not.Null, "幸存者入口事务尚未接入");
             var system = Activator.CreateInstance(type);
             ((ICanSetArchitecture)system).SetArchitecture(architecture);
-            return await ((UniTask<ArcadeSceneFlowResult>)type.GetMethod("StartAsync").Invoke(system, new object[] { token })).AsTask();
+            return await ((UniTask<SurvivorSceneFlowResult>)type.GetMethod("StartAsync").Invoke(system, new object[] { token })).AsTask();
         }
 
         [UnityTest] public IEnumerator CancelledEntryDoesNotNeedMapOrSaveServices()

@@ -42,9 +42,9 @@ public static partial class IslandLowPolyPreview
             if(!applied){SetupPalette();palm=Palm();boulder=Icosahedron();}
             for(int round=1;round<=4;round++)
             {
-                type.GetMethod("Prepare",Hidden).Invoke(fixture,new object[]{round,false});var view=(ArcadeCombatViewController)type.GetField("view",Hidden).GetValue(fixture);
+                type.GetMethod("Prepare",Hidden).Invoke(fixture,new object[]{round,false});var view=(SurvivorCombatViewController)type.GetField("view",Hidden).GetValue(fixture);
                 if(!view.IsIslandRoundReady)throw new InvalidOperationException(view.IslandRoundLoadError??"正式海岛资源未就绪");
-                var original=(GameObject)typeof(ArcadeCombatViewController).GetField("island",Hidden).GetValue(view);
+                var original=(GameObject)typeof(SurvivorCombatViewController).GetField("island",Hidden).GetValue(view);
                 var holder=new GameObject("TEMP_LOW_POLY_CANDIDATE_R"+round);var candidate=Object.Instantiate(original,holder.transform,false);candidate.SetActive(true);candidate.transform.localPosition=Vector3.zero;
                 var hero=Hero(holder.transform,Vector3.zero);
                 void Layers(){foreach(var t in holder.GetComponentsInChildren<Transform>(true))t.gameObject.layer=30;}

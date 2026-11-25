@@ -54,8 +54,8 @@ namespace Game.Tests
   }
   [Test] public void FormalControllerOverridesBothProjectionPorts()
   {
-   Assert.That(typeof(ArcadeCombatViewController).GetMethod("SetSurvivorEnemyEnchantment"),Is.Not.Null);
-   Assert.That(typeof(ArcadeCombatViewController).GetMethod("PlaySurvivorEnchantPulse"),Is.Not.Null);
+   Assert.That(typeof(SurvivorCombatViewController).GetMethod("SetSurvivorEnemyEnchantment"),Is.Not.Null);
+   Assert.That(typeof(SurvivorCombatViewController).GetMethod("PlaySurvivorEnchantPulse"),Is.Not.Null);
   }
  }
 }

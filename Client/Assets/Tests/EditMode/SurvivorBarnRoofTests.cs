@@ -16,7 +16,7 @@ namespace Game.Tests
         public void CircularSightCoversAllDirectionsAndStopsAtSolidWall()
         {
             var farm = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FarmPath));
-            ArcadeCombatViewController view = null;
+            SurvivorCombatViewController view = null;
             try
             {
                 view = Prepare(farm);
@@ -56,7 +56,7 @@ namespace Game.Tests
         public void UpperWallAndRoofShareFirstObstruction()
         {
             var farm = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FarmPath));
-            ArcadeCombatViewController view = null;
+            SurvivorCombatViewController view = null;
             try
             {
                 view = Prepare(farm);
@@ -120,10 +120,10 @@ namespace Game.Tests
             finally { Object.DestroyImmediate(farm); }
         }
 
-        private static ArcadeCombatViewController Prepare(GameObject farm)
+        private static SurvivorCombatViewController Prepare(GameObject farm)
         {
-            var view = new ArcadeCombatViewController();
-            var type = typeof(ArcadeCombatViewController);
+            var view = new SurvivorCombatViewController();
+            var type = typeof(SurvivorCombatViewController);
             type.GetField("mapRoot", Hidden).SetValue(view, farm.transform);
             type.GetMethod("PrepareSurvivorBuildingVisibility", Hidden).Invoke(view, new object[] { farm });
             return view;
@@ -136,8 +136,8 @@ namespace Game.Tests
             return block;
         }
 
-        private static void Release(ArcadeCombatViewController view) =>
-            typeof(ArcadeCombatViewController).GetMethod("ReleaseEarlyStageLoad", Hidden).Invoke(view, null);
+        private static void Release(SurvivorCombatViewController view) =>
+            typeof(SurvivorCombatViewController).GetMethod("ReleaseEarlyStageLoad", Hidden).Invoke(view, null);
 
         private static float ReadRay(Texture2D field, Vector2 direction, float radius)
         {

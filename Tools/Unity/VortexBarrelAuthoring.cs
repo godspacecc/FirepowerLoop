@@ -19,18 +19,18 @@ public static class VortexBarrelAuthoring
     {
         if(Application.dataPath.Replace('\\','/')!="E:/GitHub/FirepowerLoop/Client/Assets"||EditorApplication.isPlaying)throw new Exception("仅本项目编辑态");
         var prior=SceneManager.GetActiveScene();var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);SceneManager.SetActiveScene(scene);
-        ArcadeCombatViewController view=null;GameObject candidate=null;
+        SurvivorCombatViewController view=null;GameObject candidate=null;
         try
         {
-            var root=new GameObject("BarrelAuthoringRoot");view=new ArcadeCombatViewController();typeof(ArcadeCombatViewController).GetField("root",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,root);
+            var root=new GameObject("BarrelAuthoringRoot");view=new SurvivorCombatViewController();typeof(SurvivorCombatViewController).GetField("root",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,root);
             // 直接复用已采用候选的旧桶几何构造器，避免正式入口改为Prefab后重跑时再次嵌套浓雾。
             candidate=new GameObject("VortexBarrelVisual");var body=candidate.transform;
-            var cylinder=typeof(ArcadeCombatViewController).GetMethod("RoundCylinder",BindingFlags.Instance|BindingFlags.NonPublic);
+            var cylinder=typeof(SurvivorCombatViewController).GetMethod("RoundCylinder",BindingFlags.Instance|BindingFlags.NonPublic);
             cylinder.Invoke(view,new object[]{body,"BarrelBody",0f,.55f,0f,.9f,1.1f,0x7D429DFFu});
             cylinder.Invoke(view,new object[]{body,"UpperMetalHoop",0f,.95f,0f,.96f,.12f,0x3E4850FFu});
             cylinder.Invoke(view,new object[]{body,"LowerMetalHoop",0f,.15f,0f,.96f,.12f,0x3E4850FFu});
             cylinder.Invoke(view,new object[]{body,"VortexSmoke",0f,1.3f,0f,.6f,.18f,0xB16AE2FFu});
-            typeof(ArcadeCombatViewController).GetMethod("RoundRing",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(view,new object[]{body,"VortexMouth",.32f,1.12f,0xDC9CFFFFu});
+            typeof(SurvivorCombatViewController).GetMethod("RoundRing",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(view,new object[]{body,"VortexMouth",.32f,1.12f,0xDC9CFFFFu});
             const float height=1.761965f;candidate.transform.localScale=Vector3.one*(height*.5f/1.1f);
             var funnel=new Funnel(candidate.transform,height);funnel.Tick(0);
             var straps=new GameObject("ShoulderStraps").transform;straps.SetParent(candidate.transform,false);straps.localScale=Vector3.one/candidate.transform.localScale.x;

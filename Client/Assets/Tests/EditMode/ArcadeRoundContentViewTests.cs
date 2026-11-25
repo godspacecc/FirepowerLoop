@@ -13,21 +13,21 @@ namespace Game.Tests
     /// <summary>隔离正式视图验证纯投影和独占资源；不启动战斗、场景加载或玩家档。</summary>
     public sealed class ArcadeRoundContentViewTests
     {
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private GameObject root;
         private IResourceLoader previousLoader;
         private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
         private ArcadeRoundLayoutParameters[] Layouts()=>new Tables(name=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",name+".bytes")))).TbArcadeRoundLayout.DataList.Select(ArcadeRoundLayoutParameters.FromConfig).ToArray();
-        private object Field(string name)=>typeof(ArcadeCombatViewController).GetField(name,Hidden).GetValue(view);
-        [SetUp] public void Setup(){previousLoader=ResourceLoader.Current;ResourceLoader.Use(new FormalAssetLoader());view=new ArcadeCombatViewController();root=new GameObject("RoundContentTest");typeof(ArcadeCombatViewController).GetField("root",Hidden).SetValue(view,root);typeof(ArcadeCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));view.ConfigureRoundBounds(19.5f,19.5f,.55f);}
-        [TearDown] public void Cleanup(){typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);if(root!=null)UnityEngine.Object.DestroyImmediate(root);ResourceLoader.Use(previousLoader);}
+        private object Field(string name)=>typeof(SurvivorCombatViewController).GetField(name,Hidden).GetValue(view);
+        [SetUp] public void Setup(){previousLoader=ResourceLoader.Current;ResourceLoader.Use(new FormalAssetLoader());view=new SurvivorCombatViewController();root=new GameObject("RoundContentTest");typeof(SurvivorCombatViewController).GetField("root",Hidden).SetValue(view,root);typeof(SurvivorCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));view.ConfigureRoundBounds(19.5f,19.5f,.55f);}
+        [TearDown] public void Cleanup(){typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);if(root!=null)UnityEngine.Object.DestroyImmediate(root);ResourceLoader.Use(previousLoader);}
         [Test] public void EveryLayoutBuildsDistinctEnvironmentWithoutActiveCollidersAndReleasesResources()
         {
             var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
             var stages=tables.TbArcadeEarlyStage.DataList.Select(ArcadeEarlyStageParameters.FromConfig).ToArray();
             foreach(var p in Layouts())
             {
-                var stage=stages.FirstOrDefault(x=>x.ArenaConfigNumber==p.ArenaConfigNumber);typeof(ArcadeCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);
+                var stage=stages.FirstOrDefault(x=>x.ArenaConfigNumber==p.ArenaConfigNumber);typeof(SurvivorCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);
                 view.ConfigureRoundBounds(stage?.HalfWidth??19.5f,stage?.HalfHeight??19.5f,.55f);
                 view.SetRoundLayout(p);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError+" "+p.Id);
                 Assert.That(root.GetComponentsInChildren<Collider>(true).Length,Is.Zero,p.Id);
@@ -43,7 +43,7 @@ namespace Game.Tests
                     foreach(var renderer in root.GetComponentsInChildren<Renderer>(true))Assert.That(renderer.sharedMaterial.shader,Is.Not.Null,p.Id);
                 }
             }
-            typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);
+            typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);
             Assert.That(((ICollection)Field("roundOwnedMeshes")).Count,Is.Zero);
             Assert.That(((ICollection)Field("roundOwnedMaterials")).Count,Is.Zero);
             Assert.That(root.transform.childCount,Is.Zero);

@@ -23,7 +23,7 @@ namespace Game.Tests
             Assert.That(((IEnumerable)Read(entry,"AssetTags")).Cast<string>(),Does.Contain("arcade"));
             var deps=((IEnumerable)entry.GetType().GetField("DependAssets").GetValue(entry)).Cast<object>().Select(x=>(string)x.GetType().GetField("AssetPath").GetValue(x)).ToArray();
             foreach(var name in new[]{"SurvivorSlimeBottle.prefab","Slime.mat","BottleGreen.mat","BottleCap.mat","SlimePool.asset"})Assert.That(deps,Does.Contain(path.Replace("SurvivorSlimeBottle.prefab",name)));
-            var root=new GameObject("SlimePresentationTest");var view=new ArcadeCombatViewController();typeof(ArcadeCombatViewController).GetField("root",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,root);
+            var root=new GameObject("SlimePresentationTest");var view=new SurvivorCombatViewController();typeof(SurvivorCombatViewController).GetField("root",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,root);
             try {
                 Call(view,"BindSlimeBottleVisuals",AssetDatabase.LoadAssetAtPath<GameObject>(path).transform);
                 for(int i=0;i<12;i++){view.SetSurvivorSlimeBottle(i,Vector2.zero,1,90,true);view.SetSurvivorSlimeZone(i,Vector2.zero,1.2f,.2f,true);}
@@ -61,8 +61,8 @@ namespace Game.Tests
         /// <summary>实际模板的火焰随权威年龄采样；多次复用不突破容量，离场释放全部实例。</summary>
         [Test] public void MolotovPresentationIsBoundedReusableAndManuallySampled()
         {
-            var root=new GameObject("MolotovPresentationTest");var view=new ArcadeCombatViewController();
-            typeof(ArcadeCombatViewController).GetField("root",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,root);
+            var root=new GameObject("MolotovPresentationTest");var view=new SurvivorCombatViewController();
+            typeof(SurvivorCombatViewController).GetField("root",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,root);
             try
             {
                 Call(view,"BindMolotovVisuals",AssetDatabase.LoadAssetAtPath<GameObject>(Template).transform);

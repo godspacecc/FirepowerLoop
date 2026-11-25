@@ -22,7 +22,7 @@ namespace Game.Tests
         private object priorArchitecture, priorLanguageCache;
         private IResourceLoader priorLoader;
         private ArcadeConfigCatalogDefinition catalog;
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private GameObject root;
         private AssetLoader loader;
         private GameObject resourceCopy;
@@ -55,7 +55,7 @@ namespace Game.Tests
         }
         private void Prepare(int round,bool delayed=false)
         {
-            view?.End(); view=new ArcadeCombatViewController(); root=new GameObject("IslandPresentationTestOwner");
+            view?.End(); view=new SurvivorCombatViewController(); root=new GameObject("IslandPresentationTestOwner");
             Set("root",root); loader.Delayed=delayed;
             Call("CreateArenaCollision",1,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,
                 catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==1 && p.RoundNumber==round).Obstacles
@@ -192,7 +192,7 @@ namespace Game.Tests
             for(int round=1;round<=4;round++)
             {
                 Prepare(round);view.SetExits(new[]{-4},catalog.Rule.ArenaHalfHeight,false);
-                var exits=(List<GameObject>)typeof(ArcadeCombatViewController).GetField("exitVisuals",Private).GetValue(view);
+                var exits=(List<GameObject>)typeof(SurvivorCombatViewController).GetField("exitVisuals",Private).GetValue(view);
                 Assert.That(exits.Count,Is.EqualTo(3));
                 for(int i=0;i<3;i++)
                 {
@@ -249,12 +249,12 @@ namespace Game.Tests
             var source=resourceCopy.transform.Find("Content/BombBlast/Glow").GetComponent<Renderer>();
             var original=source.sharedMaterial; source.sharedMaterial=null;
             UnityEngine.TestTools.LogAssert.Expect(LogType.Error,
-                "[ArcadeCombatViewController] 岛岸加载失败：涉水效果缺少显式材质或 Shader 引用");
+                "[SurvivorCombatViewController] 岛岸加载失败：涉水效果缺少显式材质或 Shader 引用");
             Prepare(1,true); loader.CompleteAll();
             Assert.That(view.IsIslandRoundReady,Is.False);
             Assert.That(view.IslandRoundLoadError,Is.Not.Null);
             Assert.That(root.transform.Find("IslandWadingEffects"),Is.Null);
-            Assert.That(typeof(ArcadeCombatViewController).GetField("island",Private).GetValue(view),Is.Null);
+            Assert.That(typeof(SurvivorCombatViewController).GetField("island",Private).GetValue(view),Is.Null);
             source.sharedMaterial=original;
             view.RetryIslandRoundLoad(); loader.CompleteAll();
             Assert.That(view.IslandRoundLoadError,Is.Null);
@@ -266,9 +266,9 @@ namespace Game.Tests
                 "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab"));
             resourceCopy.SetActive(false); loader.VisualResource=resourceCopy;
         }
-        private void Set(string field,object value)=>typeof(ArcadeCombatViewController).GetField(field,Private).SetValue(view,value);
-        private Transform IslandRoot => ((GameObject)typeof(ArcadeCombatViewController).GetField("island",Private).GetValue(view)).transform;
-        private void Call(string method,params object[] values)=>typeof(ArcadeCombatViewController).GetMethod(method,Private).Invoke(view,values);
+        private void Set(string field,object value)=>typeof(SurvivorCombatViewController).GetField(field,Private).SetValue(view,value);
+        private Transform IslandRoot => ((GameObject)typeof(SurvivorCombatViewController).GetField("island",Private).GetValue(view)).transform;
+        private void Call(string method,params object[] values)=>typeof(SurvivorCombatViewController).GetMethod(method,Private).Invoke(view,values);
         private sealed class AssetLoader:IResourceLoader
         {
             public bool Delayed;

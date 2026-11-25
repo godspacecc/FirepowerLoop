@@ -41,13 +41,13 @@ namespace Game.Tests
             var kit = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab");
             Assert.That(kit.transform.Find("Content/ProjectileBlast"), Is.Not.Null, "正式资源租约需包含爆炸模板");
             var prior = ResourceLoader.Current; var root = new GameObject("special-impact-owner");
-            var view = new ArcadeCombatViewController();
+            var view = new SurvivorCombatViewController();
             ResourceLoader.Use(new AssetLoader());
             Set(view, "root", root); Set(view, "mapRoot", root.transform);
             Set(view, "lastExplosionSoundTime", float.MaxValue); Set(view, "lastSciFiExplosionSoundTime", float.MaxValue);
             try
             {
-                typeof(ArcadeCombatViewController).GetMethod("LoadContentAsync", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(view, new object[] { 15 });
+                typeof(SurvivorCombatViewController).GetMethod("LoadContentAsync", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(view, new object[] { 15 });
                 for (int i = 0; i < 40; i++) view.PlayProjectileExplosion(new Vector2(i, 2), i % 2 == 0 ? 1.35f : 2.8f);
                 var pool = (IList)Get(view, "projectileBlastPool");
                 Assert.That(pool.Count, Is.EqualTo(12)); Assert.That(root.transform.childCount, Is.EqualTo(12));

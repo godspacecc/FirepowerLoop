@@ -11,8 +11,8 @@ namespace Game.Tests
     {
         [Test] public void ArcUsesAuthoritativeEndpointsAndFollowsMapWithoutRoundLayout()
         {
-            var root=new GameObject("ray-map");var view=new ArcadeCombatViewController();
-            typeof(ArcadeCombatViewController).GetField("root",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(view,root);
+            var root=new GameObject("ray-map");var view=new SurvivorCombatViewController();
+            typeof(SurvivorCombatViewController).GetField("root",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(view,root);
             var snapshots=new[]{new ArcadeContentAreaSnapshot(1,30,1,2,.07f,false,4,6,true)};
             try
             {
@@ -24,20 +24,20 @@ namespace Game.Tests
                 Assert.That(line.transform.TransformPoint(line.GetPosition(0)),Is.EqualTo(new Vector3(101,.9f,-28)));Assert.That(root.GetComponentsInChildren<Collider>(),Is.Empty);
                 Assert.That(root.GetComponentsInChildren<MeshFilter>(),Is.Empty,"电弧不能附带危险边界或地面圈");
             }
-            finally{typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(view,null);UnityEngine.Object.DestroyImmediate(root);}
+            finally{typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(view,null);UnityEngine.Object.DestroyImmediate(root);}
         }
         [Test] public void MissingOrInvalidArcAndMapReleaseRemoveOldVisualImmediately()
         {
-            var root=new GameObject("ray-map");var view=new ArcadeCombatViewController();
-            typeof(ArcadeCombatViewController).GetField("root",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(view,root);
+            var root=new GameObject("ray-map");var view=new SurvivorCombatViewController();
+            typeof(SurvivorCombatViewController).GetField("root",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(view,root);
             try
             {
                 var good=new[]{new ArcadeContentAreaSnapshot(1,30,0,0,.07f,false,2,0,true)};view.SetRoundContent(0,good);Assert.That(root.GetComponentsInChildren<LineRenderer>().Length,Is.EqualTo(1));
                 view.SetRoundContent(0,new[]{new ArcadeContentAreaSnapshot(1,30,float.NaN,0,.07f,false,2,0,true)});Assert.That(root.GetComponentsInChildren<LineRenderer>(),Is.Empty);
                 view.SetRoundContent(0,good);view.SetRoundContent(0,Array.Empty<ArcadeContentAreaSnapshot>());Assert.That(root.GetComponentsInChildren<LineRenderer>(),Is.Empty);
-                view.SetRoundContent(0,good);typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(view,null);Assert.That(root.GetComponentsInChildren<LineRenderer>(),Is.Empty);
+                view.SetRoundContent(0,good);typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(view,null);Assert.That(root.GetComponentsInChildren<LineRenderer>(),Is.Empty);
             }
-            finally{typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(view,null);UnityEngine.Object.DestroyImmediate(root);}
+            finally{typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(view,null);UnityEngine.Object.DestroyImmediate(root);}
         }
     }
 }

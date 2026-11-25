@@ -111,11 +111,11 @@ namespace Tests.EditMode
             map.transform.position = new Vector3(0, 1000, 0);
             try
             {
-                var controller = new ArcadeCombatViewController();
+                var controller = new SurvivorCombatViewController();
                 var motor = new PlayerViewCtrl(view, 1, 1, new ViewCtrlRegistry(), new UnityViewInstanceProvider());
                 const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                typeof(ArcadeCombatViewController).GetField("mapRoot", flags).SetValue(controller, map.transform);
-                typeof(ArcadeCombatViewController).GetField("playerMotor", flags).SetValue(controller, motor);
+                typeof(SurvivorCombatViewController).GetField("mapRoot", flags).SetValue(controller, map.transform);
+                typeof(SurvivorCombatViewController).GetField("playerMotor", flags).SetValue(controller, motor);
                 var playable = BindClip("HumanM@Idle01");
                 foreach (var teleport in new[] { false, true })
                 foreach (var spawnHeight in new[] { .1f, .6f })
@@ -123,7 +123,7 @@ namespace Tests.EditMode
                     view.CharacterController.enabled = false;
                     player.transform.position = new Vector3(0, 1000f + spawnHeight, 0);
                     view.CharacterController.enabled = true;
-                    typeof(ArcadeCombatViewController).GetField("pendingRegionPosition", flags).SetValue(controller, teleport);
+                    typeof(SurvivorCombatViewController).GetField("pendingRegionPosition", flags).SetValue(controller, teleport);
                     for (int frame = 0; frame < 8; frame++)
                     {
                         controller.SetPlayer(new Vector2(frame * .02f, 0), Vector2.up, true, false);

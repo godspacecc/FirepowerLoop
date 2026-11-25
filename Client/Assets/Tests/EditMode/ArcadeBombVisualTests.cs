@@ -9,12 +9,12 @@ namespace Game.Tests
     public sealed class ArcadeBombVisualTests
     {
         private GameObject root;
-        private ArcadeBombBlastPresentation presentation;
+        private SurvivorBombBlastPresentation presentation;
         [SetUp] public void Setup()
         {
             root=new GameObject("BombTestRoot");
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Art/Arcade/VFX/Bomb/BombBlast.prefab");
-            Assert.NotNull(prefab);presentation=new ArcadeBombBlastPresentation(root.transform,prefab.transform);
+            Assert.NotNull(prefab);presentation=new SurvivorBombBlastPresentation(root.transform,prefab.transform);
         }
         [TearDown] public void Cleanup(){presentation?.Dispose();Object.DestroyImmediate(root);}
         [Test] public void FlashExpandsThenLeavesClearGround()

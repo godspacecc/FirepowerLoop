@@ -194,9 +194,9 @@ namespace Game.Tests
             Prepare();var e=new ArcadeEnemyRuntime{Id=901,ConfigId="enemy.arcade.zombie.shield",Health=200};
             Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);
             Call("ApplyModifierDamage",e,100,null);Call("ProjectSpecialEnemy",e);Call("ProjectSpecialEnemy",e);
-            Assert.That(((View)Get<IArcadeCombatViewPort>("view")).ShieldIntact,Is.False);
+            Assert.That(((View)Get<ISurvivorCombatViewPort>("view")).ShieldIntact,Is.False);
             system.Stop();Prepare();Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("ProjectSpecialEnemy",e);
-            Assert.That(((View)Get<IArcadeCombatViewPort>("view")).ShieldIntact,Is.True);
+            Assert.That(((View)Get<ISurvivorCombatViewPort>("view")).ShieldIntact,Is.True);
             Call("ApplyModifierDamage",e,99,null);Call("ApplyModifierDamage",e,1,null);Assert.That(e.Health,Is.EqualTo(200));
             Call("ApplyModifierDamage",e,10,null);Assert.That(e.Health,Is.EqualTo(190));
         }
@@ -228,7 +228,7 @@ namespace Game.Tests
             Assert.That(e.Health,Is.EqualTo(200));var state=Call("SpecialState",e);
             Assert.That((int)state.GetType().GetField("ShieldRemaining").GetValue(state),Is.LessThan(100).And.GreaterThan(0));
         }
-        private sealed class View:IArcadeCombatViewPort
+        private sealed class View:ISurvivorCombatViewPort
         {
             public bool Hidden=true,Visible=true;
             public bool ShieldIntact;

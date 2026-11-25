@@ -74,7 +74,7 @@ public static class HengePolishBake
         Guard();Directory.CreateDirectory(Evidence);
         var prior=SceneManager.GetActiveScene();var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
         var owned=new List<Object>();var oldTarget=RenderTexture.active;RenderTexture target=null;Texture2D pixels=null;Camera camera=null;
-        ArcadeCombatViewController markerView=null;
+        SurvivorCombatViewController markerView=null;
         try
         {
             SceneManager.SetActiveScene(scene);
@@ -97,11 +97,11 @@ public static class HengePolishBake
                 string sourceHash=GeometryHash(accepted.transform),appliedHash=GeometryHash(appliedVariant);
                 if(sourceHash!=appliedHash)throw new InvalidOperationException("持久回读与采用源几何不同："+layout.Id);
                 // 入口复用正式方法，两侧共享同一组标记，保证几何本体哈希不混入辅助标记。
-                var markers=new GameObject("FormalEntryMarkers");markerView=new ArcadeCombatViewController();
+                var markers=new GameObject("FormalEntryMarkers");markerView=new SurvivorCombatViewController();
                 var instanceFlags=BindingFlags.Instance|BindingFlags.NonPublic;
-                typeof(ArcadeCombatViewController).GetField("root",instanceFlags).SetValue(markerView,markers);
-                typeof(ArcadeCombatViewController).GetField("roundEnvironmentRoot",instanceFlags).SetValue(markerView,markers);
-                typeof(ArcadeCombatViewController).GetMethod("BuildRoundEntryMarkers",instanceFlags).Invoke(markerView,new object[]{layout});
+                typeof(SurvivorCombatViewController).GetField("root",instanceFlags).SetValue(markerView,markers);
+                typeof(SurvivorCombatViewController).GetField("roundEnvironmentRoot",instanceFlags).SetValue(markerView,markers);
+                typeof(SurvivorCombatViewController).GetMethod("BuildRoundEntryMarkers",instanceFlags).Invoke(markerView,new object[]{layout});
                 Layer(accepted);Layer(applied);Layer(markers);sample.Invoke(null,new[]{actor});
                 camera.orthographicSize=27;camera.transform.position=new Vector3(0,58,-38);camera.transform.LookAt(new Vector3(0,0,2));
                 accepted.SetActive(true);applied.SetActive(false);Shot("round-"+layout.RoundNumber+"-accepted.png");

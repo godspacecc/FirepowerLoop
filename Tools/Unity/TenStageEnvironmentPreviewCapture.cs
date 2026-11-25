@@ -32,7 +32,7 @@ public static class TenStageEnvironmentPreviewCapture
         var prior = SceneManager.GetActiveScene();
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         var owned = new List<Object>(); var oldTarget = RenderTexture.active;
-        Camera camera = null; RenderTexture target = null; Texture2D pixels = null; ArcadeCombatViewController view = null;
+        Camera camera = null; RenderTexture target = null; Texture2D pixels = null; SurvivorCombatViewController view = null;
         try
         {
             SceneManager.SetActiveScene(scene);
@@ -57,7 +57,7 @@ public static class TenStageEnvironmentPreviewCapture
                 string themeFolder = Path.Combine(Folder, layout.ArenaConfigNumber == 7 ? "Fort" : layout.ArenaConfigNumber == 10 ? "Koi" : "Nest");
                 Directory.CreateDirectory(themeFolder);
                 var formal = new GameObject("TEMP_Formal_" + layout.Id);
-                view = new ArcadeCombatViewController(); typeof(ArcadeCombatViewController).GetField("root", Hidden).SetValue(view, formal);
+                view = new SurvivorCombatViewController(); typeof(SurvivorCombatViewController).GetField("root", Hidden).SetValue(view, formal);
                 view.ConfigureRoundBounds(hw, hh, radius); view.SetRoundLayout(layout);
                 if (!view.IsRoundLayoutReady) throw new InvalidOperationException(view.RoundLayoutLoadError);
                 SetLayer(formal);

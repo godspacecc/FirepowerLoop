@@ -17,15 +17,15 @@ namespace Game.Tests
         private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
         private const string Asset="Assets/Game/Art/Arcade/VFX/Barrel/VortexBarrelVisual.prefab";
         private GameObject root,zombie;
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private EnemyPort port;
         private IResourceLoader previousLoader;
-        private void Field(string key,object value)=>typeof(ArcadeCombatViewController).GetField(key,Hidden).SetValue(view,value);
+        private void Field(string key,object value)=>typeof(SurvivorCombatViewController).GetField(key,Hidden).SetValue(view,value);
         [SetUp] public void Setup()
         {
             previousLoader=ResourceLoader.Current;ResourceLoader.Use(new FormalLoader());
             root=new GameObject("DockBarrelVisualTest");zombie=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab"));
-            zombie.SetActive(true);zombie.GetComponent<EnemyView>().SetNavigationEnabled(false);port=new EnemyPort{Root=zombie.transform};view=new ArcadeCombatViewController();Field("root",root);Field("enemyPresentation",port);
+            zombie.SetActive(true);zombie.GetComponent<EnemyView>().SetNavigationEnabled(false);port=new EnemyPort{Root=zombie.transform};view=new SurvivorCombatViewController();Field("root",root);Field("enemyPresentation",port);
             Field("contentTemplates",AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
             var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
             Field("earlyStage",ArcadeEarlyStageParameters.FromConfig(tables.TbArcadeEarlyStage.Get(21)));
@@ -36,7 +36,7 @@ namespace Game.Tests
         private Transform Pack()=>zombie.GetComponentsInChildren<Transform>(true).SingleOrDefault(t=>t.name=="CarrierBarrel_7");
         [Test] public void LateContentTemplateRetriesWithoutPublishingPartialGroundOrCarrier()
         {
-            var templates=typeof(ArcadeCombatViewController).GetField("contentTemplates",Hidden).GetValue(view);Field("contentTemplates",null);
+            var templates=typeof(SurvivorCombatViewController).GetField("contentTemplates",Hidden).GetValue(view);Field("contentTemplates",null);
             var areas=new[]{new ArcadeContentAreaSnapshot(-10000,11,-3,2,.45f,false),new ArcadeContentAreaSnapshot(-10001,13,2,3,.45f,false)};
             Assert.DoesNotThrow(()=>view.SetRoundContent(2,areas));Assert.DoesNotThrow(()=>view.SetEnemyContent(7,1,0,false));Assert.That(Pack(),Is.Null);
             Assert.That(root.GetComponentsInChildren<Transform>(true).Any(t=>t.name.StartsWith("GroundBarrel_")),Is.False);
@@ -76,7 +76,7 @@ namespace Game.Tests
         [Test] public void MapReleaseRemovesPacksOutsideRoundRootAndKeepsZombie()
         {
             view.SetEnemyContent(7,1,0,false);Assert.That(Pack(),Is.Not.Null);
-            typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);Assert.That(Pack(),Is.Null);Assert.That(zombie,Is.Not.Null);
+            typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);Assert.That(Pack(),Is.Null);Assert.That(zombie,Is.Not.Null);
         }
         [Test] public void LateEnemyBindingRetriesWithoutLeavingPackOnRecycledRoot()
         {
@@ -88,7 +88,7 @@ namespace Game.Tests
                 view.RemoveRoundEnemyContent(7);Assert.That(replacement.transform.childCount,Is.Zero);
             }finally{Object.DestroyImmediate(replacement);}
         }
-        private sealed class EnemyPort:IArcadeEnemyPresentationPort
+        private sealed class EnemyPort:IEnemyPresentationPort
         {
             public Transform Root;public int Removed;
             public bool TryGetEnemyPresentationRoot(int id,out Transform value){value=Root;return value!=null;}

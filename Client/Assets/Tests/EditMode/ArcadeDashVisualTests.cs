@@ -15,7 +15,7 @@ namespace Game.Tests
         private Type type;
         [SetUp] public void Setup()
         {
-            type=typeof(ArcadeCombatViewController).Assembly.GetType("Game.ArcadeDashPresentation");
+            type=typeof(SurvivorCombatViewController).Assembly.GetType("Game.SurvivorDashPresentation");
             Assert.NotNull(type,"缺少独立冲刺表现");
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Art/Arcade/VFX/Dash/Dash.prefab");
             Assert.NotNull(prefab);
@@ -76,17 +76,17 @@ namespace Game.Tests
         }
         [Test] public void RemoteDashFollowsRenderedPlayerInsteadOfSnapshotTarget()
         {
-            var controller=new ArcadeCombatViewController();
+            var controller=new SurvivorCombatViewController();
             var flags=BindingFlags.Instance|BindingFlags.NonPublic;
-            typeof(ArcadeCombatViewController).GetField("dashPresentation",flags).SetValue(controller,effect);
+            typeof(SurvivorCombatViewController).GetField("dashPresentation",flags).SetValue(controller,effect);
             var actor=new GameObject("RemoteActor");actor.transform.SetParent(root.transform,false);
             var remote=new OnlineRemotePlayerViewCtrl(actor);
             try
             {
-                var entryType=typeof(ArcadeCombatViewController).GetNestedType("RemotePlayerEntry",BindingFlags.NonPublic);
+                var entryType=typeof(SurvivorCombatViewController).GetNestedType("RemotePlayerEntry",BindingFlags.NonPublic);
                 var entry=Activator.CreateInstance(entryType);
                 entryType.GetField("PlayerId").SetValue(entry,9L);entryType.GetField("Visible").SetValue(entry,true);entryType.GetField("View").SetValue(entry,remote);
-                var entries=(System.Collections.IDictionary)typeof(ArcadeCombatViewController).GetField("remotePlayers",flags).GetValue(controller);entries.Add(9L,entry);
+                var entries=(System.Collections.IDictionary)typeof(SurvivorCombatViewController).GetField("remotePlayers",flags).GetValue(controller);entries.Add(9L,entry);
                 remote.Snap(Vector3.zero,0);remote.SetTarget(new Vector3(2,0,0),0);
                 controller.SetPlayerDash(9,new Vector2(2,0),Vector2.right,.28f,true);
                 var dash=root.transform.Find("Dash_9");Assert.AreEqual(0,dash.localPosition.x,"起步应落在显示位置而非尚未到达的快照目标");

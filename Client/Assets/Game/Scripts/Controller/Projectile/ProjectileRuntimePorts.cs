@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>街机投射物的纯表现端口，不拥有碰撞或伤害规则。</summary>
-    public interface IArcadeProjectilePresentationPort : IUtility
+    public interface IProjectilePresentationPort : IUtility
     {
         bool TrySetProjectile(int runtimeId, Vector3 position, Vector3 direction, out string error);
         bool TrySetProjectile(int runtimeId, Vector3 position, Vector3 direction, string visualResourceName, bool hostile,

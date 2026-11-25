@@ -16,14 +16,14 @@ namespace Game.Tests
     {
         private ControlledAudioLoader loader;
         private GameObject audioRoot, sceneRoot;
-        private ArcadeCombatViewController view;
+        private SurvivorCombatViewController view;
         private AudioSystem audio;
         private static ArcadeHazardParameters Tower => new ArcadeHazardParameters(1,1,0,0,0,1.2f,0,0,4,1.5f,3,0,1,1,.05f);
         [SetUp] public void SetUp()
         {
             ResetArchitecture(); loader=new ControlledAudioLoader();ResourceLoader.SetLoaderForTests(loader);
             audioRoot=CreateAudioRootBindings();audio=Game.Interface.GetSystem<AudioSystem>();
-            sceneRoot=new GameObject("ElectricFeedbackMap");view=new ArcadeCombatViewController();
+            sceneRoot=new GameObject("ElectricFeedbackMap");view=new SurvivorCombatViewController();
             Set("root",sceneRoot);Set("mapRoot",sceneRoot.transform);Set("contentArena",21);
             view.SetPlayer(Vector2.zero,Vector2.up,true,false);
         }
@@ -32,7 +32,7 @@ namespace Game.Tests
             view.End();ResetArchitecture();ResourceLoader.ResetForTests();
             if(sceneRoot!=null)Object.DestroyImmediate(sceneRoot);Object.DestroyImmediate(audioRoot);
         }
-        private void Set(string name,object value)=>typeof(ArcadeCombatViewController).GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,value);
+        private void Set(string name,object value)=>typeof(SurvivorCombatViewController).GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,value);
         private void Sync(double time=6)=>view.SetHazards(new[]{Tower},time);
         private AudioSource Loop => audioRoot.GetComponentsInChildren<AudioSource>().Single(s=>s.clip!=null&&s.loop);
         [Test] public void NearTowerIsQuietAndMovingAwayChangesSameLiveSource()
@@ -71,7 +71,7 @@ namespace Game.Tests
             var template=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/DocksElectricTower.prefab");
             Assert.That(template,Is.Not.Null);var templates=new GameObject("Templates");templates.transform.SetParent(sceneRoot.transform);
             var tower=Object.Instantiate(template,templates.transform);tower.name="DocksElectricTower";tower.SetActive(false);Set("contentTemplates",templates.transform);
-            Sync();var method=typeof(ArcadeCombatViewController).GetMethod("PlayElectricTowerHit");Assert.That(method,Is.Not.Null);
+            Sync();var method=typeof(SurvivorCombatViewController).GetMethod("PlayElectricTowerHit");Assert.That(method,Is.Not.Null);
             method.Invoke(view,new object[]{1,new Vector2(1,0)});
             Assert.That(sceneRoot.GetComponentsInChildren<LineRenderer>().Count(l=>l.name.StartsWith("电击命中")),Is.EqualTo(16));
             Assert.That(sceneRoot.GetComponentsInChildren<Collider>(),Is.Empty);

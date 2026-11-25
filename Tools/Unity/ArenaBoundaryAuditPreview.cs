@@ -43,7 +43,7 @@ public static class ArenaBoundaryAuditPreview
         var previousLoader = ResourceLoader.Current;
         var prior = SceneManager.GetActiveScene();
         var scene = EditorSceneManager.OpenScene("Assets/Game/Scenes/TaskSampleMap.unity", OpenSceneMode.Additive);
-        var view = new ArcadeCombatViewController();
+        var view = new SurvivorCombatViewController();
         var rows = new List<string> { "layout|afterLayout|afterOpeningRelease|candidate|restored" };
         int regressions = 0;
         try

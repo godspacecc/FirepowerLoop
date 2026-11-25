@@ -51,7 +51,7 @@ public static class ArcadeIslandPassageCapture
             for (int round = 1; round <= 4; round++)
             {
                 testType.GetMethod("Prepare", flags).Invoke(fixture, new object[] { round, false });
-                var view = (Game.ArcadeCombatViewController)testType.GetField("view", flags).GetValue(fixture);
+                var view = (Game.SurvivorCombatViewController)testType.GetField("view", flags).GetValue(fixture);
                 if (!view.IsIslandRoundReady) throw new InvalidOperationException(view.IslandRoundLoadError ?? "正式表现尚未就绪");
                 camera.Render(); RenderTexture.active = target;
                 var texture = new Texture2D(1600, 1000, TextureFormat.RGB24, false);

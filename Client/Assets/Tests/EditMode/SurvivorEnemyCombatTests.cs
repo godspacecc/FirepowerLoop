@@ -198,7 +198,7 @@ namespace Game.Tests
             for(int i=0;i<200;i++){a=small.Move(a,target,.1f);b=large.Move(b,target,.1f);}
             Assert.That(a.x,Is.GreaterThan(4));Assert.That(b.x,Is.LessThan(-1.5f));
         }
-        private sealed class View:IArcadeCombatViewPort
+        private sealed class View:ISurvivorCombatViewPort
         {
             public bool Hidden=true,Visible=true,HasBounds;
             public bool TryGetSurvivorViewBounds(out Rect bounds){bounds=new Rect(-20f,-20f,40f,40f);return HasBounds;}

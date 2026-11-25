@@ -13,7 +13,7 @@ ArcadeEnemyRuntime Enemy(string kind){var e=new ArcadeEnemyRuntime{Id=9,ConfigId
 [Test]public void CasterLocksWindupThenFacesNewTargetDuringCooldown(){var e=Enemy("caster");e.Position=Vector2.up*3;Set("player",Vector2.zero);Call("TickSpecialEnemy",e,.01f);Set("player",Vector2.right*20);Call("ProjectSpecialEnemy",e);Assert.That(Vector2.Dot(view.Direction,Vector2.down),Is.GreaterThan(.999f));Call("TickSpecialEnemy",e,.81f);Call("ProjectSpecialEnemy",e);Assert.That(Vector2.Dot(view.Direction,(Vector2.right*20-e.Position).normalized),Is.GreaterThan(.999f));Assert.That(Vector2.Dot(Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles").Values.Single().Velocity.normalized,Vector2.down),Is.GreaterThan(.999f));}
 [Test]public void ShieldProjectionKeepsAuthorityTurnLimit(){var e=Enemy("shield");Set("player",Vector2.right*20);Call("TickSpecialEnemy",e,.1f);Call("ProjectSpecialEnemy",e);Assert.That(Vector2.Angle(Vector2.up,view.Direction),Is.EqualTo(12f).Within(.01f));Assert.That(Vector2.Angle(Vector2.right,view.Direction),Is.GreaterThan(70));}
 [Test]public void CoincidentTargetKeepsSafeFacing(){var e=Enemy("caster");Set("player",Vector2.zero);Call("ProjectSpecialEnemy",e);Assert.That(view.Direction,Is.EqualTo(Vector2.up));}
-        private sealed class View:IArcadeCombatViewPort
+        private sealed class View:ISurvivorCombatViewPort
         {
             public Vector2 Direction;
             public void SetSurvivorEnemySpecial(int id,string kind,Vector2 direction,bool warning,float progress,Vector2 target,float radius){Direction=direction;}

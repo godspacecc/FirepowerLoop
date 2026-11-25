@@ -31,16 +31,16 @@ public static class VolcanoPolishPreview
         var prior = SceneManager.GetActiveScene(); var oldTarget = RenderTexture.active;
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         var owned = new List<Object>(); var report = new List<string>();
-        Camera camera = null; RenderTexture target = null; Texture2D pixels = null; ArcadeCombatViewController view = null;
+        Camera camera = null; RenderTexture target = null; Texture2D pixels = null; SurvivorCombatViewController view = null;
         try
         {
             SceneManager.SetActiveScene(scene);
             RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = new Color(.57f,.60f,.65f);
             var tables = new global::Tables(n => new Luban.ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", n + ".bytes"))));
             var root = new GameObject("TEMP_VolcanoFormalReadback");
-            view = new ArcadeCombatViewController();
-            typeof(ArcadeCombatViewController).GetField("root", Hidden).SetValue(view, root);
-            typeof(ArcadeCombatViewController).GetField("contentTemplates", Hidden).SetValue(view, AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
+            view = new SurvivorCombatViewController();
+            typeof(SurvivorCombatViewController).GetField("root", Hidden).SetValue(view, root);
+            typeof(SurvivorCombatViewController).GetField("contentTemplates", Hidden).SetValue(view, AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
             view.ConfigureRoundBounds(19.5f,19.5f,.55f);
             var actor = CreateHero(owned);
             camera = new GameObject("TEMP_VolcanoCamera", typeof(Camera)).GetComponent<Camera>();
@@ -55,7 +55,7 @@ public static class VolcanoPolishPreview
             {
                 var layout = ArcadeRoundLayoutParameters.FromConfig(tables.TbArcadeRoundLayout.DataList.Single(x => x.ArenaConfigNumber == 6 && x.RoundNumber == round));
                 view.SetRoundLayout(layout); if (!view.IsRoundLayoutReady) throw new InvalidOperationException(view.RoundLayoutLoadError);
-                var formal = (GameObject)typeof(ArcadeCombatViewController).GetField("roundEnvironmentRoot",Hidden).GetValue(view);
+                var formal = (GameObject)typeof(SurvivorCombatViewController).GetField("roundEnvironmentRoot",Hidden).GetValue(view);
                 var candidate = VolcanoCandidateGeometry.Build(root.transform,layout,owned);
                 // 保留同一组正式入口标记，防止候选改变四向入口的读法。
                 foreach (Transform child in formal.transform) if (child.name.StartsWith("Entry_")) Object.Instantiate(child.gameObject,candidate.transform,false);
@@ -89,7 +89,7 @@ public static class VolcanoPolishPreview
         }
         finally
         {
-            try { if (view != null) typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null); }
+            try { if (view != null) typeof(SurvivorCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null); }
             finally
             {
                 if (camera != null) camera.targetTexture = null; RenderTexture.active = oldTarget;

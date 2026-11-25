@@ -10,7 +10,7 @@ namespace Game
     public sealed class PlayerInputCtrl : IDisposable
     {
         /// <summary>只采集原始双肩意图；是否可释放由街机System裁决。</summary>
-        private readonly ArcadeFieldUpgradeChord fieldUpgradeChord=new ArcadeFieldUpgradeChord();
+        private readonly SurvivorFieldUpgradeChord fieldUpgradeChord=new SurvivorFieldUpgradeChord();
         public bool TryConsumeFieldUpgrade()=>fieldUpgradeChord.TryConsume();
         public void ClearFieldUpgradePulse()=>fieldUpgradeChord.ClearPulse();
         public bool FieldUpgradePressedThisFrame=>fieldUpgradeChord.WasPressedThisFrame;
