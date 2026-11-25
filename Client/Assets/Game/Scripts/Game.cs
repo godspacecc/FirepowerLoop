@@ -116,6 +116,7 @@ namespace Game
             RegisterSystem(new SurvivorSceneFlowSystem());
             RegisterSystem(new ServerTestCmdSystem());
             RegisterSystem(new TestCmdSystem());
+            RegisterSystem(new AppearanceGallerySceneFlowSystem());
             RegisterSystem(new RedPointSystem());
             RegisterSystem(new ResourceUpdateSystem());
             RegisterSystem(new OptionalGameplayResourceSystem());

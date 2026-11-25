@@ -60,6 +60,24 @@ namespace Game.Tests
                 Is.EqualTo(TestCmdResultCode.UsageError));
         }
 
+        [Test]
+        public void GalleryCommandRequiresMainMenuAndRejectsExtraArguments()
+        {
+            var system = Game.Interface.GetSystem<TestCmdSystem>();
+            TestCmdExecutionResult Execute(string command) =>
+                system.ExecuteAsync(command, CancellationToken.None).GetAwaiter().GetResult();
+
+            Assert.That(Execute("#gallery extra").Code, Is.EqualTo(TestCmdResultCode.UsageError));
+            Assert.That(Execute("#gallery").Code, Is.EqualTo(TestCmdResultCode.StateRejected));
+        }
+
+        [Test]
+        public void GeneratedCatalogIncludesGalleryCommand()
+        {
+            var table = new global::TbTestCmdEntry(new Luban.ByteBuf(File.ReadAllBytes("Assets/Game/Config/tbtestcmdentry.bytes")));
+            Assert.That(table.GetOrDefault("appearance.gallery")?.CommandTemplate, Is.EqualTo("#gallery"));
+        }
+
         private string tempRoot;
         private TestConfigProvider configs;
         private RoutingNetwork network;

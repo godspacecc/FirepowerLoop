@@ -84,7 +84,10 @@ namespace Game
             }
             else
             {
-                result = ExecuteClientBody(body);
+                var parts = body.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                result = string.Equals(parts[0], "gallery", StringComparison.OrdinalIgnoreCase)
+                    ? await ExecuteGalleryAsync(body, parts.Length, cancellationToken)
+                    : ExecuteClientBody(body, parts);
             }
 
             this.GetModel<TestCmdModel>().SetLastResult(result);
@@ -95,10 +98,19 @@ namespace Game
             return result;
         }
 
-        private TestCmdExecutionResult ExecuteClientBody(string trimmed)
+        /// <summary>复用主菜单的测试入口条件，打开造型库后由指令面板关闭自身。</summary>
+        private async Task<TestCmdExecutionResult> ExecuteGalleryAsync(string body, int argumentCount, CancellationToken cancellationToken)
         {
-            var parts = trimmed.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+            if (argumentCount != 1)
+                return Finish(body, Warning(TestCmdResultCode.UsageError, "用法：#gallery"), true);
+            var (success, message) = await this.GetSystem<AppearanceGallerySceneFlowSystem>().OpenAsync(cancellationToken);
+            return Finish(body, success
+                ? Result(true, true, TestCmdResultCode.AppearanceGalleryOpened, message)
+                : Warning(cancellationToken.IsCancellationRequested ? TestCmdResultCode.Canceled : TestCmdResultCode.StateRejected, message), true);
+        }
 
+        private TestCmdExecutionResult ExecuteClientBody(string trimmed, string[] parts)
+        {
 
 
             if (string.Equals(parts[0], "unitbar", StringComparison.OrdinalIgnoreCase))

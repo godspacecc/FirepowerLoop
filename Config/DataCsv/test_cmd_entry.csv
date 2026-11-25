@@ -1,5 +1,8 @@
 ##var,Id,CategoryId,Order,LabelText,CommandTemplate,DescriptionText,UsageText,ExampleText
 ##type,string,string,int,string,string,string,string,string
+,appearance.gallery,mode-entry,100,打开造型库,#gallery,"适用：Unity 编辑器和开发版 · 造型预览
+条件：位于主菜单。
+效果：打开角色、武器和动画预览。",用法：#gallery,示例：#gallery
 ,camera.topdown,camera-view,100,切换俯视视角,#camera topdown,"适用：客户端 · 视角切换
 条件：进入场景后观察切换效果。
 效果：切换到固定俯视操作。",用法：#camera topdown,示例：#camera topdown

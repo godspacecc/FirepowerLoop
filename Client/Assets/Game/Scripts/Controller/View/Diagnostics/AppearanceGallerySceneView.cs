@@ -111,6 +111,8 @@ namespace Game
         private bool cameraViewportCaptured;
         private Rect lastSafeArea;
         private Vector2Int lastScreenSize;
+        // 正式指令入口提供卸载回调，独立预览仍可直接关闭自身。
+        private Action exitRequested;
 
         private void Awake()
         {
@@ -123,7 +125,7 @@ namespace Game
             playPauseButton.onClick.AddListener(TogglePlayback);
             cameraModeButton.onClick.AddListener(ToggleCamera);
             resetCameraButton.onClick.AddListener(ResetCamera);
-            exitButton.onClick.AddListener(() => { gameObject.SetActive(false); });
+            exitButton.onClick.AddListener(RequestExit);
             if (poseTuningPanel != null) poseTuningPanel.TuningModeChanged += SetTuningWeaponSelection;
         }
 
@@ -800,6 +802,15 @@ namespace Game
         }
 
         private void TogglePlayback() { playing = !playing; RefreshPlayPauseLabel(); }
+
+        /// <summary>将已有的退出按钮和 Esc 交给场景句柄的所有者。</summary>
+        public void BindExit(Action onExit) => exitRequested = onExit;
+
+        private void RequestExit()
+        {
+            if (exitRequested != null) exitRequested();
+            else gameObject.SetActive(false);
+        }
         private void RefreshPlayPauseLabel() { if (playPauseText != null) playPauseText.text = playing ? "暂停" : "播放"; }
         private void RefreshTimelineLabel()
         {
@@ -814,7 +825,7 @@ namespace Game
             if (!initialized) return;
             if (Keyboard.current?.escapeKey.wasPressedThisFrame == true)
             {
-                gameObject.SetActive(false);
+                RequestExit();
                 return;
             }
             if (playing && selectedClip != null && selectedClip.length > 0f &&
