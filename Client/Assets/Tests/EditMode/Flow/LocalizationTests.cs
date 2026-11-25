@@ -328,7 +328,7 @@ namespace Game.Tests
             Assert.That(InvokeStatic(type, "ShouldScanAssetPath", "Assets/Game/Config/Localization/zh-CN.json"), Is.True);
             Assert.That(InvokeStatic(type, "ShouldScanAssetPath", "Assets/Game/Prefabs/UI/Test.prefab"), Is.True);
             Assert.That(InvokeStatic(type, "ShouldScanAssetPath", "Assets/Game/Scenes/Main.unity"), Is.True);
-            Assert.That(InvokeStatic(type, "ShouldScanAssetPath", "Assets/Game/Scenes/SurvivalSampleMap/NavMesh.asset"), Is.False);
+            Assert.That(InvokeStatic(type, "ShouldScanAssetPath", "Assets/Game/Scenes/TaskSampleMap/NavMesh.asset"), Is.False);
         }
 
         [Test]
