@@ -1,4 +1,5 @@
 using System;
+using FirepowerLoop.MapGeometry;
 
 namespace FirepowerLoop.Arcade
 {
@@ -32,7 +33,7 @@ namespace FirepowerLoop.Arcade
         }
 
         /// <summary>返回本帧是否由入场移动占用；抵达帧仍占用，下一帧才交接常规追击。</summary>
-        public static bool Advance(ref ArcadeOutsideEntryState state, float seconds, float speed, out ArcadeRegionPoint position)
+        public static bool Advance(ref ArcadeOutsideEntryState state, float seconds, float speed, out MapPoint2D position)
         {
             position = Position(state);
             if (!state.Active) return false;
@@ -45,12 +46,12 @@ namespace FirepowerLoop.Arcade
         }
 
         /// <summary>插值使用双精度中间值，终点精确返回，避免大步长越过入口。</summary>
-        private static ArcadeRegionPoint Position(ArcadeOutsideEntryState state)
+        private static MapPoint2D Position(ArcadeOutsideEntryState state)
         {
             if (state.Distance <= 0 || state.DistanceMoved >= state.Distance)
-                return new ArcadeRegionPoint(state.TargetX, state.TargetZ);
+                return new MapPoint2D(state.TargetX, state.TargetZ);
             double t = state.DistanceMoved / (double)state.Distance;
-            return new ArcadeRegionPoint((float)(state.StartX + ((double)state.TargetX - state.StartX) * t),
+            return new MapPoint2D((float)(state.StartX + ((double)state.TargetX - state.StartX) * t),
                 (float)(state.StartZ + ((double)state.TargetZ - state.StartZ) * t));
         }
 

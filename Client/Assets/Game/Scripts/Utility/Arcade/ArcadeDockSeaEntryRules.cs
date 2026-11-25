@@ -1,4 +1,5 @@
 using System;
+using FirepowerLoop.MapGeometry;
 
 namespace FirepowerLoop.Arcade
 {
@@ -26,15 +27,15 @@ namespace FirepowerLoop.Arcade
     {
         public const float ClimbSeconds = 5.75f, TotalSeconds = 6.75f;
         /// <summary>将已采用的右路平面轨迹旋转到左／上岸沿，高度与骨骼动作保持同源。</summary>
-        public static ArcadeRegionPoint Position(ArcadeDockSeaEntryState state)
+        public static MapPoint2D Position(ArcadeDockSeaEntryState state)
         {
             float x = Sample(state.Age).X;
-            return state.Direction == 1 ? new ArcadeRegionPoint(-2f-x,-state.Lane) :
-                state.Direction == 2 ? new ArcadeRegionPoint(-state.Lane-2.2f,x-.5f) : new ArcadeRegionPoint(x,state.Lane);
+            return state.Direction == 1 ? new MapPoint2D(-2f-x,-state.Lane) :
+                state.Direction == 2 ? new MapPoint2D(-state.Lane-2.2f,x-.5f) : new MapPoint2D(x,state.Lane);
         }
         /// <summary>面向对应平台内侧，返回平面单位向量供地图根投影。</summary>
-        public static ArcadeRegionPoint Forward(ArcadeDockSeaEntryState state) => state.Direction == 1 ?
-            new ArcadeRegionPoint(1,0) : state.Direction == 2 ? new ArcadeRegionPoint(0,-1) : new ArcadeRegionPoint(-1,0);
+        public static MapPoint2D Forward(ArcadeDockSeaEntryState state) => state.Direction == 1 ?
+            new MapPoint2D(1,0) : state.Direction == 2 ? new MapPoint2D(0,-1) : new MapPoint2D(-1,0);
         /// <summary>拒绝无效方向和车道，避免错误快照把演员投影到其它岸沿。</summary>
         public static bool Valid(ArcadeDockSeaEntryState state) => state.Direction >= 0 && state.Direction <= 2 &&
             Finite(state.Age) && state.Age >= 0 && state.Age <= TotalSeconds && Finite(state.Lane) &&

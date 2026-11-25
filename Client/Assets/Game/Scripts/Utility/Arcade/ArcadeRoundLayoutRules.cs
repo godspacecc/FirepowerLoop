@@ -8,6 +8,7 @@ using LayoutConfig = ET.ArcadeRoundLayoutConfig;
 #else
 using LayoutConfig = global::ArcadeRoundLayoutConfig;
 #endif
+using FirepowerLoop.MapGeometry;
 namespace FirepowerLoop.Arcade
 {
     /// <summary>双端平面阻挡；和主题地标使用相同的中心与半尺寸。</summary>
@@ -30,17 +31,17 @@ namespace FirepowerLoop.Arcade
     {
         /// <summary>普通场地按北、东、南、西各提供一个同去向出口。</summary>
         public const int ExitDirectionCount = 4;
-        private ArcadeRoundLayoutParameters(LayoutConfig row,IEnumerable<ArcadeRegionPoint> barrels=null)
+        private ArcadeRoundLayoutParameters(LayoutConfig row,IEnumerable<MapPoint2D> barrels=null)
         {
             Id=row.Id;ThemeKey=row.ThemeKey;NameKey=row.NameKey;ArenaConfigNumber=row.ArenaConfigNumber;
             RoundNumber=row.RoundNumber;Version=row.Version;SpawnX=row.SpawnX;SpawnY=row.SpawnY;
             ExitX=row.ExitX;ExitY=row.ExitY;ExitSpacing=row.ExitSpacing;
             Obstacles=Array.AsReadOnly(row.Obstacles.Select((o,i)=>new ArcadeLayoutObstacle(o.CenterX,o.CenterY,o.HalfWidth,o.HalfHeight,!row.MovementOnlyObstacleIndices.Contains(i))).ToArray());
-            Entries=Array.AsReadOnly(row.Entries.Select(e=>new ArcadeRegionPoint(e.X,e.Y)).ToArray());
-            Barrels=Array.AsReadOnly((barrels??row.Barrels.Select(e=>new ArcadeRegionPoint(e.X,e.Y))).ToArray());
+            Entries=Array.AsReadOnly(row.Entries.Select(e=>new MapPoint2D(e.X,e.Y)).ToArray());
+            Barrels=Array.AsReadOnly((barrels??row.Barrels.Select(e=>new MapPoint2D(e.X,e.Y))).ToArray());
             BarrelDropSeconds=row.BarrelDropSeconds;BarrelPullRadius=row.BarrelPullRadius;
             BarrelPullSpeed=row.BarrelPullSpeed;BarrelHealth=row.BarrelHealth;
-            WeaponSpawnPoints=Array.AsReadOnly(row.WeaponSpawnPoints.Select(e=>new ArcadeRegionPoint(e.X,e.Y)).ToArray());
+            WeaponSpawnPoints=Array.AsReadOnly(row.WeaponSpawnPoints.Select(e=>new MapPoint2D(e.X,e.Y)).ToArray());
             WeaponSpawnCount=row.WeaponSpawnCount;
             WeaponSpawnDelayMin=row.WeaponSpawnDelayMin;WeaponSpawnDelayMax=row.WeaponSpawnDelayMax;
             WeaponSpawnFirstDelayMin=row.WeaponSpawnFirstDelayMin;WeaponSpawnFirstDelayMax=row.WeaponSpawnFirstDelayMax;
@@ -69,45 +70,45 @@ namespace FirepowerLoop.Arcade
         /// <summary>普通敌人场外起点距场地边界的米数；特殊地图为零。</summary>
         public float OutsideEntryDistance { get; }
         /// <summary>在真实通道外生成，保留横向车道；不把入口投影到战斗区内。</summary>
-        public ArcadeRegionPoint GetPassageSpawn(int index, int sequence, float halfWidth, float halfHeight, float approachDistance)
+        public MapPoint2D GetPassageSpawn(int index, int sequence, float halfWidth, float halfHeight, float approachDistance)
         {
             var entry = Entries[index];
             float lane = (sequence % 5 - 2) * .45f;
             float distance = Math.Min(4f, approachDistance * .67f);
             return Math.Abs(entry.X) > Math.Abs(entry.Y)
-                ? new ArcadeRegionPoint(Math.Sign(entry.X) * (halfWidth + distance), entry.Y + lane)
-                : new ArcadeRegionPoint(entry.X + lane, Math.Sign(entry.Y) * (halfHeight + distance));
+                ? new MapPoint2D(Math.Sign(entry.X) * (halfWidth + distance), entry.Y + lane)
+                : new MapPoint2D(entry.X + lane, Math.Sign(entry.Y) * (halfHeight + distance));
         }
         /// <summary>规则与表现共用入口及四向落点。</summary>
-        public ArcadeRegionPoint GetExitPosition(int direction, float halfWidth, float halfHeight, float playerRadius)
+        public MapPoint2D GetExitPosition(int direction, float halfWidth, float halfHeight, float playerRadius)
             => ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries[direction] : DirectionalExit(direction, ExitX, ExitY,
                 halfWidth, halfHeight, playerRadius);
 
         /// <summary>把北侧出口依次旋转到四边。</summary>
-        public static ArcadeRegionPoint DirectionalExit(int direction, float northX, float northY,
+        public static MapPoint2D DirectionalExit(int direction, float northX, float northY,
             float halfWidth, float halfHeight, float playerRadius)
         {
             if (direction < 0 || direction >= ExitDirectionCount) throw new ArgumentOutOfRangeException(nameof(direction));
             var point = direction switch
             {
-                0 => new ArcadeRegionPoint(northX, northY),
-                1 => new ArcadeRegionPoint(northY * halfWidth / halfHeight, -northX * halfHeight / halfWidth),
-                2 => new ArcadeRegionPoint(-northX, -northY),
-                _ => new ArcadeRegionPoint(-northY * halfWidth / halfHeight, northX * halfHeight / halfWidth)
+                0 => new MapPoint2D(northX, northY),
+                1 => new MapPoint2D(northY * halfWidth / halfHeight, -northX * halfHeight / halfWidth),
+                2 => new MapPoint2D(-northX, -northY),
+                _ => new MapPoint2D(-northY * halfWidth / halfHeight, northX * halfHeight / halfWidth)
             };
             return point;
         }
         public IReadOnlyList<ArcadeLayoutObstacle> Obstacles { get; }
-        public IReadOnlyList<ArcadeRegionPoint> Entries { get; }
+        public IReadOnlyList<MapPoint2D> Entries { get; }
         /// <summary>预置可射桶坐标；数组索引是当前地图版本内的稳定身份。</summary>
-        public IReadOnlyList<ArcadeRegionPoint> Barrels { get; }
+        public IReadOnlyList<MapPoint2D> Barrels { get; }
         /// <summary>载体从出生到放桶的活动秒数；落地桶吸取半径、速度和独立耐久。</summary>
         public float BarrelDropSeconds { get; }
         public float BarrelPullRadius { get; }
         public float BarrelPullSpeed { get; }
         public int BarrelHealth { get; }
         /// <summary>本图固定武器候选点；只在轮开始时抽取，场景表现不决定生成位置。</summary>
-        public IReadOnlyList<ArcadeRegionPoint> WeaponSpawnPoints { get; }
+        public IReadOnlyList<MapPoint2D> WeaponSpawnPoints { get; }
         /// <summary>每轮分批投放数量，仍受地面物资总预算限制。</summary>
         public int WeaponSpawnCount { get; }
         /// <summary>首把投放之后，下一把出现前的活动战斗等待秒数范围。</summary>
@@ -123,7 +124,7 @@ namespace FirepowerLoop.Arcade
             WeaponSpawnDelayMin,WeaponSpawnDelayMax,random);
 
         /// <summary>使用调用方的权威随机源，无放回抽取候选点；不修改配置或持有对局状态。</summary>
-        public IReadOnlyList<ArcadeRegionPoint> ChooseWeaponSpawnPoints(int available,Func<int,int> next)
+        public IReadOnlyList<MapPoint2D> ChooseWeaponSpawnPoints(int available,Func<int,int> next)
         {
             if(next==null)throw new ArgumentNullException(nameof(next));
             int count=Math.Min(WeaponSpawnCount,Math.Max(0,available));
@@ -181,22 +182,22 @@ namespace FirepowerLoop.Arcade
             return p;
         }
         /// <summary>武器点位不能重叠或占用出生、入口、出口、预置桶和实体障碍。</summary>
-        private bool OverlapsWeaponLandmark(ArcadeRegionPoint point)
+        private bool OverlapsWeaponLandmark(MapPoint2D point)
         {
-            bool Near(ArcadeRegionPoint other,float distance)=>
+            bool Near(MapPoint2D other,float distance)=>
                 (point.X-other.X)*(point.X-other.X)+(point.Y-other.Y)*(point.Y-other.Y)<distance*distance;
-            return Near(new ArcadeRegionPoint(SpawnX,SpawnY),3) || Entries.Any(e=>Near(e,2)) ||
+            return Near(new MapPoint2D(SpawnX,SpawnY),3) || Entries.Any(e=>Near(e,2)) ||
                 Enumerable.Range(0,ExitDirectionCount).Any(i=>Near(DirectionalExit(i,ExitX,ExitY,1,1,0),2)) ||
                 Barrels.Any(e=>Near(e,1.5f)) || WeaponSpawnPoints.Count(e=>Near(e,2))>1 ||
                 Obstacles.Any(o=>Math.Abs(point.X-o.X)<o.HalfWidth+1.1f&&Math.Abs(point.Y-o.Y)<o.HalfHeight+1.1f);
         }
         /// <summary>桶保留半米占地，不能占用出生点、全部出口或地图阻挡。</summary>
-        private bool OverlapsBarrelLandmark(ArcadeRegionPoint barrel)
+        private bool OverlapsBarrelLandmark(MapPoint2D barrel)
         {
             const float radius=.5f;
             if(Obstacles.Any(o=>Math.Abs(barrel.X-o.X)<o.HalfWidth+radius&&Math.Abs(barrel.Y-o.Y)<o.HalfHeight+radius))return true;
             var points=Enumerable.Range(0,ExitDirectionCount).Select(i=>DirectionalExit(i,ExitX,ExitY,1,1,0))
-                .Append(new ArcadeRegionPoint(SpawnX,SpawnY));
+                .Append(new MapPoint2D(SpawnX,SpawnY));
             return points.Any(p=>Math.Abs(barrel.X-p.X)<radius*2&&Math.Abs(barrel.Y-p.Y)<radius*2) ||
                 Barrels.Count(p=>Math.Abs(barrel.X-p.X)<radius*2&&Math.Abs(barrel.Y-p.Y)<radius*2)>1;
         }
@@ -211,7 +212,7 @@ namespace FirepowerLoop.Arcade
         {
             if(!Finite(halfWidth)||!Finite(halfHeight)||!Finite(playerRadius)||halfWidth<=5||halfHeight<=5||playerRadius<=0)return false;
             float clearance=playerRadius*2;
-            var targets=new List<ArcadeRegionPoint>(Entries){new ArcadeRegionPoint(SpawnX,SpawnY)};
+            var targets=new List<MapPoint2D>(Entries){new MapPoint2D(SpawnX,SpawnY)};
             targets.AddRange(Enumerable.Range(0,ExitCount).Select(i=>GetExitPosition(i,halfWidth,halfHeight,playerRadius)));
             targets.AddRange(Barrels);
             targets.AddRange(WeaponSpawnPoints);
@@ -222,7 +223,7 @@ namespace FirepowerLoop.Arcade
             int columns=(int)(halfWidth*4)+1,rows=(int)(halfHeight*4)+1;
             int Index(float x,float y)=>(int)Math.Round((y+halfHeight)/step)*columns+(int)Math.Round((x+halfWidth)/step);
             var seen=new HashSet<int>();var pending=new Queue<int>();int start=Index(SpawnX,SpawnY);seen.Add(start);pending.Enqueue(start);
-            var directions=new[]{new ArcadeRegionPoint(-1,0),new ArcadeRegionPoint(1,0),new ArcadeRegionPoint(0,-1),new ArcadeRegionPoint(0,1)};
+            var directions=new[]{new MapPoint2D(-1,0),new MapPoint2D(1,0),new MapPoint2D(0,-1),new MapPoint2D(0,1)};
             while(pending.Count>0)
             {
                 int current=pending.Dequeue(),cx=current%columns,cy=current/columns;
@@ -237,7 +238,7 @@ namespace FirepowerLoop.Arcade
         }
         /// <summary>通道补桶只在出生点连通的地面随机取点；避开玩家及存活桶，无合法点时不放到原点。</summary>
         public bool TryChoosePassageBarrelPoint(float halfWidth,float halfHeight,float playerRadius,
-            IEnumerable<ArcadeRegionPoint> occupied,Random random,out ArcadeRegionPoint point)
+            IEnumerable<MapPoint2D> occupied,Random random,out MapPoint2D point)
         {
             point=default;
             if(!Finite(halfWidth)||!Finite(halfHeight)||!Finite(playerRadius)||halfWidth<=0||halfHeight<=0||playerRadius<=0||random==null)return false;
@@ -245,14 +246,14 @@ namespace FirepowerLoop.Arcade
             int columns=(int)(halfWidth*4)+1,rows=(int)(halfHeight*4)+1;
             int sx=(int)Math.Round((SpawnX+halfWidth)/step),sy=(int)Math.Round((SpawnY+halfHeight)/step);
             if(!IsWalkable(sx*step-halfWidth,sy*step-halfHeight,clearance,halfWidth,halfHeight))return false;
-            var blockers=occupied.ToArray();var candidates=new List<ArcadeRegionPoint>();
+            var blockers=occupied.ToArray();var candidates=new List<MapPoint2D>();
             var seen=new HashSet<int>();var pending=new Queue<int>();int start=sy*columns+sx;seen.Add(start);pending.Enqueue(start);
-            var directions=new[]{new ArcadeRegionPoint(-1,0),new ArcadeRegionPoint(1,0),new ArcadeRegionPoint(0,-1),new ArcadeRegionPoint(0,1)};
+            var directions=new[]{new MapPoint2D(-1,0),new MapPoint2D(1,0),new MapPoint2D(0,-1),new MapPoint2D(0,1)};
             while(pending.Count>0)
             {
                 int current=pending.Dequeue(),cx=current%columns,cy=current/columns;
                 float px=cx*step-halfWidth,py=cy*step-halfHeight;
-                if(blockers.All(p=>(p.X-px)*(p.X-px)+(p.Y-py)*(p.Y-py)>=spacing*spacing))candidates.Add(new ArcadeRegionPoint(px,py));
+                if(blockers.All(p=>(p.X-px)*(p.X-px)+(p.Y-py)*(p.Y-py)>=spacing*spacing))candidates.Add(new MapPoint2D(px,py));
                 foreach(var direction in directions)
                 {
                     int x=cx+(int)direction.X,y=cy+(int)direction.Y,index=y*columns+x;
@@ -326,7 +327,7 @@ namespace FirepowerLoop.Arcade
     public sealed class ArcadeWeaponSpawnSchedule
     {
         /// <summary>本轮已抽取且不重复的候选点。</summary>
-        private readonly IReadOnlyList<ArcadeRegionPoint> points;
+        private readonly IReadOnlyList<MapPoint2D> points;
         /// <summary>由对局权威提供的随机源，统一生成间隔和武器权重。</summary>
         private readonly Random random;
         /// <summary>首把之后的投放间隔范围，避免两把都集中在开场。</summary>
@@ -338,7 +339,7 @@ namespace FirepowerLoop.Arcade
         public float RemainingSeconds { get; private set; }
 
         /// <summary>首次与后续间隔分别取配置范围，随机源和计时仍由原战斗权威持有。</summary>
-        internal ArcadeWeaponSpawnSchedule(IReadOnlyList<ArcadeRegionPoint> points,float firstDelayMin,float firstDelayMax,
+        internal ArcadeWeaponSpawnSchedule(IReadOnlyList<MapPoint2D> points,float firstDelayMin,float firstDelayMax,
             float delayMin,float delayMax,Random random)
         {
             this.points=points;this.delayMin=delayMin;this.delayMax=delayMax;this.random=random;
@@ -350,7 +351,7 @@ namespace FirepowerLoop.Arcade
         public int NextWeaponRoll(int totalWeight)=>random.Next(totalWeight);
 
         /// <summary>预算不足保留待刷点位；恢复空间后只补一把，并为下一把重新计时。</summary>
-        public bool TryAdvance(float seconds,bool hasCapacity,out ArcadeRegionPoint point)
+        public bool TryAdvance(float seconds,bool hasCapacity,out MapPoint2D point)
         {
             point=default;
             if(RemainingCount<=0||seconds<=0||float.IsNaN(seconds)||float.IsInfinity(seconds))return false;

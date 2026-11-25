@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FirepowerLoop.MapGeometry;
 
 namespace FirepowerLoop.Arcade
 {
@@ -113,12 +114,12 @@ namespace FirepowerLoop.Arcade
         }
 
         /// <summary>从目标点向外寻找可走地面，双端同顺序；仅在清场创建时计算。</summary>
-        public static ArcadeRegionPoint FindGround(float x,float z,float radius,float halfWidth,float halfHeight,Func<float,float,bool> blocked)
+        public static MapPoint2D FindGround(float x,float z,float radius,float halfWidth,float halfHeight,Func<float,float,bool> blocked)
         {
             bool Clear(float px,float pz)=>Math.Abs(px)<=halfWidth-radius&&Math.Abs(pz)<=halfHeight-radius&&!blocked(px,pz);
-            if(Clear(x,z))return new ArcadeRegionPoint(x,z);
+            if(Clear(x,z))return new MapPoint2D(x,z);
             for(float distance=.5f;distance<=Math.Max(halfWidth,halfHeight)*2;distance+=.5f)
-                for(int i=0;i<32;i++){float a=i*(float)Math.PI/16,px=x+(float)Math.Cos(a)*distance,pz=z+(float)Math.Sin(a)*distance;if(Clear(px,pz))return new ArcadeRegionPoint(px,pz);}
+                for(int i=0;i<32;i++){float a=i*(float)Math.PI/16,px=x+(float)Math.Cos(a)*distance,pz=z+(float)Math.Sin(a)*distance;if(Clear(px,pz))return new MapPoint2D(px,pz);}
             throw new InvalidOperationException("地图缺少奖励或传送门可用地面");
         }
         private static bool Finite(float v)=>!float.IsNaN(v)&&!float.IsInfinity(v);

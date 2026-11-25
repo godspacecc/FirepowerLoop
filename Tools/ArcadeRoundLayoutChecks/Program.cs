@@ -15,13 +15,13 @@ if(args[1]=="ArcadeBarrelLayoutChecks")
     Require(barrelField!=null,"preset barrel configuration is missing");
     foreach(var row in rows)
     {
-        var points=(IReadOnlyList<FirepowerLoop.Arcade.ArcadeRegionPoint>)barrels!.GetValue(Convert(row))!;
+        var points=(IReadOnlyList<FirepowerLoop.MapGeometry.MapPoint2D>)barrels!.GetValue(Convert(row))!;
         Require(points.Count==(row.ArenaConfigNumber==3?2:0),"barrels belong only to four Barrage maps");
     }
     Console.WriteLine("PASS Four Barrage rounds expose two immutable configured barrel positions");
     var source=rows.First(r=>r.ArenaConfigNumber==3);
     var original=(ArcadeLayoutEntryConfig[])barrelField!.GetValue(source)!;
-    var retained=(IReadOnlyList<FirepowerLoop.Arcade.ArcadeRegionPoint>)barrels!.GetValue(Convert(source))!;
+    var retained=(IReadOnlyList<FirepowerLoop.MapGeometry.MapPoint2D>)barrels!.GetValue(Convert(source))!;
     ArcadeLayoutEntryConfig Point(float x,float y){var b=new Luban.ByteBuf();b.WriteFloat(x);b.WriteFloat(y);return new ArcadeLayoutEntryConfig(new Luban.ByteBuf(b.CopyData()));}
     void Invalid(float x,float y,bool conversionReject)
     {
