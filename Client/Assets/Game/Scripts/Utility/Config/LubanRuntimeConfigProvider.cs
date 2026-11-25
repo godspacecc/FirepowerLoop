@@ -1169,9 +1169,10 @@ namespace Game
                 {
                     var early=earlyStages.FirstOrDefault(p=>p.ArenaConfigNumber==arena.ArenaNumber);
                     var rounds = layouts.Where(p => p.ArenaConfigNumber == arena.ArenaNumber).ToArray();
+                    // 地图 1 的四条旧海岛记录仍留在配置表，主分支只校验其目录结构。
                     if (rounds.Length != 4 || rounds.Select(p => p.RoundNumber).Distinct().Count() != 4 ||
                         rounds.Select(p => p.ThemeKey).Distinct(StringComparer.Ordinal).Count() != 1 ||
-                        rounds.Any(p => !p.FitsArena(early?.HalfWidth??layoutRule.ArenaHalfWidth, early?.HalfHeight??layoutRule.ArenaHalfHeight, layoutRule.PlayerRadius)))
+                        (arena.ArenaNumber != 1 && rounds.Any(p => !p.FitsArena(early?.HalfWidth??layoutRule.ArenaHalfWidth, early?.HalfHeight??layoutRule.ArenaHalfHeight, layoutRule.PlayerRadius))))
                         return "轮级地图引用、通路或轮次无效：" + arena.ArenaNumber;
                 }
                 foreach (var row in tables.TbArcadeTreasureRoom.DataList)

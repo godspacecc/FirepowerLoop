@@ -43,7 +43,6 @@ namespace Game.Tests
             Set("root", root);
             Set("contentArena", 1);
             Set("contentTemplates", Bank().transform.Find("Content"));
-            Set("islandRound", 1);
         }
 
         [TearDown] public void Cleanup()
@@ -83,7 +82,7 @@ namespace Game.Tests
             view.SetExits(new[] { -2 }, 19.5f, false);
             var marker = root.transform.Find("ArcadeRouteExit_-2");
             Assert.That(marker, Is.Not.Null, "出口仍需要指路箭头");
-            var position = ArcadeIslandLayout.GetExitPosition(1, 0, 4, 19.5f, 19.5f, .55f);
+            var position = new Vector2(0, 16.5f);
             Assert.That(marker.localPosition, Is.EqualTo(new Vector3(position.x, 0, position.y)));
             Assert.That(marker.GetComponentsInChildren<MeshRenderer>(true), Is.Empty, "不能重新带回门框和牌子");
             Assert.That(marker.GetComponentsInChildren<TextMeshPro>(true), Is.Empty);
@@ -112,7 +111,6 @@ namespace Game.Tests
         {
             Assert.That(Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
             var room = catalog.TreasureRooms.First();
-            Set("islandRound", 3);
             view.SetTreasureRoom(room, false, false, false, Array.Empty<int>());
             Assert.That(root.transform.Find("RouteGate(Clone)"), Is.Null, "清场前未发现的入口保持隐藏");
             view.SetTreasureRoom(room, false, true, true, Array.Empty<int>());
@@ -147,7 +145,6 @@ namespace Game.Tests
 
         [Test] public void EveryThemeKeepsOnlyOrdinaryExitArrows()
         {
-            Set("islandRound", 0);
             for (int arena = 1; arena <= 20; arena++)
             {
                 Set("contentArena", arena);
@@ -156,54 +153,6 @@ namespace Game.Tests
                 Assert.That(root.GetComponentsInChildren<MeshRenderer>(true), Is.Empty);
                 Assert.That(root.GetComponentsInChildren<ParticleSystem>(true), Is.Empty);
                 view.SetExits(Array.Empty<int>(), 19.5f, false);
-            }
-        }
-        [Test] public void EntryWarningWaitsForLoadedMaterialsAndResumesOnNextSnapshot()
-        {
-            Set("contentTemplates", null);
-            Assert.DoesNotThrow(() => view.SetIslandEntryWarning(new Vector2(2, 4), true));
-            Assert.That(root.transform.Find("IslandEntryWarning"), Is.Null,
-                "模板未就绪时延迟表现，不能回退到按名称查找 Shader");
-            Set("contentTemplates", Bank().transform.Find("Content"));
-            view.SetIslandEntryWarning(new Vector2(2, 4), true);
-            Assert.That(root.transform.Find("IslandEntryWarning").gameObject.activeSelf, Is.True);
-        }
-
-        [Test] public void EntryWarningPreservesLoadedShaderAndRenderSettingsWithoutMutatingTemplate()
-        {
-            var templates = UnityEngine.Object.Instantiate(Bank().transform.Find("Content").gameObject);
-            var source = new Material(Bank().transform.Find("Content/RouteGate/Threshold").GetComponent<Renderer>().sharedMaterial);
-            try
-            {
-                source.SetFloat("_Cull", 0);
-                var originalColor = source.GetColor("_BaseColor");
-                templates.transform.Find("RouteGate/ExitCue/GroundRing").GetComponent<LineRenderer>().sharedMaterial = source;
-                Set("contentTemplates", templates.transform);
-                view.SetIslandEntryWarning(new Vector2(2, 4), true);
-                var warning = root.transform.Find("IslandEntryWarning");
-                var material = warning.GetComponent<Renderer>().sharedMaterial;
-                Assert.That(material, Is.Not.SameAs(source), "预告颜色只改实例材质");
-                Assert.That(material.shader, Is.SameAs(source.shader), "依赖随资源加载的 Shader 引用");
-                Assert.That(material.GetFloat("_Cull"), Is.Zero, "保留模板渲染设置");
-                var color = material.GetColor("_BaseColor");
-                Assert.That(color.r, Is.EqualTo(1).Within(.001f));
-                Assert.That(color.g, Is.EqualTo(.72f).Within(.001f));
-                Assert.That(color.b, Is.EqualTo(.08f).Within(.001f));
-                Assert.That(color.a, Is.EqualTo(1).Within(.001f));
-                Assert.That(source.GetColor("_BaseColor"), Is.EqualTo(originalColor));
-                view.SetIslandEntryWarning(Vector2.zero, false);
-                Assert.That(warning.gameObject.activeSelf, Is.False);
-                view.SetIslandEntryWarning(new Vector2(-2, 5), true);
-                Assert.That(warning.localPosition, Is.EqualTo(new Vector3(-2, .08f, 5)));
-                Assert.That(warning.GetComponent<Renderer>().sharedMaterial, Is.SameAs(material));
-                view.End();
-                Assert.That(material == null, Is.True, "离场释放独占材质");
-                Assert.That(source != null, Is.True, "离场不能释放模板材质");
-            }
-            finally
-            {
-                UnityEngine.Object.DestroyImmediate(templates);
-                UnityEngine.Object.DestroyImmediate(source);
             }
         }
     }

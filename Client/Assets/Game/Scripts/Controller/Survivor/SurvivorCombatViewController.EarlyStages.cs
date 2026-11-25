@@ -73,8 +73,8 @@ namespace Game
         private readonly Dictionary<Collider,bool> earlyBaseWalls=new();
         private void HideEarlyStageBaseWalls()
         {
-            if(earlyStage==null||islandBaseArenaRoot==null)return;
-            foreach(var collider in islandBaseArenaRoot.GetComponentsInChildren<Collider>(true))
+            if(earlyStage==null||baseArenaRoot==null)return;
+            foreach(var collider in baseArenaRoot.GetComponentsInChildren<Collider>(true))
             {
                 if(root!=null&&collider.transform.IsChildOf(root.transform))continue;
                 if(collider.name!="NorthBoundary"&&collider.name!="SouthBoundary"&&collider.name!="EastBoundary"&&collider.name!="WestBoundary")continue;

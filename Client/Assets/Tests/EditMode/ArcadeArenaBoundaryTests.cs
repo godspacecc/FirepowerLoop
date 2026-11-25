@@ -57,11 +57,10 @@ namespace Game.Tests
         private void Start(ArcadeRoundLayoutParameters layout)
         {
             view.End(); root = new GameObject("BoundaryRegressionRuntime"); root.transform.SetParent(map.DynamicObjectRoot, false);
-            Set("root", root); Set("islandBaseArenaRoot", map.transform); Set("contentArena", layout.ArenaConfigNumber);
+            Set("root", root); Set("baseArenaRoot", map.transform); Set("contentArena", layout.ArenaConfigNumber);
             var stage = catalog.EarlyStages.FirstOrDefault(p => p.ArenaConfigNumber == layout.ArenaConfigNumber);
             Set("earlyStage", stage);
             view.ConfigureRoundBounds(stage?.HalfWidth ?? catalog.Rule.ArenaHalfWidth, stage?.HalfHeight ?? catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
-            view.SetIslandRound(layout.ArenaConfigNumber == 1 ? layout.RoundNumber : 0);
             view.SetRoundLayout(layout);
         }
         private void Start(int arena) => Start(catalog.RoundLayouts.First(p => p.ArenaConfigNumber == arena));
@@ -72,11 +71,10 @@ namespace Game.Tests
         {
             var exposed = new List<string>();
             Assert.That(catalog.RoundLayouts, Is.Not.Empty);
-            foreach (var layout in catalog.RoundLayouts)
+            foreach (var layout in catalog.RoundLayouts.Where(layout => layout.ArenaConfigNumber != 1))
             {
                 Start(layout); Assert.That(view.IsRoundLayoutReady, Is.True, layout.Id + " " + view.RoundLayoutLoadError);
-                var opening = catalog.Arenas.Single(a => a.ArenaNumber == layout.ArenaConfigNumber).Opening;
-                for (int i = 0; i < 3; i++) view.SetOpening(opening, false);
+                for (int i = 0; i < 3; i++) Invoke("ReapplyBaseArenaOverlay");
                 if (baseRenderers.Any(r => r.enabled)) exposed.Add(layout.Id);
             }
             Assert.That(exposed, Is.Empty, "全部正式轮布局都必须保持覆盖：" + string.Join(",", exposed));
@@ -88,18 +86,18 @@ namespace Game.Tests
         {
             loader.DelayEnvironment = true; Start(arena);
             Assert.That(view.IsRoundLayoutReady, Is.False);
-            view.SetOpening(default, false);
+            Invoke("ReapplyBaseArenaOverlay");
             Assert.That(baseRenderers.All(r => r.enabled), Is.True, "资源准备前保留旧底图兜底");
             loader.CompleteEnvironment(); Assert.That(view.IsRoundLayoutReady, Is.True, view.RoundLayoutLoadError);
-            view.SetOpening(default, false); AssertBaseHidden();
+            Invoke("ReapplyBaseArenaOverlay"); AssertBaseHidden();
         }
 
         [Test]
-        public void ShopRegionKeepsBaseHiddenWhenOpeningIsDisabled()
+        public void ShopRegionKeepsBaseHiddenWhenOverlayIsReapplied()
         {
             Start(5);
             view.SetSlayerMartRegion(new ArcadeSlayerMartRegionLayout(1, 8, 6, 0, 0, 0, -4, 1, new[] { new ArcadeSlayerMartPoint(2, 2) }), new[] { 1 });
-            view.SetOpening(default, false); AssertBaseHidden();
+            Invoke("ReapplyBaseArenaOverlay"); AssertBaseHidden();
             Assert.That(root.GetComponentsInChildren<Renderer>(true).Any(r => r.name == "NorthWall" && r.enabled), Is.True, "保留商店本身的正式墙体");
         }
 
@@ -121,9 +119,9 @@ namespace Game.Tests
             Start(21);
             Set("contentTemplates", AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
             view.SetTreasureRoom(null, true, false, false, Array.Empty<int>());
-            view.SetOpening(default, false); AssertBaseHidden();
+            Invoke("ReapplyBaseArenaOverlay"); AssertBaseHidden();
             view.SetTreasureRoom(null, false, false, false, Array.Empty<int>());
-            view.SetOpening(default, false); AssertBaseHidden();
+            Invoke("ReapplyBaseArenaOverlay"); AssertBaseHidden();
             Assert.That(root.GetComponentsInChildren<Renderer>(true).Any(r => r.enabled), Is.True, "本轮正式环境仍然可见");
             view.End(); view.End();
             Assert.That(baseRenderers.Select(r => r.enabled), Is.EqualTo(original), "重复释放逐项恢复原始状态");

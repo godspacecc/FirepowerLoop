@@ -85,7 +85,7 @@ namespace Game.Tests
             var oldWall=new GameObject("EastBoundary",typeof(BoxCollider));oldWall.transform.SetParent(map.transform,false);
             var oldDisabled=new GameObject("WestBoundary",typeof(BoxCollider));oldDisabled.transform.SetParent(map.transform,false);oldDisabled.GetComponent<Collider>().enabled=false;
             var ownedWall=new GameObject("EastBoundary",typeof(BoxCollider));ownedWall.transform.SetParent(root.transform,false);
-            typeof(SurvivorCombatViewController).GetField("islandBaseArenaRoot",Hidden).SetValue(view,map.transform);
+            typeof(SurvivorCombatViewController).GetField("baseArenaRoot",Hidden).SetValue(view,map.transform);
             try
             {
                 Start(22);Assert.That(oldWall.GetComponent<Collider>().enabled,Is.True,"准备期间仍保留旧场地");loader.Finish(0);loader.Finish(1);

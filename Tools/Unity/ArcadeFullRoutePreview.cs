@@ -44,17 +44,10 @@ public static class ArcadeFullRoutePreview
             var light=new GameObject("FullRoutePreviewLight",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.8f;light.cullingMask=1<<31;light.transform.rotation=Quaternion.Euler(55,-30,0);
             rt=new RenderTexture(1400,1000,24);tex=new Texture2D(1400,1000,TextureFormat.RGB24,false);camera.targetTexture=rt;
             string directory=Path.GetFullPath(Path.Combine(Application.dataPath,"../Temp/FullRoutePreview"));Directory.CreateDirectory(directory);
-            foreach(var p in catalog.RoundLayouts.Where(p=>arenaFilter==0||p.ArenaConfigNumber==arenaFilter))
+            foreach(var p in catalog.RoundLayouts.Where(p=>p.ArenaConfigNumber!=1&&(arenaFilter==0||p.ArenaConfigNumber==arenaFilter)))
             {
                 view=new SurvivorCombatViewController();var root=new GameObject("FullRoutePreview_"+p.Id);Set(view,"root",root);
                 view.ConfigureRoundBounds(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
-                if(p.ArenaConfigNumber==1)
-                {
-                    var obstacles=p.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight)).ToArray();
-                    Call(view,"CreateArenaCollision",1,19.5f,19.5f,obstacles);Call(view,"LoadContentAsync",1);
-                    view.SetIslandRound(p.RoundNumber);view.SetOpening(catalog.Arenas.Single(a=>a.ArenaNumber==1).Opening,p.RoundNumber==4);
-                    if(!view.IsIslandRoundReady)throw new InvalidOperationException(view.IslandRoundLoadError??"海岛表现尚未完成");
-                }
                 view.SetRoundLayout(p);
                 if(!view.IsRoundLayoutReady)throw new InvalidOperationException(view.RoundLayoutLoadError??"轮级表现尚未完成");
                 if(p.SpecialKind!=0||p.BossKind!=0){view.RecordRoundEnemyPosition(1,new Vector2(0,-5));view.SetEnemyContent(1,p.SpecialKind,p.BossKind,true);view.SetRoundEnemyHealth(1,70,100);}

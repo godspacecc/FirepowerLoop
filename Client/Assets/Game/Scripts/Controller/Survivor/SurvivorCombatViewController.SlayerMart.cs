@@ -45,7 +45,7 @@ namespace Game
                 }
                 var remaining=new HashSet<int>(remainingIds??Array.Empty<int>());
                 foreach(var box in slayerMartCashBoxes)box.Value.SetActive(remaining.Contains(box.Key));
-                HideIslandBaseArena();if(contentEnvironment!=null)contentEnvironment.SetActive(false);
+                HideBaseArena();if(contentEnvironment!=null)contentEnvironment.SetActive(false);
             }
             catch(Exception exception){slayerMartRegionError=exception.Message;slayerMartRegionReady=false;}
         }

@@ -44,7 +44,7 @@ public static class ArenaBoundaryAuditPreview
         var prior = SceneManager.GetActiveScene();
         var scene = EditorSceneManager.OpenScene("Assets/Game/Scenes/TaskSampleMap.unity", OpenSceneMode.Additive);
         var view = new SurvivorCombatViewController();
-        var rows = new List<string> { "layout|afterLayout|afterOpeningRelease|candidate|restored" };
+        var rows = new List<string> { "layout|afterLayout|afterOverlayReapply|candidate|restored" };
         int regressions = 0;
         try
         {
@@ -65,22 +65,20 @@ public static class ArenaBoundaryAuditPreview
             var lightObject = new GameObject("TemporaryBoundaryLight", typeof(Light));
             var light = lightObject.GetComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.3f;
             light.cullingMask = 1 << 30; lightObject.transform.rotation = Quaternion.Euler(48, -32, 0);
-            foreach (var layout in catalog.RoundLayouts)
+            foreach (var layout in catalog.RoundLayouts.Where(layout => layout.ArenaConfigNumber != 1))
             {
                 view.End();
                 var root = new GameObject("BoundaryAuditRuntime"); root.transform.SetParent(map.DynamicObjectRoot, false);
-                Set(view, "root", root); Set(view, "islandBaseArenaRoot", map.transform); Set(view, "contentArena", layout.ArenaConfigNumber);
+                Set(view, "root", root); Set(view, "baseArenaRoot", map.transform); Set(view, "contentArena", layout.ArenaConfigNumber);
                 var stage = catalog.EarlyStages.FirstOrDefault(p => p.ArenaConfigNumber == layout.ArenaConfigNumber);
                 Set(view, "earlyStage", stage);
                 view.ConfigureRoundBounds(stage?.HalfWidth ?? catalog.Rule.ArenaHalfWidth, stage?.HalfHeight ?? catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
-                view.SetIslandRound(layout.ArenaConfigNumber == 1 ? layout.RoundNumber : 0);
                 view.SetRoundLayout(layout);
                 if (!view.IsRoundLayoutReady) throw new InvalidOperationException(layout.Id + ": " + view.RoundLayoutLoadError);
                 int prepared = walls.Count(w => w.enabled);
-                var arena = catalog.Arenas.Single(a => a.ArenaNumber == layout.ArenaConfigNumber);
-                view.SetOpening(arena.Opening, false);
+                typeof(SurvivorCombatViewController).GetMethod("ReapplyBaseArenaOverlay", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(view, null);
                 int released = walls.Count(w => w.enabled);
-                if (layout.ArenaConfigNumber != 1 && released > 0) regressions++;
+                if (released > 0) regressions++;
                 if (layout.RoundNumber == 1)
                 {
                     // 角色仅作正式比例参照；不启动输入、战斗、存档或网络。

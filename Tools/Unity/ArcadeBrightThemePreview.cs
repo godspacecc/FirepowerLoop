@@ -49,13 +49,6 @@ public static class ArcadeBrightThemePreview
             {
                 view=new SurvivorCombatViewController();var root=new GameObject("FullRoutePreview_"+p.Id);Set(view,"root",root);
                 view.ConfigureRoundBounds(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
-                if(p.ArenaConfigNumber==1)
-                {
-                    var obstacles=p.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight)).ToArray();
-                    Call(view,"CreateArenaCollision",1,19.5f,19.5f,obstacles);Call(view,"LoadContentAsync",1);
-                    view.SetIslandRound(p.RoundNumber);view.SetOpening(catalog.Arenas.Single(a=>a.ArenaNumber==1).Opening,p.RoundNumber==4);
-                    if(!view.IsIslandRoundReady)throw new InvalidOperationException(view.IslandRoundLoadError??"海岛表现尚未完成");
-                }
                 view.SetRoundLayout(p);
                 if(!view.IsRoundLayoutReady)throw new InvalidOperationException(view.RoundLayoutLoadError??"轮级表现尚未完成");
                 if(p.SpecialKind!=0||p.BossKind!=0){view.RecordRoundEnemyPosition(1,new Vector2(0,-5));view.SetEnemyContent(1,p.SpecialKind,p.BossKind,true);view.SetRoundEnemyHealth(1,70,100);}

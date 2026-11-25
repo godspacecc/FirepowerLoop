@@ -62,8 +62,8 @@ namespace FirepowerLoop.Arcade
         public float ExitX { get; }
         public float ExitY { get; }
         public float ExitSpacing { get; }
-        /// <summary>海岛只显示真实存在的三条通道，其余主题保留原四向出口。</summary>
-        public int ExitCount => ArenaConfigNumber == 1 ? ArcadeIslandRegion.PassageCount : ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries.Count : ExitDirectionCount;
+        /// <summary>有固定入口的地图沿用入口坐标，其余主题保留四向出口。</summary>
+        public int ExitCount => ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries.Count : ExitDirectionCount;
         /// <summary>只按活动战斗时间换入场通道，由权威推进且不附带预警。</summary>
         public float EntrySegmentSeconds { get; }
         /// <summary>普通敌人场外起点距场地边界的米数；特殊地图为零。</summary>
@@ -78,17 +78,15 @@ namespace FirepowerLoop.Arcade
                 ? new ArcadeRegionPoint(Math.Sign(entry.X) * (halfWidth + distance), entry.Y + lane)
                 : new ArcadeRegionPoint(entry.X + lane, Math.Sign(entry.Y) * (halfHeight + distance));
         }
-        /// <summary>规则与表现共用四向落点；海岛沿用干陆地内侧的留量。</summary>
+        /// <summary>规则与表现共用入口及四向落点。</summary>
         public ArcadeRegionPoint GetExitPosition(int direction, float halfWidth, float halfHeight, float playerRadius)
-            => ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries[direction] : DirectionalExit(direction, ArenaConfigNumber == 1 ? 0 : ExitX,
-                ArenaConfigNumber == 1 ? halfHeight - 3 : ExitY,
-                halfWidth, halfHeight, playerRadius, ArenaConfigNumber == 1 ? RoundNumber : 0);
+            => ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries[direction] : DirectionalExit(direction, ExitX, ExitY,
+                halfWidth, halfHeight, playerRadius);
 
-        /// <summary>把北侧出口依次旋转到四边；海岛中心落在干陆地，外缘保留完整触发半径。</summary>
+        /// <summary>把北侧出口依次旋转到四边。</summary>
         public static ArcadeRegionPoint DirectionalExit(int direction, float northX, float northY,
-            float halfWidth, float halfHeight, float playerRadius, int islandRound = 0)
+            float halfWidth, float halfHeight, float playerRadius)
         {
-            if (islandRound > 0) return ArcadeIslandRegion.PassageExit(islandRound, direction, halfWidth, halfHeight);
             if (direction < 0 || direction >= ExitDirectionCount) throw new ArgumentOutOfRangeException(nameof(direction));
             var point = direction switch
             {
@@ -202,17 +200,10 @@ namespace FirepowerLoop.Arcade
             return points.Any(p=>Math.Abs(barrel.X-p.X)<radius*2&&Math.Abs(barrel.Y-p.Y)<radius*2) ||
                 Barrels.Count(p=>Math.Abs(barrel.X-p.X)<radius*2&&Math.Abs(barrel.Y-p.Y)<radius*2)>1;
         }
-        /// <summary>矩形场地或保留的海岛岸线内，使用膨胀阻挡判断真实行走位置。</summary>
+        /// <summary>检查矩形场地边界，并按角色半径扩张障碍以判断真实行走位置。</summary>
         public bool IsWalkable(float x,float y,float radius,float halfWidth=19.5f,float halfHeight=19.5f)
-            => IsWalkable(x,y,radius,halfWidth,halfHeight,ArenaConfigNumber==1 ? new ArcadeIslandRegion(halfWidth,halfHeight,RoundNumber) : null);
-        private bool IsWalkable(float x,float y,float radius,float halfWidth,float halfHeight,ArcadeIslandRegion region)
         {
             if(!Finite(x)||!Finite(y)||!Finite(radius)||radius<0 || Math.Abs(x)+radius>halfWidth || Math.Abs(y)+radius>halfHeight)return false;
-            if(region!=null)
-            {
-                var constrained=region.Constrain(x,y,radius);
-                if(Math.Abs(constrained.X-x)>.01f || Math.Abs(constrained.Y-y)>.01f)return false;
-            }
             return !Obstacles.Any(o=>Math.Abs(x-o.X)<o.HalfWidth+radius && Math.Abs(y-o.Y)<o.HalfHeight+radius);
         }
         /// <summary>目录加载时按两人并行直径检查出生、四向入口与所有可能出口的连通区域。</summary>
@@ -220,12 +211,11 @@ namespace FirepowerLoop.Arcade
         {
             if(!Finite(halfWidth)||!Finite(halfHeight)||!Finite(playerRadius)||halfWidth<=5||halfHeight<=5||playerRadius<=0)return false;
             float clearance=playerRadius*2;
-            var region=ArenaConfigNumber==1 ? new ArcadeIslandRegion(halfWidth,halfHeight,RoundNumber) : null;
             var targets=new List<ArcadeRegionPoint>(Entries){new ArcadeRegionPoint(SpawnX,SpawnY)};
             targets.AddRange(Enumerable.Range(0,ExitCount).Select(i=>GetExitPosition(i,halfWidth,halfHeight,playerRadius)));
             targets.AddRange(Barrels);
             targets.AddRange(WeaponSpawnPoints);
-            if(targets.Any(p=>!IsWalkable(p.X,p.Y,clearance,halfWidth,halfHeight,region)) ||
+            if(targets.Any(p=>!IsWalkable(p.X,p.Y,clearance,halfWidth,halfHeight)) ||
                 Obstacles.Any(o=>Math.Abs(o.X)+o.HalfWidth>=halfWidth||Math.Abs(o.Y)+o.HalfHeight>=halfHeight))return false;
             // 半米网格比最窄的并行通路更细；只用于装载校验，不参与每帧移动。
             const float step=.5f;
@@ -239,7 +229,7 @@ namespace FirepowerLoop.Arcade
                 foreach(var delta in directions)
                 {
                     int x=cx+(int)delta.X,y=cy+(int)delta.Y,index=y*columns+x;
-                    if(x<0||y<0||x>=columns||y>=rows||seen.Contains(index)||!IsWalkable(x*step-halfWidth,y*step-halfHeight,clearance,halfWidth,halfHeight,region))continue;
+                    if(x<0||y<0||x>=columns||y>=rows||seen.Contains(index)||!IsWalkable(x*step-halfWidth,y*step-halfHeight,clearance,halfWidth,halfHeight))continue;
                     seen.Add(index);pending.Enqueue(index);
                 }
             }

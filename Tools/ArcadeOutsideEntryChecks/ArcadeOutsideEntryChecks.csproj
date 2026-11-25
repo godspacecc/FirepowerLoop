@@ -2,6 +2,6 @@
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings></PropertyGroup>
   <ItemGroup>
     <Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeOutsideEntryRules.cs" Link="ArcadeOutsideEntryRules.cs" />
-    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeIslandRegion.cs" Link="ArcadeIslandRegion.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeRegionPoint.cs" Link="ArcadeRegionPoint.cs" />
   </ItemGroup>
 </Project>

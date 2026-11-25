@@ -40,9 +40,6 @@ namespace Game
                 if (discovered)
                 {
                     var entryPosition = new Vector2(p.EntryX, p.EntryY);
-                    if (islandRound > 0 && Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var islandCatalog, out _))
-                        entryPosition = ArcadeIslandLayout.GetLandmarkPosition(new ArcadeIslandRegion(islandCatalog.Rule.ArenaHalfWidth,
-                            islandCatalog.Rule.ArenaHalfHeight, islandRound), entryPosition, p.EntryRadius + islandCatalog.Rule.PlayerRadius);
                     var entrance=CreateContent("TreasureEntrance",new Vector3(entryPosition.x,0,entryPosition.y));
                     SetContentLabel(entrance, p.IsArmory ? (open ? "ui.arcade.armory.open" : "ui.arcade.armory.locked") : (open ? "ui.arcade.treasure.open" : "ui.arcade.treasure.locked"));
                     entrance.transform.Find("Chest").localRotation=Quaternion.Euler(0,open?35:0,0);

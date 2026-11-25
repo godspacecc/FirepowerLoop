@@ -92,7 +92,7 @@ namespace Game
                     projectileBlastTemplate=null;
                     barrelBlastTemplate=null;ClearBarrelBlasts();
                     hazardPresentation?.Dispose();hazardPresentation=null;
-                    contentEnvironmentIdentity=null; RestoreIslandBaseArena(); ReapplyBaseArenaOverlay();
+                    contentEnvironmentIdentity=null; RestoreBaseArena(); ReapplyBaseArenaOverlay();
                 }
                 ReleaseObstacleVisualLoad(state);if(ReferenceEquals(contentLoad,state))contentLoad=null;
             }
@@ -101,14 +101,14 @@ namespace Game
         /// <summary>区域身份变化才替换环境；原场地碰撞保留，宝藏房仅覆盖可见地面。</summary>
         private void SyncContentEnvironment()
         {
-            if(slayerMartRegionRoot!=null){HideIslandBaseArena();if(contentEnvironment!=null)contentEnvironment.SetActive(false);return;}
+            if(slayerMartRegionRoot!=null){HideBaseArena();if(contentEnvironment!=null)contentEnvironment.SetActive(false);return;}
             if(contentTemplates==null || root==null)return;
             if (roundLayout != null && contentArena > 1)
             {
                 if (contentEnvironment != null) contentEnvironment.SetActive(contentInRoom);
                 if (contentInRoom && contentEnvironment == null)
                     contentEnvironment = CreateContent("TreasureRoom", Vector3.zero);
-                HideIslandBaseArena();
+                HideBaseArena();
                 SyncRoundContentEnvironment();
                 return;
             }
@@ -116,9 +116,8 @@ namespace Game
             if(contentEnvironmentIdentity==name)return;
             if(contentEnvironment!=null)contentEnvironment.SetActive(false);
             DestroyObject(contentEnvironment);contentEnvironment=null;contentEnvironmentIdentity=name;
-            if(name!=null){contentEnvironment=CreateContent(name,Vector3.zero);HideIslandBaseArena();}
-            else if(island==null)RestoreIslandBaseArena();
-            if(island!=null)island.SetActive(!contentInRoom);
+            if(name!=null){contentEnvironment=CreateContent(name,Vector3.zero);HideBaseArena();}
+            else RestoreBaseArena();
             SyncRoundContentEnvironment();
         }
         private GameObject CreateContent(string name,Vector3 position)
@@ -143,7 +142,7 @@ namespace Game
             barrelBlastTemplate=null;ClearBarrelBlasts();
             DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;contentEnvironmentIdentity=null;
             ReleaseObstacleVisualLoad(contentLoad);contentLoad=null;
-            RestoreIslandBaseArena();
+            RestoreBaseArena();
             contentTreasure=null;contentInRoom=contentDiscovered=contentOpen=contentVictory=false;
             contentRemaining=contentDestinations=Array.Empty<int>();contentHazards=Array.Empty<ArcadeHazardParameters>();
         }

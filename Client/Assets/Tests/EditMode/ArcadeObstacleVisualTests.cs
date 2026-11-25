@@ -44,7 +44,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Island_HidesBaseStageRenderersWithoutDisablingCollisionOrOtherMaps()
+        public void OverlayHidesBaseStageRenderersWithoutDisablingCollisionOrOtherMaps()
         {
             var stage = new GameObject("SharedStage");
             var otherMap = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -56,7 +56,7 @@ namespace Game.Tests
                 var ground = AddStagePrimitive(stage, "Ground");
                 var decor = AddStagePrimitive(stage, "OtherDecoration");
                 SetStage(controller, stage.transform);
-                Invoke(controller, "HideIslandBaseArena");
+                Invoke(controller, "HideBaseArena");
                 Assert.That(wall.GetComponent<Renderer>().enabled, Is.False);
                 Assert.That(ground.GetComponent<Renderer>().enabled, Is.False);
                 Assert.That(wall.GetComponent<Collider>().enabled, Is.True);
@@ -68,7 +68,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Island_ReleaseRestoresOriginalVisibilityAfterRepeatedHide()
+        public void OverlayReleaseRestoresOriginalVisibilityAfterRepeatedHide()
         {
             var stage = new GameObject("SharedStage");
             var controller = new SurvivorCombatViewController();
@@ -78,32 +78,15 @@ namespace Game.Tests
                 var hidden = AddStagePrimitive(stage, "SouthBoundary").GetComponent<Renderer>();
                 hidden.enabled = false;
                 SetStage(controller, stage.transform);
-                Invoke(controller, "HideIslandBaseArena");
-                Invoke(controller, "HideIslandBaseArena");
-                controller.SetOpening(default, false);
+                Invoke(controller, "HideBaseArena");
+                Invoke(controller, "HideBaseArena");
+                Invoke(controller, "RestoreBaseArena");
                 Assert.That(visible.enabled, Is.True);
                 Assert.That(hidden.enabled, Is.False, "恢复原始状态，不能强制打开原本隐藏的物件");
-                controller.SetOpening(default, false);
+                Invoke(controller, "RestoreBaseArena");
                 Assert.That(visible.enabled, Is.True);
             }
             finally { controller.End(); UnityEngine.Object.DestroyImmediate(stage); }
-        }
-
-        [Test]
-        public void Island_OceanCoversAreaBeyondShoreWithoutColliders()
-        {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeIslandVisualSet.prefab");
-            var ocean = prefab.transform.Find("Ocean");
-            Assert.That(ocean, Is.Not.Null, "隐藏旧地板后，岛岸外应显示海面");
-            var oceanBounds = ocean.GetComponent<Renderer>().bounds;
-            var sandBounds = prefab.transform.Find("Sand").GetComponent<Renderer>().bounds;
-            Assert.That(oceanBounds.min.x, Is.LessThan(sandBounds.min.x));
-            Assert.That(oceanBounds.max.x, Is.GreaterThan(sandBounds.max.x));
-            Assert.That(oceanBounds.min.z, Is.LessThan(sandBounds.min.z));
-            Assert.That(oceanBounds.max.z, Is.GreaterThan(sandBounds.max.z));
-            Assert.That(oceanBounds.max.y, Is.LessThan(sandBounds.min.y));
-            Assert.That(prefab.GetComponentsInChildren<Collider>(true), Is.Empty);
         }
 
         private static GameObject AddStagePrimitive(GameObject stage, string name)
@@ -113,7 +96,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Content_OpeningReleaseKeepsThemeHiddenAndEndRestoresBaseVisibility()
+        public void ContentOverlayKeepsThemeHiddenAndEndRestoresBaseVisibility()
         {
             var stage = new GameObject("SharedStage");
             var root = new GameObject("ContentRuntime");
@@ -132,7 +115,7 @@ namespace Game.Tests
                 int count = root.transform.childCount;
                 Invoke(view, "SyncContentEnvironment");
                 Assert.That(root.transform.childCount, Is.EqualTo(count), "重复快照不叠加环境");
-                view.SetOpening(default, false);
+                Invoke(view, "ReapplyBaseArenaOverlay");
                 Assert.That(ground.enabled, Is.False, "无岛岸分支不能恢复被主题覆盖的旧地板");
                 Assert.That(root.GetComponentsInChildren<Collider>(true), Is.Empty);
                 view.End(); view.End();
@@ -142,7 +125,7 @@ namespace Game.Tests
         }
         private static void SetStage(SurvivorCombatViewController controller, Transform stage)
         {
-            var field = typeof(SurvivorCombatViewController).GetField("islandBaseArenaRoot", BindingFlags.Instance | BindingFlags.NonPublic);
+            var field = typeof(SurvivorCombatViewController).GetField("baseArenaRoot", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.That(field, Is.Not.Null); field.SetValue(controller, stage);
         }
         private static void Invoke(SurvivorCombatViewController controller, string method)

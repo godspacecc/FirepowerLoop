@@ -74,7 +74,6 @@ namespace Game
         /// <summary>电塔权威命中的只读反馈，不裁决伤害。</summary>
         void PlayElectricTowerHit(int hazardId, Vector2 position) { }
         /// <summary>只按权威配置显示岛岸与第四轮营火，不从视觉碰撞计算伤害。</summary>
-        void SetOpening(FirepowerLoop.Arcade.ArcadeOpeningParameters parameters, bool fireActive) { }
         /// <summary>按权威布局准备当前轮，资源就绪后才允许规则开始活动。</summary>
         void SetRoundLayout(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters layout) { }
         /// <summary>幸存者使用独立的采用环境；必须在Begin后、布局加载前配置。</summary>
@@ -110,17 +109,10 @@ namespace Game
         /// <summary>按权威年龄投影墓穴、乌鸦与蓝影，不自行推进或裁决重生。</summary>
         void SetNextStageEnemyState(int id,int kind,FirepowerLoop.Arcade.ArcadeStageEnemyState state) { }
         /// <summary>本地海岛局部地图准备；其他表现端口沿用原行为。</summary>
-        void SetIslandRound(int roundNumber) { }
-        bool IsIslandRoundReady => true;
-        bool IsIslandTreasureReady => true;
         /// <summary>区域资源就绪才开始商店时钟，旧端口不会误报已支持新区域。</summary>
         bool IsSlayerMartRegionReady => false;
         string SlayerMartRegionLoadError => null;
         void SetSlayerMartRegion(FirepowerLoop.Arcade.ArcadeSlayerMartRegionLayout layout,IReadOnlyList<int> remainingIds) { }
-        string IslandRoundLoadError => null;
-        void RetryIslandRoundLoad() { }
-        void SetIslandCampfireWarning(bool warning) { }
-        void SetIslandEntryWarning(Vector2 position, bool visible) { }
         /// <summary>只显示权威剩余箱子和护甲，命中与发奖由领域裁决。</summary>
         void SetBabylon(FirepowerLoop.Arcade.ArcadeBabylonParameters parameters, IReadOnlyList<int> remainingIds) { }
         void SetEnemyArmor(int id, Vector2 position, int health) { }
@@ -272,6 +264,9 @@ namespace Game
         private readonly List<string> staleEffectVisualKeys = new();
         private int remoteGeneration;
         private int effectSyncRevision;
+        /// <summary>通用障碍表现是否已准备完成，以及本次加载失败的原因。</summary>
+        private bool obstacleVisualReady;
+        private string obstacleVisualError;
         private int obstacleVisualGeneration;
         private ObstacleVisualLoadState obstacleVisualLoad;
         private bool hasPlayerHealthBaseline;
@@ -368,7 +363,7 @@ namespace Game
                 throw new InvalidOperationException("街机表现启动失败：敌人、投射物或掉落表现端口不可用");
 
             mapRoot = mapModel.CurrentHandle.Context.DynamicObjectRoot;
-            islandBaseArenaRoot = mapModel.CurrentHandle.Context.transform;
+            baseArenaRoot = mapModel.CurrentHandle.Context.transform;
             root = new GameObject("ArcadeCombatRuntime");
             root.transform.SetParent(mapRoot, false);
             if (!architecture.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var boundsCatalog, out var boundsError))
@@ -406,10 +401,9 @@ namespace Game
             StopFlamethrowerAudio();
             ReleaseSlayerMartRegion();
             ReleaseRoundContent();
-            ReleaseIslandEntryWarning();
             ClearPickupFeedback();
             if (root != null) root.SetActive(false);
-            ReleaseIsland();
+            RestoreBaseArena();
             ReleaseBabylon();
             ClearTreasureVisuals();
             exitCues.Clear();
@@ -456,14 +450,10 @@ namespace Game
             projectilePresentation = null;
             lootPresentation = null;
             mapRoot = null;
-            islandBaseArenaRoot = null;
+            baseArenaRoot = null;
             DestroyObject(root);
             root = null;
             // Begin 复用同一端口；退出本地轮图后，下一次联机或普通地图必须回到默认身份。
-            islandRound = 0;
-            islandCampfireWarning = false;
-            islandFireActive = false;
-            islandParameters = default;
         }
 
         public void SetHazards(IReadOnlyList<FirepowerLoop.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds)
@@ -495,9 +485,8 @@ namespace Game
             exitVisuals.Clear();
             int destinationCount = victory ? 1 : destinations.Count;
             if (destinationCount == 0) return;
-            bool fourDirections = roundLayout != null || islandRound > 0;
-            var count = islandRound > 0 ? FirepowerLoop.Arcade.ArcadeIslandRegion.PassageCount :
-                roundLayout != null ? roundLayout.ExitCount : fourDirections ? FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.ExitDirectionCount : destinationCount;
+            bool fourDirections = roundLayout != null;
+            var count = roundLayout?.ExitCount ?? destinationCount;
             bool formalExit = roundLayout != null;
             if (contentTemplates == null) { exitVisualIdentity = null; return; }
             // 正式门自带材质；旧圆柱出口也从资源引用复制，Android Host 不依赖 Shader 名称查找。
@@ -511,9 +500,6 @@ namespace Game
                 var point = roundLayout?.GetExitPosition(index, roundHalfWidth, roundHalfHeight, roundPlayerRadius);
                 var position = point.HasValue
                     ? new Vector2(point.Value.X, point.Value.Y)
-                    : islandRound > 0 && Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var exitCatalog, out _)
-                    ? ArcadeIslandLayout.GetExitPosition(islandRound, index, count, exitCatalog.Rule.ArenaHalfWidth,
-                        exitCatalog.Rule.ArenaHalfHeight, exitCatalog.Rule.PlayerRadius)
                     : new Vector2((index - (count - 1) * .5f) * 5f, halfHeight - 3f);
                 GameObject marker;
                 if (!victory)
@@ -883,7 +869,6 @@ namespace Game
         public void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill,int impactKind)
         {
             RemoveHerdEnemyFeedback(id,playDeath,impactKind);
-            islandWading?.Remove(id);
             var worldDirection = new Vector3(direction.x, 0f, direction.y);
             if (mapRoot != null) worldDirection = mapRoot.TransformDirection(worldDirection);
             RemoveNextStageEnemy(id,playDeath,worldDirection,explosive,flameKill,impactKind);
@@ -1123,7 +1108,6 @@ namespace Game
             TickElectricTowerFeedback(deltaTime);
             TickRoundFlameFeedback(deltaTime);
             TickNextStageFeedback(deltaTime);
-            islandWading?.Tick(deltaTime);
             bombBlasts?.Tick(deltaTime);
             dashPresentation?.Tick(deltaTime);
             TickExitCues(deltaTime);
@@ -1509,13 +1493,6 @@ namespace Game
             }
             obstacleVisualReady = true;
             SyncRoundContentEnvironment();
-            // 岛岸可能先完成加载；晚到的通用障碍仍须立即切换为本轮同源礁石或船壳。
-            try { if (island != null) ConfigureIsland(); }
-            catch (Exception exception)
-            {
-                obstacleVisualError = exception.Message;
-                Log.Error("[SurvivorCombatViewController] 海岛地标准备失败：" + exception.Message);
-            }
         }
 
         private static bool ValidateObstacleVisualPrefab(GameObject prefab, out string error)

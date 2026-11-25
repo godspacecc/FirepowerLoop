@@ -21,7 +21,7 @@ namespace FirepowerLoop.Arcade
         public bool Enabled => WaterSpeedRatio > 0;
         /// <summary>休整可独立于水岸启用；单位秒，零表示沿用旧短切轮。</summary>
         public bool HasRest => RoundRestSeconds > 0 && ExitRestSeconds > 0;
-        /// <summary>旧矩形浅水阈值，保留配置兼容；当前海岛减速由 ArcadeIslandRegion 的双轮廓判定。</summary>
+        /// <summary>旧海岛浅水阈值，供历史配置反序列化。</summary>
         public float WaterMinY { get; }
         public float WaterSpeedRatio { get; }
         public float CampfireX { get; }
