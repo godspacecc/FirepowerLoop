@@ -12,27 +12,12 @@ namespace Game.Tests
     public sealed class ArcadeZombieRosterTests
     {
         private Tables Load()=>new Tables(name=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",name+".bytes"))));
-        [Test] public void FirstThreeThemesUseOnlyUnarmedZombieRoster()
-        {
-            var tables=Load();
-            foreach(var arena in tables.TbArcadeArena.DataList.Where(a=>a.ArenaNumber<=3))
-            foreach(var groupId in arena.WaveGroupIds)
-            foreach(var member in tables.TbArcadeEnemyGroup.Get(groupId).Members)
-            {
-                Assert.That(member.EnemyId,Does.StartWith("enemy.arcade.zombie."));
-                var enemy=tables.TbEnemy.Get(member.EnemyId);
-                Assert.That(enemy.AttackKind,Is.EqualTo(global::EnemyAttackKind.Melee));
-                Assert.That(enemy.WeaponId,Is.EqualTo("weapon.zombie-claw"));Assert.That(enemy.ProjectileConfigId,Is.Null.Or.Empty);
-            }
-        }
-        [Test] public void LaterThemesAndOriginalArmedModelsRemainAvailable()
+        [Test] public void SharedEnemyModelsRemainAvailable()
         {
             var tables=Load();
             Assert.That(tables.TbEnemy.Get("enemy.arcade.basic").PrefabName,Is.EqualTo("ArcadeEnemyBasic"));
             Assert.That(tables.TbEnemy.Get("enemy.arcade.archer").AttackKind,Is.EqualTo(global::EnemyAttackKind.Projectile));
             Assert.That(tables.TbEnemy.Get("enemy.arcade.brute").WeaponId,Is.EqualTo("weapon.greatsword"));
-            Assert.That(tables.TbArcadeArena.DataList.Where(a=>a.ArenaNumber>=4).SelectMany(a=>a.WaveGroupIds)
-                .SelectMany(id=>tables.TbArcadeEnemyGroup.Get(id).Members).Any(m=>m.EnemyId=="enemy.arcade.archer"),Is.True);
         }
         [Test] public void RuntimeCatalogAcceptsUnarmedZombiesWithoutGuaranteedWeaponDrop()
         {

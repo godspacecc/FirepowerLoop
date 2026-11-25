@@ -1160,7 +1160,12 @@ namespace Game
             {
                 var layouts = tables.TbArcadeRoundLayout.DataList.Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig).ToArray();
                 var earlyStages=tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig).ToArray();
-                if(!earlyStages.Select(p=>p.ArenaConfigNumber).OrderBy(p=>p).SequenceEqual(new[]{5,7,10,20,21,22,23,24,25}))return "已采用场地目录缺失或重复";
+                // 主分支只保留幸存者选用的场地，场地 ID 从权威布局读取。
+                var survivorRule = tables.TbSurvivorRule.DataList.SingleOrDefault();
+                var survivorLayout = survivorRule == null ? null : tables.TbSurvivorMapLayout.GetOrDefault(survivorRule.LayoutId);
+                if (survivorLayout == null || earlyStages.Length != 1 ||
+                    earlyStages[0].ArenaConfigNumber != survivorLayout.ArenaConfigNumber)
+                    return "幸存者场地目录缺失、重复或与地图布局不一致";
                 var layoutRule = tables.TbArcadeRule.DataList.FirstOrDefault();
                 if (layoutRule == null || layouts.Length != tables.TbArcadeArena.DataList.Count * 4 ||
                     layouts.Select(p => p.Id).Distinct(StringComparer.Ordinal).Count() != layouts.Length)

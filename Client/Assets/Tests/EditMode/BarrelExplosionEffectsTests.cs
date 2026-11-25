@@ -23,9 +23,9 @@ namespace Game.Tests
         void Call(string method,params object[] args){var m=view.GetType().GetMethod(method,Hidden|BindingFlags.Public);Assert.That(m,Is.Not.Null,"桶专属表现缺失："+method);m.Invoke(view,args);}
         [SetUp] public void Setup()
         {
-            root=new GameObject("BarrelExplosionOwner");view=new SurvivorCombatViewController();Set("root",root);view.ConfigureRoundBounds(19.5f,19.5f,.55f);
+            root=new GameObject("BarrelExplosionOwner");view=new SurvivorCombatViewController();Set("root",root);view.ConfigureRoundBounds(30.5f,30.5f,.55f);
             var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
-            view.SetRoundLayout(ArcadeRoundLayoutParameters.FromConfig(tables.TbArcadeRoundLayout.DataList.First(p=>p.ArenaConfigNumber==3&&p.RoundNumber==1)));
+            view.SetRoundLayout(ArcadeRoundLayoutParameters.FromConfig(tables.TbSurvivorMapLayout.DataList.Single()));
         }
         [TearDown] public void Cleanup(){view?.End();if(root!=null)Object.DestroyImmediate(root);}
         [Test] public void FormalTemplateKeepsPurpleLayersAndOriginalGunfireMaterial()

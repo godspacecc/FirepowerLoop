@@ -80,7 +80,6 @@ namespace Game.Tests
             Assert.That(exposed, Is.Empty, "全部正式轮布局都必须保持覆盖：" + string.Join(",", exposed));
         }
 
-        [TestCase(21)]
         [TestCase(22)]
         public void ConfirmedEnvironmentTakesOverOnlyAfterAllResourcesAreReady(int arena)
         {
@@ -95,7 +94,7 @@ namespace Game.Tests
         [Test]
         public void ShopRegionKeepsBaseHiddenWhenOverlayIsReapplied()
         {
-            Start(5);
+            Start(22);
             view.SetSlayerMartRegion(new ArcadeSlayerMartRegionLayout(1, 8, 6, 0, 0, 0, -4, 1, new[] { new ArcadeSlayerMartPoint(2, 2) }), new[] { 1 });
             Invoke("ReapplyBaseArenaOverlay"); AssertBaseHidden();
             Assert.That(root.GetComponentsInChildren<Renderer>(true).Any(r => r.name == "NorthWall" && r.enabled), Is.True, "保留商店本身的正式墙体");
@@ -104,10 +103,10 @@ namespace Game.Tests
         [Test]
         public void ContentLoadFailureCannotExposeAnAlreadyReadyEnvironment()
         {
-            Start(21); AssertBaseHidden(); loader.FailContent = true;
+            Start(22); AssertBaseHidden(); loader.FailContent = true;
             LogAssert.Expect(LogType.Error, new Regex(".*前两场内容加载失败.*"));
-            Invoke("LoadContentAsync", 21);
-            Assert.That(view.IsRoundLayoutReady, Is.True, "公共效果加载失败不能撤销已准备好的码头环境");
+            Invoke("LoadContentAsync", 22);
+            Assert.That(view.IsRoundLayoutReady, Is.True, "公共效果加载失败不能撤销已准备好的农场环境");
             AssertBaseHidden();
         }
 
@@ -116,7 +115,7 @@ namespace Game.Tests
         {
             baseRenderers[0].enabled = false;
             var original = baseRenderers.Select(r => r.enabled).ToArray();
-            Start(21);
+            Start(22);
             Set("contentTemplates", AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
             view.SetTreasureRoom(null, true, false, false, Array.Empty<int>());
             Invoke("ReapplyBaseArenaOverlay"); AssertBaseHidden();

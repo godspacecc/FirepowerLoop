@@ -57,20 +57,10 @@ namespace Game.Tests
             view.SetRoundLayout(config.Layout);Assert.That(loader.Paths.All(p=>p==config.EnvironmentPrefabAddress),Is.True);loader.Finish(2);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);
             view.End();Assert.That(typeof(SurvivorCombatViewController).GetField("survivorEnvironmentAddress",Hidden).GetValue(view),Is.Null);Assert.That(loader.Released.Count,Is.EqualTo(3));
         }
-        [Test] public void DockUsesConfirmedPrefabAndReleasesItsHandleOnce()
-        {
-            Start(21);Assert.That(loader.Pending.Count,Is.EqualTo(1));loader.Finish(0);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);
-            Assert.That(root.GetComponentsInChildren<MeshRenderer>(true).Length,Is.EqualTo(7));Release();Assert.That(root.transform.childCount,Is.Zero);Assert.That(loader.Released.Count,Is.EqualTo(1));Release();Assert.That(loader.Released.Count,Is.EqualTo(1));
-        }
         [Test] public void LateCallbacksCannotRestoreReleasedMap()
         {
             Start(22);Assert.That(loader.Pending.Count,Is.EqualTo(2));Release();loader.Finish(0);loader.Finish(1);
             Assert.That(view.IsRoundLayoutReady,Is.False);Assert.That(root.transform.childCount,Is.Zero);Assert.That(loader.Released.Count,Is.EqualTo(2));
-        }
-        [Test] public void FailedResourceKeepsMapUnreadyAndSameLayoutCanRetry()
-        {
-            Start(21);Assert.That(loader.Pending.Count,Is.EqualTo(1));LogAssert.Expect(LogType.Error,new System.Text.RegularExpressions.Regex(".*已确认场地准备失败.*"));loader.Finish(0,true);Assert.That(view.IsRoundLayoutReady,Is.False);Assert.That(view.RoundLayoutLoadError,Is.Not.Null.And.Not.Empty);
-            Start(21);Assert.That(loader.Pending.Count,Is.EqualTo(2));loader.Finish(1);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);
         }
         [Test] public void ExpandedFarmHasPhysicalGroundSupportAndNoTemporaryObstacleArtRequest()
         {

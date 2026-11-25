@@ -15,11 +15,11 @@ namespace Game.Tests
         {
             var provider=new LubanRuntimeConfigProvider(Load);
             Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);
-            Assert.That(catalog.Arenas.Select(arena => arena.ArenaNumber), Is.EquivalentTo(Enumerable.Range(2, 24)));
-            Assert.That(catalog.RoundLayouts.Count, Is.EqualTo(96));
-            Assert.That(catalog.RoundLayouts.Any(layout => layout.ArenaConfigNumber == 1), Is.False);
+            Assert.That(catalog.Arenas.Select(arena => arena.ArenaNumber), Is.EquivalentTo(new[] { 22 }));
+            Assert.That(catalog.RoundLayouts.Count, Is.EqualTo(4));
+            Assert.That(catalog.RoundLayouts.All(layout => layout.ArenaConfigNumber == 22), Is.True);
             Assert.That(catalog.EnemyGroups.Any(group => group.Id.StartsWith("arcade.group.zombie.island.", StringComparison.Ordinal)), Is.False);
-            Assert.That(catalog.TreasureRooms.Select(room => room.Id), Is.EquivalentTo(new[] { "arcade.armory.second" }));
+            Assert.That(catalog.TreasureRooms, Is.Empty);
             foreach(var arena in catalog.Arenas)
             {
                 var group=catalog.RoundLayouts.Where(p=>p.ArenaConfigNumber==arena.ArenaNumber).ToArray();

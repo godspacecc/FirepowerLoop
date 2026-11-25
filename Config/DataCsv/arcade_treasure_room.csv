@@ -1,3 +1,2 @@
 ##var,Id,ArenaConfigNumber,WaveNumber,Duration,EntryX,EntryY,EntryRadius,ReturnX,ReturnY,HalfWidth,HalfHeight,SpawnX,SpawnY,ExitX,ExitY,ExitRadius,PickupRadius,ProgressPerLevel,MaxMultiplier,LifeThreshold,MaxLives,Rewards,Enabled
 ##type,string,int,int,float,float,float,float,float,float,float,float,float,float,float,float,float,float,int,int,long,int,"(array#sep=;),(ArcadeTreasureRewardConfig#sep=|)",bool
-,arcade.armory.second,2,3,60,-15,-15,1.5,-12,-15,9,7,0,-4,0,-5.5,1,0.8,1000,9,200000,9,1|Weapon|-6|0|0|0|1|arcade.drop.weapon.rapid;3|Weapon|6|0|0|0|1|arcade.drop.weapon.piercing;4|Weapon|-6|3|0|0|1|arcade.drop.weapon.rocket;5|Weapon|0|3|0|0|1|arcade.drop.weapon.grenade,true
