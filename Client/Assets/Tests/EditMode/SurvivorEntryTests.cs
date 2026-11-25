@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Game.Tests
 {
-    /// <summary>入场失败必须发生在地图及闯关状态变更之前。</summary>
+    /// <summary>入场失败时不启动幸存者局。</summary>
     public sealed class SurvivorEntryTests
     {
         private static async Task<SurvivorSceneFlowResult> Start(Game architecture, CancellationToken token)
@@ -33,23 +33,16 @@ namespace Game.Tests
             Assert.That(result.Error, Is.Not.Empty);
         }
 
-        [UnityTest] public IEnumerator MissingConfigurationLeavesExistingArcadeCheckpointUntouched()
+        [UnityTest] public IEnumerator MissingConfigurationLeavesSurvivorInactive()
         {
             var architecture = new Game();
-            var run = new ArcadeRunModel();
-            architecture.RegisterModel(run);
             architecture.RegisterModel(new SurvivorModel());
             architecture.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(() => null));
-            run.CommitSafeNode(new ArcadeRunSaveData { RunId = "preserved-arcade", RemainingLives = 3,
-                NextArenaNumber = 4, Checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 4 } });
             var task = Start(architecture, default);
             while (!task.IsCompleted) yield return null;
             var result = task.GetAwaiter().GetResult();
             Assert.That(result.Success, Is.False);
             Assert.That(result.Error, Is.Not.Empty);
-            Assert.That(run.Current.RunId, Is.EqualTo("preserved-arcade"));
-            Assert.That(run.Current.NextArenaNumber, Is.EqualTo(4));
-            Assert.That(run.Current.RemainingLives, Is.EqualTo(3));
             Assert.That(architecture.GetModel<SurvivorModel>().Snapshot.Active, Is.False);
         }
     }

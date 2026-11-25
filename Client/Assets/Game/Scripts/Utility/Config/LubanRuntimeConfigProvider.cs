@@ -1387,7 +1387,7 @@ namespace Game
             var supportIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (var row in tables.TbArcadeSupportVisual.DataList)
                 if (row == null || string.IsNullOrWhiteSpace(row.Id) || !supportIds.Add(row.Id) ||
-                    string.IsNullOrWhiteSpace(row.ProductId) || row.EquipmentSlotId != ArcadeRunDefaults.SupportSlotId ||
+                    string.IsNullOrWhiteSpace(row.ProductId) || row.EquipmentSlotId != CombatConfigIds.SupportSlotId ||
                     !IsFinite(row.VisualOffsetX) || !IsFinite(row.VisualOffsetY) || !IsFinite(row.VisualOffsetZ))
                     return "支援视觉配置无效";
 

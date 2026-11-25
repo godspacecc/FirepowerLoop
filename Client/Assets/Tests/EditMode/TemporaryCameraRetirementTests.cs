@@ -3,13 +3,12 @@ using System.Reflection;
 using System.IO;
 using System.Linq;
 using Luban;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine;
 
 namespace Game.Tests
 {
-    /// <summary>退役临时相机效果；旧局额外字段可忽略，普通射击释放闸门必须保留。</summary>
+    /// <summary>退役临时相机效果，保留正式相机模式。</summary>
     public sealed class TemporaryCameraRetirementTests
     {
         [Test]
@@ -22,14 +21,6 @@ namespace Game.Tests
             Assert.That(Enum.IsDefined(typeof(global::ArcadeDropKind), 7), Is.False);
             Assert.That(typeof(PlayerCameraSystem).GetMethod("TryBeginArcadeFirstPerson"), Is.Null);
             Assert.That(Enum.IsDefined(typeof(PlayerCameraMode), PlayerCameraMode.FirstPerson), Is.True);
-        }
-
-        [Test]
-        public void OldCheckpointIgnoresRetiredCameraAndKeepsWeapon()
-        {
-            var value = JsonConvert.DeserializeObject<ArcadeIslandRoundCheckpoint>("{\"FirstPersonRemaining\":20,\"TemporaryWeaponRemaining\":12}");
-            Assert.That(value.TemporaryWeaponRemaining, Is.EqualTo(12));
-            Assert.That(JsonConvert.SerializeObject(value), Does.Not.Contain("FirstPersonRemaining"));
         }
 
     }

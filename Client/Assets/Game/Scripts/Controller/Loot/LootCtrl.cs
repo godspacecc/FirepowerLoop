@@ -157,7 +157,7 @@ namespace Game
 
             if (!arcadeDrops.TryGetValue(runtimeId, out var view) || view == null)
             {
-                if (!committedPrefabs.TryGetValue(ArcadeRunDefaults.DropPresentationLootConfigId, out var prefab) || prefab.Prefab == null || !ValidatePrefab(prefab.Prefab, out var prefabView, out error))
+                if (!committedPrefabs.TryGetValue(CombatConfigIds.DropPresentationLootConfigId, out var prefab) || prefab.Prefab == null || !ValidatePrefab(prefab.Prefab, out var prefabView, out error))
                 {
                     error = error ?? "街机掉落 Prefab 未预加载";
                     return false;
@@ -233,7 +233,7 @@ namespace Game
         {
             var provider = this.GetUtility<IRuntimeConfigProvider>();
             string configError = null;
-            if (provider == null || !provider.TryGetLoot(ArcadeRunDefaults.DropPresentationLootConfigId, out var config, out configError))
+            if (provider == null || !provider.TryGetLoot(CombatConfigIds.DropPresentationLootConfigId, out var config, out configError))
                 return FailPrepared("街机掉落准备失败：" + (configError ?? "掉落配置不可用"));
             var prefabResult = await LoadLootPrefabAsync(config, cancellationToken);
             if (!prefabResult.Success)

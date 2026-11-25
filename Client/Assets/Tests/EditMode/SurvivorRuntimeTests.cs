@@ -236,7 +236,6 @@ namespace Game.Tests
         private Game architecture;
         private SurvivorSystem system;
         private SurvivorModel model;
-        private ArcadeRunModel arcade;
         private SurvivorConfiguration config;
         private TestView view;
         private PlayerInputCtrl input;
@@ -610,14 +609,13 @@ namespace Game.Tests
         }
         [SetUp] public void Setup()
         {
-            architecture=new Game();model=new SurvivorModel();arcade=new ArcadeRunModel();architecture.RegisterModel(model);architecture.RegisterModel(arcade);architecture.RegisterModel(new MapSceneModel());
+            architecture=new Game();model=new SurvivorModel();architecture.RegisterModel(model);architecture.RegisterModel(new MapSceneModel());
             var provider=new LubanRuntimeConfigProvider(()=>new Tables(name=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",name+".bytes")))));
             architecture.RegisterUtility<IRuntimeConfigProvider>(provider);
             Assert.That(provider.TryGetSurvivor(out config,out var error),Is.True,error);Assert.That(provider.TryGetArcadeCatalog(out var catalog,out error),Is.True,error);Assert.That(provider.TryGetEnemy(config.EnemyId,out var enemy,out error),Is.True,error);
             system=new SurvivorSystem();((ICanSetArchitecture)system).SetArchitecture(architecture);view=new TestView();input=new PlayerInputCtrl();root=Path.Combine(Path.GetTempPath(),"SurvivorRuntimeTests-"+Guid.NewGuid().ToString("N"));
             Set("config",config);Set("catalog",catalog);Set("layout",config.Layout);Set("weapon",catalog.Weapons.Single(x=>x.Id==config.WeaponId));Set("enemyConfig",enemy);Set("obstacles",Array.Empty<ArcadeObstacleDefinition>());Set("view",view);Set("input",input);Set("store",new SurvivorResultFileStore(1,root));Set("runId",123L);
             model.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);model.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");model.Active=true;model.Health=model.MaximumHealth=config.PlayerMaxHealth;
-            arcade.CommitSafeNode(new ArcadeRunSaveData{RunId="unrelated-arcade",RemainingLives=3,NextArenaNumber=1});
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();if(Directory.Exists(root))Directory.Delete(root,true);}
         /// <summary>已开局的账本不可替换时保留现场金币，恢复可写后冷却重试只提交一次。</summary>
@@ -1075,7 +1073,23 @@ namespace Game.Tests
         }
         [Test] public void DeathSavesIndependentResultAndRetryIsIdempotent()
         {
-            model.Health=0;model.Kills=2;model.Score=20;Assert.That(system.TryFinish(out var error),Is.True,error);Assert.That(system.TryFinish(out error),Is.True,error);var store=new SurvivorResultFileStore(1,root);Assert.That(store.TryRead(out var result,out error),Is.True,error);Assert.That(result.Outcome,Is.EqualTo("failed"));Assert.That(result.Kills,Is.EqualTo(2));Assert.That(Directory.GetFiles(root,"*",SearchOption.AllDirectories).Length,Is.EqualTo(1));Assert.That(arcade.Current.RunId,Is.EqualTo("unrelated-arcade"));
+            Directory.CreateDirectory(Path.Combine(root, "Saves"));
+            var legacyPath = Path.Combine(root, "Saves", "arcade-run.json");
+            var legacyBytes = new byte[] { 11, 31, 59 };
+            File.WriteAllBytes(legacyPath, legacyBytes);
+            model.Health = 0;
+            model.Kills = 2;
+            model.Score = 20;
+            Assert.That(system.TryFinish(out var error), Is.True, error);
+            Assert.That(system.TryFinish(out error), Is.True, error);
+            var store = new SurvivorResultFileStore(1, root);
+            Assert.That(store.TryRead(out var result, out error), Is.True, error);
+            Assert.That(result.Outcome, Is.EqualTo("failed"));
+            Assert.That(result.Kills, Is.EqualTo(2));
+            Assert.That(File.ReadAllBytes(legacyPath), Is.EqualTo(legacyBytes));
+            Assert.That(Directory.GetFiles(root, "*", SearchOption.AllDirectories).Length, Is.EqualTo(2));
+            Assert.That(typeof(SurvivorResultFileStore).Assembly.GetType("Game.ArcadeRunFileStore"), Is.Null,
+                "主分支不再提供旧闯关存档读写器");
         }
         [Test] public void QuitSavesAbandonedSurvivorBeforeAllowingApplicationExit()
         {
@@ -1085,11 +1099,10 @@ namespace Game.Tests
             Assert.That(model.ResultSnapshot.Outcome, Is.EqualTo("abandoned"));
             Assert.That(new SurvivorResultFileStore(1, root).TryRead(out var result, out var error), Is.True, error);
             Assert.That(result, Is.Not.Null);
-            Assert.That(arcade.Current.RunId, Is.EqualTo("unrelated-arcade"));
         }
-        [Test] public void StopReleasesOwnedViewAndPreservesArcadeRun()
+        [Test] public void StopReleasesOwnedViewWithoutWritingResult()
         {
-            Set("ownsView",true);system.Stop();system.Stop();Assert.That(view.Ends,Is.EqualTo(1));Assert.That(model.Active,Is.False);Assert.That(arcade.Current.RunId,Is.EqualTo("unrelated-arcade"));Assert.That(Directory.Exists(root),Is.False);
+            Set("ownsView",true);system.Stop();system.Stop();Assert.That(view.Ends,Is.EqualTo(1));Assert.That(model.Active,Is.False);Assert.That(Directory.Exists(root),Is.False);
         }
         /// <summary>复用真实配置及敌池，开启可控相机范围供尸潮集成检查。</summary>
         private void PrepareHordeCheck()

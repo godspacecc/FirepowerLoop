@@ -11,7 +11,7 @@ namespace Game.Tests
     /// <summary>首批完整 Slayer 的同源阶段、容错、退出与现金规则，仅此明确类范围。</summary>
     public sealed class SlayerChallengeRulesTests
     {
-        private static Type Type(string name){var t=typeof(ArcadeRunModel).Assembly.GetType("FirepowerLoop.Arcade.ArcadeSlayerChallenge"+name);Assert.That(t,Is.Not.Null,"完整Slayer同源规则尚未实现："+name);return t;}
+        private static Type Type(string name){var t=typeof(SurvivorModel).Assembly.GetType("FirepowerLoop.Arcade.ArcadeSlayerChallenge"+name);Assert.That(t,Is.Not.Null,"完整Slayer同源规则尚未实现："+name);return t;}
         private static object Config()=>Type("Configuration").GetMethod("FromTables").Invoke(null,new object[]{new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))))});
         private static object Call(string method,params object[] args)=>Type("Rules").GetMethod(method).Invoke(null,args);
         private static object Get(object state,string key)=>state.GetType().GetProperty(key).GetValue(state);

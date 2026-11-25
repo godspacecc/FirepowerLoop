@@ -1351,7 +1351,6 @@ namespace Game.Tests
             architecture.RegisterModel(new RuntimeLogModel());
             architecture.RegisterModel(new MapSceneModel());
             architecture.RegisterModel(new ResourceUpdateModel());
-            architecture.RegisterModel(new ArcadeRunModel());
             architecture.RegisterModel(new TestToolSettingsModel());
             architecture.RegisterModel(new MobileControlLayoutModel());
             architecture.RegisterUtility<IDisplayResolutionApplier>(displayApplier);

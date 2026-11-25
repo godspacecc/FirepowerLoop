@@ -65,7 +65,7 @@ namespace Game
             foreach (var config in configs)
             {
                 // 街机才需要枪械弹药；基础地图不能因全表预热隐式下载可选资源。
-                if ((context.Mode == MapPreparationMode.ArcadePlayerOnly || context.Mode == MapPreparationMode.Survivor) && string.Equals(config.Id, ArcadeRunDefaults.ProjectileConfigId, StringComparison.Ordinal))
+                if ((context.Mode == MapPreparationMode.ArcadePlayerOnly || context.Mode == MapPreparationMode.Survivor) && string.Equals(config.Id, CombatConfigIds.ProjectileConfigId, StringComparison.Ordinal))
                     candidateArcadeProjectileAddress = config.PrefabAddress;
                 if ((context.Mode == MapPreparationMode.ArcadePlayerOnly || context.Mode == MapPreparationMode.Survivor) && config.Id == "projectile.arrow.basic")
                     candidateArcadeArrowAddress = config.PrefabAddress;
@@ -111,7 +111,7 @@ namespace Game
             candidateScene = context.Scene;
             candidateMapInstanceId = context.MapInstanceId;
             if ((context.Mode == MapPreparationMode.ArcadePlayerOnly || context.Mode == MapPreparationMode.Survivor) && string.IsNullOrWhiteSpace(candidateArcadeProjectileAddress))
-                return FailPrepared($"投射物准备失败：缺少 {ArcadeRunDefaults.ProjectileConfigId}");
+                return FailPrepared($"投射物准备失败：缺少 {CombatConfigIds.ProjectileConfigId}");
             if ((context.Mode == MapPreparationMode.ArcadePlayerOnly || context.Mode == MapPreparationMode.Survivor) && string.IsNullOrWhiteSpace(candidateArcadeArrowAddress))
                 return FailPrepared("投射物准备失败：缺少 projectile.arrow.basic");
             return MapControllerResult.Ok();

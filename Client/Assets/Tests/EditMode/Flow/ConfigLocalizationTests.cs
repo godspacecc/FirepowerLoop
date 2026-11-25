@@ -163,7 +163,7 @@ namespace Game.Tests
             Assert.That(tables.TbEnemy.DataList.All(row => row.Id.StartsWith("enemy.arcade.")), Is.True);
             Assert.That(tables.TbEnemy.DataList.All(row => string.IsNullOrEmpty(row.LootConfigId) &&
                 string.IsNullOrEmpty(row.GuaranteedWeaponLootConfigId) && string.IsNullOrEmpty(row.GuaranteedAmmoLootConfigId)), Is.True);
-            var carrier = tables.TbLoot.Get(ArcadeRunDefaults.DropPresentationLootConfigId);
+            var carrier = tables.TbLoot.Get(CombatConfigIds.DropPresentationLootConfigId);
             Assert.That(carrier.ItemId, Is.EqualTo(49));
             Assert.That(carrier.PrefabName, Is.EqualTo("TestResourcePickup"));
             Assert.That(tables.TbItem.Get(49).NameKey, Is.EqualTo("item.arcade_drop.name"));
