@@ -33,8 +33,6 @@ namespace Game
         private static readonly int RangedWeaponAnimatorParameter = Animator.StringToHash("RangedWeaponActive");
         private static readonly int PistolWeaponAnimatorParameter = Animator.StringToHash("PistolWeaponActive");
         private static readonly int PistolFireAnimatorParameter = Animator.StringToHash("PistolFire");
-        private static readonly int ShotgunWeaponAnimatorParameter = Animator.StringToHash("ShotgunWeaponActive");
-        private static readonly int ShotgunFireAnimatorParameter = Animator.StringToHash("ShotgunFire");
         private static readonly int IdleAnimatorState = Animator.StringToHash("Idle");
         /// <summary>首次收到已倒地状态时采样终态，不重演加载前的死亡过程。</summary>
         private static readonly int DeathAnimatorState = Animator.StringToHash("Death");
@@ -135,8 +133,6 @@ namespace Game
         private Quaternion activeArcadeWeaponAimLocalRotation;
         // 控制器选定的当前武器姿态；切换或隐藏武器时复位为 None。
         private PlayerWeaponGripPose activeGripPose;
-        // 仅标识当前显示的霰弹枪，避免共用步枪层的其他长枪进入霰弹枪开火状态。
-        private bool activeShotgun;
         private Vector3 activeLeftHandGripLocalPosition;
         private bool activeLeftHandGrip;
         // 五角色共享动作启用时，旧的手枪/步枪上身层不得覆盖目录中的完整 Humanoid 片段。
@@ -335,7 +331,6 @@ namespace Game
                 animator.ResetTrigger(AttackAnimatorParameter);
                 animator.ResetTrigger(HitAnimatorParameter);
                 animator.ResetTrigger(PistolFireAnimatorParameter);
-                animator.ResetTrigger(ShotgunFireAnimatorParameter);
                 animator.SetBool(DeadAnimatorParameter, !alive);
                 if (alive)
                 {
@@ -397,7 +392,6 @@ namespace Game
                 HideLegacyWeaponObjects();
                 muzzleFlashEnabled = false;
                 activeGripPose = PlayerWeaponGripPose.None;
-                activeShotgun = false;
                 activeLeftHandGrip = false;
                 ApplyRequestedWeaponAim();
                 return;
@@ -406,10 +400,8 @@ namespace Game
             HideLegacyWeaponObjects();
             muzzleFlashEnabled = false;
             activeGripPose = PlayerWeaponGripPose.None;
-            activeShotgun = false;
             activeLeftHandGrip = false;
             animator?.ResetTrigger(PistolFireAnimatorParameter);
-            animator?.ResetTrigger(ShotgunFireAnimatorParameter);
             ApplyRequestedWeaponAim();
             SetBowAnimatorActive(ranged && showBow);
             ConfigureProjectileFirePoint(DefaultProjectileFirePoint);
@@ -457,7 +449,6 @@ namespace Game
             var previousArcadeWeaponVisual = activeArcadeWeaponVisual;
             activeArcadeWeaponVisual = null;
             activeGripPose = PlayerWeaponGripPose.None;
-            activeShotgun = false;
             activeLeftHandGrip = false;
             for (var index = 0; index < arcadeWeaponVisuals.Length; index++)
             {
@@ -473,7 +464,6 @@ namespace Game
                     matched = true;
                     activeArcadeWeaponVisual = binding.VisualRoot;
                     activeGripPose = gripPose;
-                    activeShotgun = visualResourceName == "ArcadeScifiShotgun";
                     activeLeftHandGrip = gripPose != PlayerWeaponGripPose.None && binding.HasLeftHandGrip;
                     activeLeftHandGripLocalPosition = binding.LeftHandGripLocalPosition;
                     activeArcadeWeaponRestLocalRotation = arcadeWeaponRestLocalRotations[index];
@@ -491,9 +481,6 @@ namespace Game
             ConfigureProjectileFirePoint(projectileFirePointLocalPosition);
 
             animator?.ResetTrigger(PistolFireAnimatorParameter);
-            // 每帧重复同步同一外观时不能清掉刚设置的开火触发；只在真正切枪时清理。
-            if (activeArcadeWeaponVisual != previousArcadeWeaponVisual)
-                animator?.ResetTrigger(ShotgunFireAnimatorParameter);
             ApplyRequestedWeaponAim();
         }
 
@@ -710,9 +697,6 @@ namespace Game
             if (activeGripPose == PlayerWeaponGripPose.Pistol && presentationAlive &&
                 rangedAimSuppressionRemainingSeconds <= 0f && animator != null)
                 animator.SetTrigger(PistolFireAnimatorParameter);
-            if (!sharedWeaponAnimationActive && activeShotgun && presentationAlive &&
-                rangedAimSuppressionRemainingSeconds <= 0f && animator != null)
-                animator.SetTrigger(ShotgunFireAnimatorParameter);
             PlayRangedFireFeedback(muzzleFlashEnabled);
         }
 
@@ -745,7 +729,7 @@ namespace Game
             muzzleFlash.Play(true);
         }
 
-        /// <summary>三种普通枪按稳定身份选择短促闪光；其余共享武器恢复原模板参数，不继承上把枪。</summary>
+        /// <summary>两种普通枪按稳定身份选择短促闪光；其余共享武器恢复原模板参数，不继承上把枪。</summary>
         private void ConfigureArcadeGunMuzzle(string weaponId)
         {
             float size = .42f, lifetime = .045f;
@@ -753,7 +737,6 @@ namespace Game
             {
                 case "arcade.weapon.basic": size = .44f; lifetime = .04f; break;
                 case "arcade.weapon.rapid": size = .30f; lifetime = .025f; break;
-                case "arcade.weapon.spread": size = .70f; lifetime = .055f; break;
             }
             gunMuzzleParticles ??= muzzleFlash.GetComponentsInChildren<ParticleSystem>(true);
             foreach (var particles in gunMuzzleParticles)
@@ -825,9 +808,7 @@ namespace Game
             if (rangedAimSuppressionRemainingSeconds > 0f || !presentationAlive) return;
             var rifleGrip = activeGripPose == PlayerWeaponGripPose.Rifle &&
                             animator.layerCount > RifleUpperBodyLayerIndex &&
-                            (animator.GetCurrentAnimatorStateInfo(RifleUpperBodyLayerIndex).IsName("Rifle Aim") ||
-                             activeShotgun && animator.GetCurrentAnimatorStateInfo(RifleUpperBodyLayerIndex)
-                                 .IsName("Shotgun Fire"));
+                            animator.GetCurrentAnimatorStateInfo(RifleUpperBodyLayerIndex).IsName("Rifle Aim");
             var pistolGrip = activeGripPose == PlayerWeaponGripPose.Pistol &&
                              animator.layerCount > PistolUpperBodyLayerIndex &&
                              (animator.GetCurrentAnimatorStateInfo(PistolUpperBodyLayerIndex).IsName("Pistol Aim") ||
@@ -917,7 +898,7 @@ namespace Game
         }
 
         private bool IsWeaponAimState(AnimatorStateInfo state) => activeGripPose == PlayerWeaponGripPose.Rifle
-            ? state.IsName("Rifle Aim") || activeShotgun && state.IsName("Shotgun Fire")
+            ? state.IsName("Rifle Aim")
             : state.IsName("Pistol Aim") || state.IsName("Pistol Fire");
 
         private void CaptureArcadeWeaponRestRotations()
@@ -1005,7 +986,6 @@ namespace Game
                     rangedAimSuppressionRemainingSeconds = HurtAimSuppressionSeconds;
                     UpdateWeaponAimAnimator(false);
                     animator.ResetTrigger(PistolFireAnimatorParameter);
-                    animator.ResetTrigger(ShotgunFireAnimatorParameter);
                     animator.ResetTrigger(AttackAnimatorParameter);
                     animator.SetTrigger(HitAnimatorParameter);
                 }
@@ -1320,7 +1300,6 @@ namespace Game
             if (active && animator != null)
             {
                 animator.ResetTrigger(PistolFireAnimatorParameter);
-                animator.ResetTrigger(ShotgunFireAnimatorParameter);
                 projectileBodyRecoilEndTime = 0f;
                 projectileRecoilRemainingSeconds = 0f;
             }
@@ -1335,7 +1314,6 @@ namespace Game
                     active && activeGripPose == PlayerWeaponGripPose.Rifle);
                 animator.SetBool(PistolWeaponAnimatorParameter,
                     active && activeGripPose == PlayerWeaponGripPose.Pistol);
-                animator.SetBool(ShotgunWeaponAnimatorParameter, active && activeShotgun);
             }
         }
 

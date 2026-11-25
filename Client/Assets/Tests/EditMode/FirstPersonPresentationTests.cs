@@ -43,7 +43,6 @@ namespace Game.Tests
         [TestCase("arcade.weapon.basic")]
         [TestCase("arcade.weapon.rapid")]
         [TestCase("arcade.weapon.piercing")]
-        [TestCase("arcade.weapon.spread")]
         [TestCase("arcade.weapon.rocket")]
         public void IdleGripStaysInsideFirstPersonViewport(string weaponId)
         {

@@ -17844,14 +17844,6 @@ MonoBehaviour:
     handLocalPosition: {x: 0.28, y: -0.78, z: 0.11}
     handLocalEulerAngles: {x: 293.17, y: 239.92, z: 131.92}
     handLocalScale: 0.7904745
-  - resourceName: ArcadeScifiShotgun
-    handLocalPosition: {x: 0, y: -0.04, z: -0.05}
-    handLocalEulerAngles: {x: 66.83, y: 59.92, z: 228.08}
-    handLocalScale: 0.857141
-  - resourceName: ArcadeScifiPlasmaRifle
-    handLocalPosition: {x: 0, y: -0.04, z: -0.06}
-    handLocalEulerAngles: {x: 66.83, y: 59.92, z: 228.08}
-    handLocalScale: 0.7714269
   damageNumberEmitter: {fileID: 4125789403315886344}
   dockSeaEntryClip: {fileID: 0}
   dockSeaEntryRippleMaterial: {fileID: 0}

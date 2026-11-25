@@ -448,8 +448,7 @@ namespace Game.Tests
                     foreach (var id in new[]
                              {
                                  "arcade.weapon.basic", "arcade.weapon.rapid", "arcade.weapon.piercing",
-                                 "arcade.weapon.grenade", "arcade.weapon.rocket", "arcade.weapon.spread",
-                                 "arcade.weapon.raygun"
+                                 "arcade.weapon.grenade", "arcade.weapon.rocket",
                              })
                     {
                         var entry = presenter.Catalog.Find(id);
@@ -499,7 +498,6 @@ namespace Game.Tests
                     foreach (var id in new[]
                              {
                                  "arcade.weapon.basic", "arcade.weapon.rapid", "arcade.weapon.piercing",
-                                 "arcade.weapon.spread", "arcade.weapon.raygun"
                              })
                     {
                         var entry = presenter.Catalog.Find(id);
@@ -1007,8 +1005,8 @@ namespace Game.Tests
                     .FindProperty("characterWeaponCatalog").objectReferenceValue;
                 var rifle = Enumerable.Range(0, catalog.Count)
                     .First(i => catalog.Get(i).Id == "arcade.weapon.rapid") + 1;
-                var spread = Enumerable.Range(0, catalog.Count)
-                    .First(i => catalog.Get(i).Id == "arcade.weapon.spread") + 1;
+                var piercing = Enumerable.Range(0, catalog.Count)
+                    .First(i => catalog.Get(i).Id == "arcade.weapon.piercing") + 1;
                 var bow = Enumerable.Range(0, catalog.Count)
                     .First(i => catalog.Get(i).Id == "weapon.bow") + 1;
                 InvokePrivate(view, "SelectEquipment", rifle);
@@ -1023,7 +1021,7 @@ namespace Game.Tests
                 Assert.That(GetPrivate<CharacterAnimationDefinition>(view, "selectedDefinition"), Is.SameAs(action));
                 Assert.That(GetPrivate<float>(view, "clipTimeSeconds"), Is.EqualTo(seconds).Within(0.001f));
                 Assert.That(GetPrivate<bool>(view, "playing"), Is.False);
-                InvokePrivate(view, "SelectEquipment", spread);
+                InvokePrivate(view, "SelectEquipment", piercing);
                 Assert.That(GetPrivate<CharacterAnimationDefinition>(view, "selectedDefinition"), Is.SameAs(action));
                 Assert.That(GetPrivate<float>(view, "clipTimeSeconds"), Is.EqualTo(seconds).Within(0.001f));
                 InvokePrivate(view, "SelectEquipment", bow);

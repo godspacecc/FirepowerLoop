@@ -297,9 +297,7 @@ namespace Game
         internal static bool UsesRifleAimPose(string visualResourceName) =>
             visualResourceName == "ArcadeRifle" ||
             visualResourceName == "ArcadeFlamethrower" ||
-            visualResourceName == "ArcadePiercingGun" ||
-            visualResourceName == "ArcadeScifiShotgun" ||
-            visualResourceName == "ArcadeScifiPlasmaRifle";
+            visualResourceName == "ArcadePiercingGun";
 
         /// <summary>手动采样仅在兼容片段上约束副手；换弹与受击保留原动画的放手动作。</summary>
         internal static bool AllowsOffhandGrip(string visualResourceName, string animationName)

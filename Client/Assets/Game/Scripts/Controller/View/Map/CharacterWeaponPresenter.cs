@@ -736,7 +736,6 @@ namespace Game
             {
                 case "arcade.weapon.basic": gunKickDistance = .035f; gunKickDurationSeconds = .12f; break;
                 case "arcade.weapon.rapid": gunKickDistance = .022f; gunKickDurationSeconds = .07f; break;
-                case "arcade.weapon.spread": gunKickDistance = .075f; gunKickDurationSeconds = .19f; break;
                 default: gunKickRemainingSeconds = 0f; return;
             }
             gunKickRemainingSeconds = gunKickDurationSeconds;

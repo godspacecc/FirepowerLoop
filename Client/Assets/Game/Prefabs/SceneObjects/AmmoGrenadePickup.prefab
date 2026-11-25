@@ -329,9 +329,6 @@ MonoBehaviour:
   - prefabAddress: Prefabs/SceneObjects/ArcadeRifle
     localPosition: {x: 0, y: 0.12, z: 0}
     localEulerAngles: {x: 0, y: 0, z: 90}
-  - prefabAddress: Prefabs/SceneObjects/ArcadeScifiShotgun
-    localPosition: {x: 0, y: 0.06, z: 0}
-    localEulerAngles: {x: 0, y: 0, z: 90}
   - prefabAddress: Prefabs/SceneObjects/ArcadePiercingGun
     localPosition: {x: 0, y: 0.1, z: 0}
     localEulerAngles: {x: 0, y: 0, z: 90}
@@ -341,9 +338,6 @@ MonoBehaviour:
   - prefabAddress: Prefabs/SceneObjects/ArcadeGrenade
     localPosition: {x: 0, y: 0.3, z: 0}
     localEulerAngles: {x: 90, y: 0, z: 0}
-  - prefabAddress: Prefabs/SceneObjects/ArcadeScifiPlasmaRifle
-    localPosition: {x: 0, y: 0.11, z: 0}
-    localEulerAngles: {x: 0, y: 0, z: 90}
   - prefabAddress: Prefabs/SceneObjects/ArcadeDropCoin
     localPosition: {x: 0, y: 0.07, z: 0}
     localEulerAngles: {x: 90, y: 0, z: 0}
@@ -359,11 +353,9 @@ MonoBehaviour:
       type: 3}
   - visualAddresses:
     - Prefabs/SceneObjects/ArcadeRifle
-    - Prefabs/SceneObjects/ArcadeScifiShotgun
     - Prefabs/SceneObjects/ArcadePiercingGun
     - Prefabs/SceneObjects/ArcadePanzerschreck
     - Prefabs/SceneObjects/ArcadeGrenade
-    - Prefabs/SceneObjects/ArcadeScifiPlasmaRifle
     - Prefabs/SceneObjects/ArcadeDropShortSword
     - Prefabs/SceneObjects/ArcadeDropKnife
     - Prefabs/SceneObjects/ArcadeDropGreatsword

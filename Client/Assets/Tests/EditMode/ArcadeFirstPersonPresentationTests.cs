@@ -12,10 +12,6 @@ namespace Game.Tests
         public void RifleArms_PointWeaponTowardCenterWithoutChangingSourceOrCollision() =>
             AssertWeaponAim("arcade.weapon.rapid");
 
-        [Test]
-        public void ShotgunArms_PointWeaponTowardCenterWithoutChangingSourceOrCollision() =>
-            AssertWeaponAim("arcade.weapon.spread");
-
         private void AssertWeaponAim(string weaponId)
         {
             var player = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(

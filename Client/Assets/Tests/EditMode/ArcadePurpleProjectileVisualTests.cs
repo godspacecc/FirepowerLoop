@@ -8,7 +8,6 @@ namespace Game.Tests
     public sealed class ArcadePurpleProjectileVisualTests
     {
         [Test] public void PurpleRocketTailUsesWorldScaleAndRestoresOnReuse()=>Check("ArcadePanzerschreckRocket",.8f);
-        [Test] public void PurpleRayTailUsesWorldScaleAndRestoresOnReuse()=>Check("ArcadeRaygunBolt",.45f);
         private static void Check(string visual,float length)
         {
             var go=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Combat/GrayboxArrow.prefab"));

@@ -107,9 +107,13 @@ namespace Game
         {
             visualResourceName=ArcadeWeaponPowerVisual.Split(visualResourceName,out var powerLevel);
             ApplyPowerColor(hostile?0:powerLevel);
-            bool rocket=visualResourceName=="ArcadePanzerschreckRocket",ray=visualResourceName=="ArcadeRaygunBolt";
-            purpleTailLength=rocket?.8f:.45f;
-            if(purpleWeaponTail!=null){purpleWeaponTail.enabled=!hostile&&powerLevel>=2&&(rocket||ray);purpleWeaponTail.startWidth=rocket?.07f:.05f;}
+            bool rocket = visualResourceName == "ArcadePanzerschreckRocket";
+            purpleTailLength = .8f;
+            if (purpleWeaponTail != null)
+            {
+                purpleWeaponTail.enabled = !hostile && powerLevel >= 2 && rocket;
+                purpleWeaponTail.startWidth = .07f;
+            }
             if (originalVisualScales == null)
             {
                 originalVisualScales = new Vector3[arcadeVisuals.Length];
@@ -152,12 +156,11 @@ namespace Game
             if (defaultArcadeRenderer != null) defaultArcadeRenderer.enabled = !matched;
         }
 
-        /// <summary>三种普通枪的视觉变体共用短弹载体；弓箭、敌弹和特殊模型仍使用既有载体。</summary>
+        /// <summary>两种普通枪的视觉变体共用短弹载体；弓箭、敌弹和特殊模型仍使用既有载体。</summary>
         internal static bool UsesOrdinaryArcadeBullet(string visualResourceName)
         {
             visualResourceName=ArcadeWeaponPowerVisual.Split(visualResourceName,out _);
-            return visualResourceName == "ArcadeBulletBasic" || visualResourceName == "ArcadeBulletRapid" ||
-                   visualResourceName == "ArcadeBulletSpread";
+            return visualResourceName == "ArcadeBulletBasic" || visualResourceName == "ArcadeBulletRapid";
         }
 
         /// <summary>保留原弹体形状，只改本实例的强化色；敌弹和普通弹恢复缓存，避免对象池串色。</summary>

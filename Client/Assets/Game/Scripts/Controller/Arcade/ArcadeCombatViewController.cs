@@ -309,11 +309,9 @@ namespace Game
             {
                 case "arcade.weapon.basic": return "ArcadeFireBasic";
                 case "arcade.weapon.rapid": return "ArcadeFireRapid";
-                case "arcade.weapon.spread": return "ArcadeFireSpread";
                 case "arcade.weapon.piercing": return "ArcadeFirePiercing";
                 case "arcade.weapon.rocket":
                 case "arcade.weapon.grenade": return "ArcadeFireLauncher";
-                case "arcade.weapon.raygun": return "ArcadeFireRaygun";
                 default: return null;
             }
         }
@@ -324,7 +322,6 @@ namespace Game
             switch (weaponId)
             {
                 case "arcade.weapon.rapid": return elapsed >= 0.18f;
-                case "arcade.weapon.raygun": return elapsed >= 0.25f;
                 default: return true;
             }
         }

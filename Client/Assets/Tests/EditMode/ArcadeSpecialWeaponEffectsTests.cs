@@ -36,34 +36,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void RaygunUsesIndependentBoltAndPoolReuseRestoresOtherVisuals()
-        {
-            var provider = new LubanRuntimeConfigProvider(() => new Tables(n => new ByteBuf(File.ReadAllBytes("Assets/Game/Config/" + n + ".bytes"))));
-            Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
-            var weapon = catalog.Weapons.Single(w => w.Id == "arcade.weapon.raygun");
-            Assert.That(weapon.ProjectileVisualResourceName, Is.EqualTo("ArcadeRaygunBolt"));
-            var go = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Combat/GrayboxArrow.prefab"));
-            try
-            {
-                var view = go.GetComponent<ProjectileView>();
-                Assert.That(view.Validate(out error), Is.True, error);
-                view.SetArcadePresentation(weapon.ProjectileVisualResourceName, false);
-                var bolt = go.transform.Find("ArcadeRaygunBolt");
-                Assert.That(bolt, Is.Not.Null); Assert.That(bolt.gameObject.activeSelf, Is.True);
-                Assert.That(bolt.GetComponentsInChildren<Renderer>().All(r => r.sharedMaterial.shader.name.Contains("Universal Render Pipeline")), Is.True);
-                view.SetArcadePresentation("ArcadePiercingRay", false);
-                Assert.That(bolt.gameObject.activeSelf, Is.False);
-                var piercing = go.transform.Find("ArcadePiercingRay");
-                Assert.That(piercing, Is.Not.Null);
-                Assert.That(piercing.gameObject.activeSelf, Is.True, "复用须选中正式穿透视觉根");
-                Assert.That(piercing.GetComponentsInChildren<Renderer>(), Is.Not.Empty);
-                view.SetArcadePresentation(weapon.ProjectileVisualResourceName, true);
-                Assert.That(bolt.gameObject.activeSelf, Is.False, "敌弹复用不能继承玩家能量弹");
-            }
-            finally { Object.DestroyImmediate(go); }
-        }
-
-        [Test]
         public void ExplosionsRemainVisibleDuringAudioCooldownAndReuseBoundedMapPool()
         {
             var kit = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab");

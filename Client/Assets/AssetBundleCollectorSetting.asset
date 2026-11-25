@@ -361,24 +361,8 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeRaygunWeaponShared.prefab
-        CollectorGUID: 1430f05217da3584bb709179088e4102
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeRocketWeaponShared.prefab
         CollectorGUID: 143c2dbb0cbf9144d9fb4ed5b969c6e4
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeSpreadWeaponShared.prefab
-        CollectorGUID: 1a13e5f3d718a4f4a96b2d91468bdbe3
         CollectorType: 0
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
@@ -723,22 +707,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeScifiPlasmaRifle.prefab
-        CollectorGUID: 0255fa85e4dc9664cbdde21690c86346
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeScifiShotgun.prefab
-        CollectorGUID: a0bc55a8491185843be8e484007f21db
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeSentryTurret.prefab
         CollectorGUID: 1e8ed2391d092cf4a9f5a47dffc1899d
         CollectorType: 0
@@ -991,22 +959,6 @@ MonoBehaviour:
         UserData:
       - CollectPath: Assets/Game/Audio/Sound/ArcadeFireRapid.wav
         CollectorGUID: a33adc74b86dfbc49adc9b3c067e22fe
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Audio/Sound/ArcadeFireRaygun.wav
-        CollectorGUID: 3383a6f9f2e500946980c41d0e7ea049
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Audio/Sound/ArcadeFireSpread.wav
-        CollectorGUID: 4d001909c011afd45993f4ddc0ed5448
         CollectorType: 0
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately

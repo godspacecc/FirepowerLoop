@@ -142,7 +142,7 @@ namespace Game.Tests
         {
             var method = typeof(ResourcePickupView).GetMethod("FitArcadeVisual");
             Assert.That(method, Is.Not.Null);
-            foreach (string name in new[] { "ArcadeDropBomb", "ArcadeDropDash", "ArcadeRifle", "ArcadeScifiShotgun", "ArcadePiercingGun", "ArcadePanzerschreck", "ArcadeGrenade", "ArcadeScifiPlasmaRifle" })
+            foreach (string name in new[] { "ArcadeDropBomb", "ArcadeDropDash", "ArcadeRifle", "ArcadePiercingGun", "ArcadePanzerschreck", "ArcadeGrenade" })
             {
                 var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/TestResourcePickup.prefab"), root.transform);
                 try

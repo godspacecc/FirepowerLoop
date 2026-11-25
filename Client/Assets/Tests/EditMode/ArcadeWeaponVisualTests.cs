@@ -18,12 +18,11 @@ public sealed class ArcadeWeaponVisualTests
     [Test]
     public void FormalWeaponAssetsExistWithDedicatedMaterials()
     {
-        foreach (var name in new[] { "ArcadePistol", "ArcadeRifle", "ArcadeScifiShotgun", "ArcadeScifiPlasmaRifle", "ArcadePiercingGun", "ArcadeGrenade", "ArcadePiercingRay", "ArcadePanzerschreck", "ArcadePanzerschreckRocket" })
+        foreach (var name in new[] { "ArcadePistol", "ArcadeRifle", "ArcadePiercingGun", "ArcadeGrenade", "ArcadePiercingRay", "ArcadePanzerschreck", "ArcadePanzerschreckRocket" })
             Assert.That(AssetDatabase.LoadAssetAtPath<GameObject>($"{WeaponFolder}/{name}.fbx"), Is.Not.Null, name);
 
-        foreach (var name in new[] { "ArcadePistol", "ArcadeRifle", "ArcadeScifiShotgun", "ArcadeScifiPlasmaRiflePt1", "ArcadeScifiPlasmaRiflePt2", "ArcadePiercing", "ArcadeGrenade", "ArcadePanzerschreck", "ArcadePanzerschreckRocket" })
+        foreach (var name in new[] { "ArcadePistol", "ArcadeRifle", "ArcadePiercing", "ArcadeGrenade", "ArcadePanzerschreck", "ArcadePanzerschreckRocket" })
             Assert.That(AssetDatabase.LoadAssetAtPath<Material>($"{WeaponFolder}/{name}.mat"), Is.Not.Null, name);
-        Assert.That(AssetDatabase.LoadAssetAtPath<Material>($"{WeaponFolder}/ArcadeScifiShotgunScope.mat"), Is.Not.Null);
     }
 
     [Test]
@@ -37,8 +36,6 @@ public sealed class ArcadeWeaponVisualTests
             Assert.That(view, Is.Not.Null);
             AssertWeapon(view, instance.transform, "ArcadePistol", "ArcadeBasicWeapon");
             AssertWeapon(view, instance.transform, "ArcadeRifle", "ArcadeRapidWeapon");
-            AssertWeapon(view, instance.transform, "ArcadeScifiShotgun", "ArcadeSpreadWeapon");
-            AssertWeapon(view, instance.transform, "ArcadeScifiPlasmaRifle", "ArcadeRaygunWeapon");
             AssertWeapon(view, instance.transform, "ArcadePiercingGun", "ArcadePiercingWeapon");
             AssertWeapon(view, instance.transform, "ArcadePanzerschreck", "ArcadeRocketWeapon");
             AssertWeapon(view, instance.transform, "ArcadeGrenade", "ArcadeGrenadeWeapon");
@@ -192,7 +189,7 @@ public sealed class ArcadeWeaponVisualTests
     {
         foreach (var name in new[]
                  {
-                     "ArcadeRifle", "ArcadePiercingGun", "ArcadeScifiShotgun", "ArcadeScifiPlasmaRifle"
+                     "ArcadeRifle", "ArcadePiercingGun"
                  })
             Assert.That(PlayerViewCtrl.UsesRifleAimPose(name), Is.True, name);
         foreach (var name in new[] { "ArcadePistol", "ArcadeGrenade", "ArcadePanzerschreck", null })
@@ -275,82 +272,10 @@ public sealed class ArcadeWeaponVisualTests
     }
 
     [Test]
-    public void ShotgunFireReturnsToAimAndReleasesPoseWhenSwitchingWeapons()
-    {
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
-        var instance = Object.Instantiate(prefab);
-        try
-        {
-            var view = instance.GetComponent<PlayerView>();
-            var animator = view.Animator;
-            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-            PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, "ArcadeScifiShotgun", true, Vector3.zero);
-            animator.Update(0.2f);
-            animator.Update(0.2f);
-            Assert.That(animator.GetCurrentAnimatorStateInfo(1).IsName("Rifle Aim"), Is.True);
-
-            view.PlayProjectileFireFeedback();
-            for (var frame = 0; frame < 3; frame++) animator.Update(0.02f);
-            Assert.That(animator.GetCurrentAnimatorStateInfo(1).IsName("Shotgun Fire"), Is.True,
-                "霰弹枪开火应进入专属上身状态");
-            var rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-            var visual = Find(instance.transform, "ArcadeSpreadWeapon");
-            for (var frame = 0; frame < 20; frame++)
-            {
-                animator.Update(0.02f);
-                var animatedHandPosition = rightHand.position;
-                view.ApplyWeaponGripPose();
-                Assert.That(Vector3.Distance(rightHand.position, animatedHandPosition), Is.LessThan(0.001f),
-                    $"开火帧 {frame} 主手应由原动画决定");
-                Assert.That(Vector3.Angle(instance.transform.forward, visual.forward), Is.LessThan(8f),
-                    $"开火帧 {frame} 枪口不再朝前");
-            }
-            animator.Update(0.1f);
-            Assert.That(animator.GetCurrentAnimatorStateInfo(1).IsName("Rifle Aim"), Is.True,
-                "开火结束后应回到持枪待机");
-
-            view.PlayProjectileFireFeedback();
-            PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, "ArcadeRifle", true, Vector3.zero);
-            animator.Update(0.1f);
-            Assert.That(animator.GetCurrentAnimatorStateInfo(1).IsName("Shotgun Fire"), Is.False,
-                "切枪不能把待触发的霰弹枪动作带给另一把枪");
-        }
-        finally
-        {
-            Object.DestroyImmediate(instance);
-        }
-    }
-
-    [Test]
-    public void ShotgunAimPreservesAnimatedMainHandPose()
-    {
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
-        var instance = Object.Instantiate(prefab);
-        try
-        {
-            var view = instance.GetComponent<PlayerView>();
-            var animator = view.Animator;
-            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-            PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, "ArcadeScifiShotgun", true, Vector3.zero);
-            animator.Update(0.2f);
-            animator.Update(0.2f);
-            var rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-            var animatedHandPosition = rightHand.position;
-            view.ApplyWeaponGripPose();
-            Assert.That(Vector3.Distance(rightHand.position, animatedHandPosition), Is.LessThan(0.001f),
-                "霰弹枪主手应由原动画决定，不被通用枪口校准拉到固定位置");
-        }
-        finally
-        {
-            Object.DestroyImmediate(instance);
-        }
-    }
-
-    [Test]
     public void LongGunAimPreservesAnimatedMainHandPose()
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
-        foreach (var weapon in new[] { "ArcadeRifle", "ArcadePiercingGun", "ArcadeScifiPlasmaRifle" })
+        foreach (var weapon in new[] { "ArcadeRifle", "ArcadePiercingGun" })
         {
             var instance = Object.Instantiate(prefab);
             try
@@ -389,8 +314,6 @@ public sealed class ArcadeWeaponVisualTests
                  {
                      (resource: "ArcadeRifle", visual: "ArcadeRapidWeapon"),
                      (resource: "ArcadePiercingGun", visual: "ArcadePiercingWeapon"),
-                     (resource: "ArcadeScifiShotgun", visual: "ArcadeSpreadWeapon"),
-                     (resource: "ArcadeScifiPlasmaRifle", visual: "ArcadeRaygunWeapon")
                  })
         {
             var instance = Object.Instantiate(prefab);
@@ -416,7 +339,7 @@ public sealed class ArcadeWeaponVisualTests
                 for (var repeat = 0; repeat < 3; repeat++)
                 {
                     sample.Invoke(gallery, null);
-                    var expectedState = pair.resource == "ArcadeScifiShotgun" ? "Shotgun Fire" : "Rifle Aim";
+                    const string expectedState = "Rifle Aim";
                     Assert.That(animator.GetCurrentAnimatorStateInfo(1).IsName(expectedState), Is.True,
                         pair.resource);
                     Assert.That(Vector3.Angle(instance.transform.forward, weapon.forward), Is.LessThan(10f),
@@ -651,7 +574,7 @@ public sealed class ArcadeWeaponVisualTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
         foreach (var weaponName in new[]
                  {
-                     "ArcadeRifle", "ArcadePiercingGun", "ArcadeScifiShotgun", "ArcadeScifiPlasmaRifle"
+                     "ArcadeRifle", "ArcadePiercingGun"
                  })
         {
             var instance = Object.Instantiate(prefab);
@@ -728,15 +651,11 @@ public sealed class ArcadeWeaponVisualTests
         var grenade = catalog.Weapons.Single(weapon => weapon.Id == "arcade.weapon.grenade");
         Assert.That(grenade.ProjectileVisualResourceName, Is.EqualTo("ArcadeGrenade"));
         Assert.That(grenade.MuzzleFlash, Is.False);
-        var spread = catalog.Weapons.Single(weapon => weapon.Id == "arcade.weapon.spread");
-        Assert.That(spread.HeldVisualResourceName, Is.EqualTo("ArcadeScifiShotgun"));
-        Assert.That(spread.MuzzleFlash, Is.True);
+        Assert.That(catalog.Weapons.Any(weapon => weapon.Id == "arcade.weapon.spread" ||
+            weapon.Id == "arcade.weapon.raygun"), Is.False);
         var rocket = catalog.Weapons.Single(weapon => weapon.Id == "arcade.weapon.rocket");
         Assert.That(rocket.HeldVisualResourceName, Is.EqualTo("ArcadePanzerschreck"));
         Assert.That(rocket.ProjectileVisualResourceName, Is.EqualTo("ArcadePanzerschreckRocket"));
-        var raygun = catalog.Weapons.Single(weapon => weapon.Id == "arcade.weapon.raygun");
-        Assert.That(raygun.HeldVisualResourceName, Is.EqualTo("ArcadeScifiPlasmaRifle"));
-        Assert.That(raygun.MuzzleFlash, Is.True);
     }
 
     [Test]
@@ -751,11 +670,9 @@ public sealed class ArcadeWeaponVisualTests
             ["ArcadePistol"] = "ArcadeBasicWeapon",
             ["ArcadeRifle"] = "ArcadeRapidWeapon",
             ["ArcadeFlamethrower"] = "ArcadeFlamethrowerWeapon",
-            ["ArcadeScifiShotgun"] = "ArcadeSpreadWeapon",
             ["ArcadePiercingGun"] = "ArcadePiercingWeapon",
             ["ArcadePanzerschreck"] = "ArcadeRocketWeapon",
             ["ArcadeGrenade"] = "ArcadeGrenadeWeapon",
-            ["ArcadeScifiPlasmaRifle"] = "ArcadeRaygunWeapon"
         };
         foreach (var weapon in catalog.Weapons.Where(w=>w.Id.StartsWith("arcade.weapon.")))
         {
@@ -1067,7 +984,7 @@ public sealed class ArcadeWeaponVisualTests
     {
         PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, resourceName, false,
             new Vector3(0f, 0.04f, 0.5f));
-        foreach (var name in new[] { "ArcadeBasicWeapon", "ArcadeRapidWeapon", "ArcadeSpreadWeapon", "ArcadeRaygunWeapon", "ArcadePiercingWeapon", "ArcadeRocketWeapon", "ArcadeGrenadeWeapon" })
+        foreach (var name in new[] { "ArcadeBasicWeapon", "ArcadeRapidWeapon", "ArcadePiercingWeapon", "ArcadeRocketWeapon", "ArcadeGrenadeWeapon" })
         {
             var child = Find(root, name);
             Assert.That(child, Is.Not.Null, name);

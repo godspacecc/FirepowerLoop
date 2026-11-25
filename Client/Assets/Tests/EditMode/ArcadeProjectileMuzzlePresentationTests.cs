@@ -20,7 +20,7 @@ namespace Game.Tests
             SetField(view, "projectilePresentation", projectiles);
             try
             {
-                view.SetPlayerWeapon(new ArcadeWeaponDefinition("spread", "ArcadeScifiShotgun", null, true,
+                view.SetPlayerWeapon(new ArcadeWeaponDefinition("arcade.weapon.rapid", "ArcadeRifle", null, true,
                     Vector3.zero, 1, 0.3f, 15f, 1f, 2, 20f, ArcadeWeaponBehavior.Direct, 1, 0f));
                 view.SetPlayerFireSequence(0);
                 view.SetProjectile(10, false, new Vector2(0f, 0.65f), Vector2.up);

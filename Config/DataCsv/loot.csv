@@ -8,9 +8,6 @@
 ,loot.weapon.rifle,TestResourcePickup,20,1
 ,loot.weapon.piercing,TestResourcePickup,21,1
 ,loot.weapon.grenade,TestResourcePickup,22,1
-,loot.weapon.rocket,TestResourcePickup,23,1
-,loot.weapon.shotgun,TestResourcePickup,24,1
-,loot.weapon.plasma,TestResourcePickup,25,1
 ,loot.ammunition.bullet,AmmoBulletPickup,26,20
 ,loot.ammunition.grenade,AmmoGrenadePickup,27,4
 ,loot.ammunition.rocket,AmmoRocketPickup,28,2

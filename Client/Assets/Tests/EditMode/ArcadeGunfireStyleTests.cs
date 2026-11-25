@@ -12,7 +12,7 @@ namespace Game.Tests
     /// <summary>用正式共享武器、粒子和投射物验证首批三枪的表现差异与回收。</summary>
     public sealed class ArcadeGunfireStyleTests
     {
-        private static readonly string[] Ids = { "arcade.weapon.basic", "arcade.weapon.rapid", "arcade.weapon.spread" };
+        private static readonly string[] Ids = { "arcade.weapon.basic", "arcade.weapon.rapid" };
 
         [Test]
         public void SharedMuzzlesFollowVisibleBarrelsDuringFire()
@@ -43,9 +43,9 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ThreeGunsHaveDistinctMuzzleBursts()
+        public void RiflesHaveDistinctMuzzleBursts()
         {
-            var sizes = new float[3]; var lifetimes = new float[3];
+            var sizes = new float[Ids.Length]; var lifetimes = new float[Ids.Length];
             var go = Player();
             try
             {
@@ -58,8 +58,7 @@ namespace Game.Tests
                     Assert.That(ps.main.maxParticles, Is.LessThanOrEqualTo(4));
                 }
                 Assert.That(sizes[1], Is.LessThan(sizes[0]), "连射闪光应更克制");
-                Assert.That(sizes[2], Is.GreaterThan(sizes[0]), "散射应有更宽闪光");
-                Assert.That(lifetimes[1], Is.LessThan(lifetimes[2]));
+                Assert.That(lifetimes[1], Is.LessThan(lifetimes[0]));
             }
             finally { Object.DestroyImmediate(go); }
         }
@@ -71,7 +70,7 @@ namespace Game.Tests
             try
             {
                 var view = go.GetComponent<PlayerView>(); var presenter = go.GetComponent<CharacterWeaponPresenter>();
-                Bind(view, Ids[2]);
+                Bind(view, Ids[1]);
                 presenter.ApplyOffhandGrip(); var rest = presenter.Visual.transform.localPosition;
                 view.PlayProjectileFireFeedback(); presenter.ApplyOffhandGrip();
                 var kick = presenter.Visual.transform.localPosition;
@@ -95,7 +94,7 @@ namespace Game.Tests
             Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
             var names = Ids.Select(id => catalog.Weapons.Single(w => w.Id == id).ProjectileVisualResourceName).ToArray();
             Assert.That(names.All(n => !string.IsNullOrWhiteSpace(n)), Is.True);
-            Assert.That(names.Distinct().Count(), Is.EqualTo(3));
+            Assert.That(names.Distinct().Count(), Is.EqualTo(Ids.Length));
             var go = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Combat/GrayboxBullet.prefab"));
             try
             {

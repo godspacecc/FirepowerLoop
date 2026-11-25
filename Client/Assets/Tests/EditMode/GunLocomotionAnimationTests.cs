@@ -13,9 +13,7 @@ namespace Game.Tests
     {
         [TestCase("arcade.weapon.basic", false)]
         [TestCase("arcade.weapon.rapid", false)]
-        [TestCase("arcade.weapon.spread", false)]
         [TestCase("arcade.weapon.piercing", false)]
-        [TestCase("arcade.weapon.raygun", false)]
         [TestCase("arcade.weapon.rocket", false)]
         [TestCase("arcade.weapon.basic", true)]
         [TestCase("arcade.weapon.rapid", true)]

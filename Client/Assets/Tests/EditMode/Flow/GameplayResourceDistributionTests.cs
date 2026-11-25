@@ -177,6 +177,33 @@ namespace Game.Tests
         }
 
         /// <summary>只查询正式收集器的寻址结果，不构建资源包。</summary>
+        /// <summary>旧武器不应再被幸存者、造型库或启动图标目录间接收集。</summary>
+        [Test]
+        public void RetiredSciFiArsenalIsNotCollected()
+        {
+            var roots = CollectAssets().Cast<object>()
+                .Select(asset => Read(asset, "AssetInfo"))
+                .Select(info => (string)info.GetType().GetField("AssetPath").GetValue(info))
+                .ToArray();
+            var retired = new[]
+            {
+                "ArcadeScifiShotgun", "ArcadeScifiPlasmaRifle", "ArcadeSpreadWeaponShared",
+                "ArcadeRaygunWeaponShared", "IconWeaponRocket", "IconWeaponShotgun", "IconWeaponPlasma",
+                "ArcadeFireRaygun", "ArcadeFireSpread"
+            };
+            Assert.That(AssetDatabase.GetDependencies(roots, true)
+                .Where(path => retired.Any(name => Path.GetFileName(path).StartsWith(name, StringComparison.Ordinal))),
+                Is.Empty);
+            AssertTags("Prefabs/Characters/GrayboxPlayer", "game-player");
+            AssertTags("Prefabs/Characters/ArcadeEnemyBasic", "arcade");
+            AssertTags("Prefabs/Characters/Weapons/ArcadeBasicWeaponShared", "arcade");
+            AssertTags("Prefabs/UI/Diagnostics/Gallery/AppearanceGallery", "development");
+
+            var tables = new Tables(name => new ByteBuf(File.ReadAllBytes($"Assets/Game/Config/{name}.bytes")));
+            foreach (var itemId in new[] { 23, 24, 25 })
+                Assert.That(tables.TbItem.GetOrDefault(itemId), Is.Null, itemId.ToString());
+        }
+
         private static IEnumerable CollectAssets()
         {
             var setting = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>("Assets/AssetBundleCollectorSetting.asset");

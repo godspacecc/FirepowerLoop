@@ -11,7 +11,7 @@ namespace Game.Tests
     public sealed class ArcadeCombatAudioTests
     {
         [Test]
-        public void SevenWeapons_ResolveImportedFireClips()
+        public void RemainingWeapons_ResolveImportedFireClips()
         {
             var resolve = typeof(ArcadeCombatViewController).GetMethod("ResolveFireSoundName",
                 BindingFlags.Static | BindingFlags.NonPublic);
@@ -19,9 +19,8 @@ namespace Game.Tests
 
             var ids = new[]
             {
-                "arcade.weapon.basic", "arcade.weapon.rapid", "arcade.weapon.spread",
+                "arcade.weapon.basic", "arcade.weapon.rapid",
                 "arcade.weapon.piercing", "arcade.weapon.rocket", "arcade.weapon.grenade",
-                "arcade.weapon.raygun"
             };
             foreach (var id in ids)
             {
@@ -44,8 +43,6 @@ namespace Game.Tests
                 (bool)canPlay.Invoke(null, new object[] { id, elapsed });
             Assert.That(Check("arcade.weapon.rapid", 0.10f), Is.False);
             Assert.That(Check("arcade.weapon.rapid", 0.20f), Is.True);
-            Assert.That(Check("arcade.weapon.raygun", 0.18f), Is.False);
-            Assert.That(Check("arcade.weapon.raygun", 0.30f), Is.True);
             Assert.That(Check("arcade.weapon.basic", 0.10f), Is.True);
         }
     }

@@ -50,8 +50,8 @@ namespace Game.Tests
         {
             var catalog = Load();
             Assert.That(catalog.Rule.BaseWeaponId, Is.EqualTo("arcade.weapon.rapid"));
-            Assert.That(catalog.Drops.Any(d => d.MinArena == 1 && d.Kind == ArcadeDropKind.TemporaryWeapon &&
-                d.ProductId == "arcade.weapon.spread" && d.Weight > 0), Is.True);
+            Assert.That(catalog.Drops.Any(d => d.MinArena <= 2 && d.Kind == ArcadeDropKind.TemporaryWeapon &&
+                d.ProductId == "arcade.weapon.rapid" && d.Weight > 0), Is.True);
         }
     }
 }
