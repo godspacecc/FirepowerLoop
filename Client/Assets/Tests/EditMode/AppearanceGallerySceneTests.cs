@@ -637,11 +637,55 @@ namespace Game.Tests
                     Is.SameAs(presenter.Current.Animations.Idle), "已保存的待机握点设置仍须匹配。");
                 presenter.ApplyOffhandGrip();
 
+                var weaponPosition = player.transform.InverseTransformPoint(presenter.Visual.transform.position);
+                Assert.That(weaponPosition.y, Is.EqualTo(1.159f).Within(0.015f), "基础步枪应使用确认的较低枪位。");
                 Assert.That(Vector3.Angle(presenter.Visual.transform.forward, player.transform.forward),
                     Is.LessThan(3f), "The barrel should follow the player's aim in the standing state.");
                 var leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
-                var grip = presenter.Visual.transform.TransformPoint(presenter.Current.OffhandGripLocalPosition);
+                var grip = presenter.Visual.transform.TransformPoint(
+                    presenter.Current.GetOffhandGrip(presenter.Current.Animations.Idle));
                 Assert.That(Vector3.Distance(leftHand.position, grip), Is.LessThan(0.02f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(player);
+            }
+        }
+
+        [Test]
+        public void FiringBasicRifleKeepsItsCurrentGripPose()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
+            var player = Object.Instantiate(prefab);
+            try
+            {
+                var presenter = player.GetComponent<CharacterWeaponPresenter>();
+                Assert.That(presenter.SetWeaponId("arcade.weapon.basic"), Is.True, presenter.LastError);
+                var view = player.GetComponent<PlayerView>();
+                view.SetSharedWeaponAnimationActive(true);
+                var animator = presenter.BodyAnimator;
+                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                animator.Rebind();
+                animator.Update(0f);
+                foreach (var state in new[] { "Idle", "Run" })
+                {
+                    animator.SetFloat("MoveSpeed", state == "Run" ? 1f : 0f);
+                    animator.Play(state, 0, 0.25f);
+                    animator.Update(0.1f);
+                    presenter.ApplyOffhandGrip();
+                    var gun = presenter.Visual.transform;
+                    var position = gun.position;
+                    var rotation = gun.rotation;
+                    view.PlayProjectileFireFeedback();
+                    animator.Update(0f);
+                    presenter.ApplyOffhandGrip();
+
+                    Assert.That(animator.GetLayerWeight(animator.GetLayerIndex("Shared Gun Upper Body")),
+                        Is.EqualTo(0f), state + " 开火时保持当前握持动作。");
+                    Assert.That(Vector3.Distance(gun.position, position), Is.LessThan(0.005f), state);
+                    Assert.That(Quaternion.Angle(gun.rotation, rotation), Is.LessThan(0.5f), state);
+                }
             }
             finally
             {

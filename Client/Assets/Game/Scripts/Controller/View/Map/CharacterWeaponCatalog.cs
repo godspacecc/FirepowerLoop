@@ -14,7 +14,7 @@ namespace Game
         [Serializable]
         public sealed class Entry
         {
-            /// <summary>只覆盖本武器指定动作的挂点姿态；未列出的动作沿用默认挂点。</summary>
+            /// <summary>只覆盖本武器指定动作的挂点与副手握点；未列出的动作沿用默认值。</summary>
             [Serializable]
             public sealed class AnimationPoseOverride
             {
@@ -32,6 +32,10 @@ namespace Game
                 [SerializeField] private bool overrideScale;
                 [Tooltip("该动作下武器相对主手骨骼的缩放；三个分量都要大于 0")]
                 [SerializeField] private Vector3 localScale = Vector3.one;
+                [Tooltip("启用后，此动作使用独立的副手握点")]
+                [SerializeField] private bool overrideOffhandGrip;
+                [Tooltip("该动作的副手握点，使用武器根节点的局部米坐标")]
+                [SerializeField] private Vector3 offhandGripLocalPosition;
 
                 public CharacterAnimationDefinition Definition => definition;
                 public bool OverridePosition => overridePosition;
@@ -40,6 +44,8 @@ namespace Game
                 public Quaternion LocalRotation => Quaternion.Euler(localEulerAngles);
                 public bool OverrideScale => overrideScale;
                 public Vector3 LocalScale => localScale;
+                public bool OverrideOffhandGrip => overrideOffhandGrip;
+                public Vector3 OffhandGripLocalPosition => offhandGripLocalPosition;
             }
 
             [SerializeField] private string id;
@@ -61,6 +67,8 @@ namespace Game
             [SerializeField] private CharacterAnimationDefinition.Categories category;
             [SerializeField] private bool isProjectile;
             [SerializeField] private bool muzzleFlash;
+            /// <summary>开火只播放特效，继续用当前站立或移动的持枪姿态。</summary>
+            [SerializeField] private bool keepAimPoseOnFire;
             [SerializeField] private CharacterAnimationSet animations = new CharacterAnimationSet();
             /// <summary>可选连招表现控制器与按段排序的片段；不储存伤害、冷却或输入缓存。</summary>
             [SerializeField] private RuntimeAnimatorController meleeComboController;
@@ -86,8 +94,19 @@ namespace Game
             public CharacterAnimationDefinition.Categories Category => category;
             public bool IsProjectile => isProjectile;
             public bool MuzzleFlash => muzzleFlash;
+            public bool KeepAimPoseOnFire => keepAimPoseOnFire;
             public CharacterAnimationSet Animations => animations;
             public bool HasVisual => visualSource != null || mesh != null && material != null;
+
+            /// <summary>使用动作自己的护木握点；其余动作沿用枪械的通用握点。</summary>
+            public Vector3 GetOffhandGrip(CharacterAnimationDefinition definition)
+            {
+                if (definition != null && animationPoseOverrides != null)
+                    foreach (var pose in animationPoseOverrides)
+                        if (pose?.Definition == definition && pose.OverrideOffhandGrip)
+                            return pose.OffhandGripLocalPosition;
+                return offhandGripLocalPosition;
+            }
 
             /// <summary>按动作资源身份解析本武器姿态；未配置覆盖时使用原有默认值。</summary>
             public void GetPose(CharacterAnimationDefinition definition, out Vector3 position,

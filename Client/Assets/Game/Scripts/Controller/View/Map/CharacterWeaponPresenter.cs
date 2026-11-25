@@ -35,6 +35,8 @@ namespace Game
         /// <summary>共享枪械独立上身层；基础层继续负责行走和近战全身动作。</summary>
         private const string GunFireLayer = "Shared Gun Upper Body";
         private float gunFireRemainingSeconds;
+        /// <summary>与本帧武器挂点使用同一动画权重混合的副手握点。</summary>
+        private Vector3 activeOffhandGripLocalPosition;
 
         /// <summary>仅枪械与发射器使用上身射击；弓和投掷动作保留原有完整动作。</summary>
         public bool UsesUpperBodyGunFire => current != null && current.IsProjectile &&
@@ -45,7 +47,7 @@ namespace Game
         /// <summary>每次权威开火只重启上身片段，不触发基础层 Attack，也不改变玩法冷却。</summary>
         public void PlayUpperBodyGunFire()
         {
-            if (!UsesUpperBodyGunFire || animator == null || reloadDefinition != null) return;
+            if (!UsesUpperBodyGunFire || current.KeepAimPoseOnFire || animator == null || reloadDefinition != null) return;
             BeginArcadeGunKick();
             int layer = animator.GetLayerIndex(GunFireLayer);
             if (layer < 0) return;
@@ -405,6 +407,7 @@ namespace Game
                 if (pose == null || pose.Definition == null || !seen.Add(pose.Definition) ||
                     (pose.OverridePosition && !Finite(pose.LocalPosition)) ||
                     (pose.OverrideRotation && !Finite(pose.LocalRotation)) ||
+                    (pose.OverrideOffhandGrip && !Finite(pose.OffhandGripLocalPosition)) ||
                     (pose.OverrideScale && (!Finite(pose.LocalScale) || pose.LocalScale.x <= 0f ||
                                             pose.LocalScale.y <= 0f || pose.LocalScale.z <= 0f)))
                     return false;
@@ -650,6 +653,7 @@ namespace Game
             if (current == null || visual == null) return;
             ResolvePose(definition, out var position, out var rotation, out var scale);
             SetVisualPose(position, rotation, scale);
+            activeOffhandGripLocalPosition = current.GetOffhandGrip(definition);
         }
 
         /// <summary>优先使用活动射击层的片段解析挂点，其余时刻按基础层动作混合。</summary>
@@ -663,6 +667,7 @@ namespace Game
             if (current == null || visual == null || animator == null || !animator.isActiveAndEnabled)
                 return;
             var positionSum = Vector3.zero;
+            var gripSum = Vector3.zero;
             var scaleSum = Vector3.zero;
             var rotation = current.HandLocalRotation;
             var weightSum = 0f;
@@ -677,6 +682,7 @@ namespace Game
                 return;
             }
             SetVisualPose(positionSum / weightSum, rotation, scaleSum / weightSum);
+            activeOffhandGripLocalPosition = gripSum / weightSum;
             AlignFlamethrowerMainHand();
 
             void Accumulate(AnimatorClipInfo[] infos)
@@ -684,8 +690,10 @@ namespace Game
                 foreach (var info in infos)
                 {
                     if (info.clip == null || info.weight <= 0.0001f) continue;
-                    ResolvePose(current.FindAnimation(info.clip), out var position, out var clipRotation, out var scale);
+                    var definition = current.FindAnimation(info.clip);
+                    ResolvePose(definition, out var position, out var clipRotation, out var scale);
                     positionSum += position * info.weight;
+                    gripSum += current.GetOffhandGrip(definition) * info.weight;
                     scaleSum += scale * info.weight;
                     rotation = weightSum <= 0f ? clipRotation :
                         Quaternion.Slerp(rotation, clipRotation, info.weight / (weightSum + info.weight));
@@ -783,7 +791,7 @@ namespace Game
             var lower = animator.GetBoneTransform(otherIsRight ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm);
             var hand = animator.GetBoneTransform(otherIsRight ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
             if (upper == null || lower == null || hand == null) return;
-            var target = visual.transform.TransformPoint(current.OffhandGripLocalPosition);
+            var target = visual.transform.TransformPoint(activeOffhandGripLocalPosition);
             var shoulder = upper.position;
             var upperLength = Vector3.Distance(shoulder, lower.position);
             var lowerLength = Vector3.Distance(lower.position, hand.position);
