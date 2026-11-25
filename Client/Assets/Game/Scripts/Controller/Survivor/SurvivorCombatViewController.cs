@@ -1506,7 +1506,7 @@ namespace Game
             if (prefab.transform.childCount < 4 ||
                 Enumerable.Range(0, 4).Any(i => prefab.transform.GetChild(i).GetComponentsInChildren<MeshRenderer>(true).Length == 0) ||
                 Enumerable.Range(4, prefab.transform.childCount - 4).Any(i =>
-                    prefab.transform.GetChild(i).name != "Island" && prefab.transform.GetChild(i).name != "Crate" &&
+                    prefab.transform.GetChild(i).name != "Crate" &&
                     prefab.transform.GetChild(i).name != "ArmorPlate" && prefab.transform.GetChild(i).name != "Content"))
             {
                 error = $"障碍视觉 Prefab 必须包含四套有效组合：{ObstacleVisualAddress}";

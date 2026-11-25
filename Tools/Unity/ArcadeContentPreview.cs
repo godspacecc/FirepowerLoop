@@ -25,10 +25,10 @@ public static class ArcadeContentPreview
             camera.transform.position=new Vector3(0,42,-26);camera.transform.LookAt(Vector3.zero);camera.orthographic=true;
             camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.08f,.11f,.14f);
             var light=new GameObject("PreviewLight",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.8f;light.transform.rotation=Quaternion.Euler(55,-30,0);
-            foreach(var name in new[]{"Island","Babylon","Forest","TreasureRoom"})
+            foreach(var name in new[]{"Babylon","Forest","TreasureRoom"})
             {
                 IDisposable hazard=null;
-                var root=new GameObject(name+"Preview");var template=name=="Island"?kit.parent.Find("Island"):kit.Find(name);
+                var root=new GameObject(name+"Preview");var template=kit.Find(name);
                 var env=Object.Instantiate(template.gameObject,root.transform,false);env.SetActive(true);
                 camera.orthographicSize=name=="TreasureRoom"?12:29;
                 if(name=="TreasureRoom")
@@ -39,13 +39,8 @@ public static class ArcadeContentPreview
                 }
                 else
                 {
-                    Gate(kit,root.transform,new Vector3(-2.5f,0,16.5f),text[name=="Island"?"ui.arcade.destination.babylon":"ui.arcade.destination.brute"]);
-                    Gate(kit,root.transform,new Vector3(2.5f,0,16.5f),text[name=="Island"?"ui.arcade.destination.forest":"ui.arcade.destination.mixed"]);
-                    if(name=="Island")
-                    {
-                        var entry=Place(kit,"TreasureEntrance",root.transform,new Vector3(-15,0,-15));
-                        entry.GetComponentInChildren<TextMeshPro>().text=text["ui.arcade.treasure.locked"];
-                    }
+                    Gate(kit,root.transform,new Vector3(-2.5f,0,16.5f),text["ui.arcade.destination.brute"]);
+                    Gate(kit,root.transform,new Vector3(2.5f,0,16.5f),text["ui.arcade.destination.mixed"]);
                     if(name=="Babylon")
                     {
                         var type=typeof(Game.SurvivorCombatViewController).Assembly.GetType("Game.SurvivorHazardPresentation");

@@ -19,11 +19,11 @@ namespace Game.Tests
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
 
             Assert.That(prefab, Is.Not.Null);
-            Assert.That(prefab.transform.childCount, Is.EqualTo(8));
-            Assert.That(prefab.transform.GetChild(4).name, Is.EqualTo("Island"));
-            Assert.That(prefab.transform.GetChild(5).name, Is.EqualTo("Crate"));
-            Assert.That(prefab.transform.GetChild(6).name, Is.EqualTo("ArmorPlate"));
-            Assert.That(prefab.transform.GetChild(7).name, Is.EqualTo("Content"));
+            Assert.That(prefab.transform.childCount, Is.EqualTo(7));
+            Assert.That(prefab.transform.Find("Island"), Is.Null);
+            Assert.That(prefab.transform.GetChild(4).name, Is.EqualTo("Crate"));
+            Assert.That(prefab.transform.GetChild(5).name, Is.EqualTo("ArmorPlate"));
+            Assert.That(prefab.transform.GetChild(6).name, Is.EqualTo("Content"));
             foreach (string name in new[] { "Babylon", "Forest", "TreasureRoom", "RouteGate", "TreasureEntrance", "GoldBar", "Gem", "ElectricTower" })
                 Assert.That(prefab.transform.Find("Content/" + name), Is.Not.Null, name);
             Assert.That(prefab.GetComponentsInChildren<Collider>(true), Is.Empty);
