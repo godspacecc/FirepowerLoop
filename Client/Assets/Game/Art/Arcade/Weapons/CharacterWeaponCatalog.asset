@@ -136,7 +136,7 @@ MonoBehaviour:
     isProjectile: 1
     muzzleFlash: 1
     animations:
-      idle: {fileID: 11400000, guid: 716301c511edf614d959c7fe047ceb4b, type: 2}
+      idle: {fileID: 11400000, guid: e1cfd68fcd8d2634c92be0de2768ddf3, type: 2}
       moveForward: {fileID: 11400000, guid: feced01edfefb01499028e38ba85839e, type: 2}
       moveBackward: {fileID: 11400000, guid: 2d74e7a80ce43d44694ee1b65f35fc34, type: 2}
       moveLeft: {fileID: 11400000, guid: 253e16ae688aeb648996239d030fa43e, type: 2}

@@ -615,6 +615,41 @@ namespace Game.Tests
         }
 
         [Test]
+        public void BasicRifleIdleAlignsBarrelWithPlayerAim()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
+            var player = Object.Instantiate(prefab, Vector3.zero, Quaternion.Euler(0f, 82f, 0f));
+            try
+            {
+                var presenter = player.GetComponent<CharacterWeaponPresenter>();
+                Assert.That(presenter.SetWeaponId("arcade.weapon.basic"), Is.True, presenter.LastError);
+                var animator = presenter.BodyAnimator;
+                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                animator.Rebind();
+                animator.Update(0f);
+                animator.Play("Idle", 0, 0.25f);
+                animator.Update(0.1f);
+                var idle = animator.GetCurrentAnimatorClipInfo(0).Single().clip;
+                Assert.That(idle, Is.SameAs(presenter.Current.Animations.Idle.Clip));
+                Assert.That(idle.name, Is.EqualTo("OverviewRifleIdle"));
+                Assert.That(presenter.Current.FindAnimation("RifleIdle"),
+                    Is.SameAs(presenter.Current.Animations.Idle), "已保存的待机握点设置仍须匹配。");
+                presenter.ApplyOffhandGrip();
+
+                Assert.That(Vector3.Angle(presenter.Visual.transform.forward, player.transform.forward),
+                    Is.LessThan(3f), "The barrel should follow the player's aim in the standing state.");
+                var leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+                var grip = presenter.Visual.transform.TransformPoint(presenter.Current.OffhandGripLocalPosition);
+                Assert.That(Vector3.Distance(leftHand.position, grip), Is.LessThan(0.02f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(player);
+            }
+        }
+
+        [Test]
         public void EverySharedWeaponOverridesTheThreeFormalAnimatorActions()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<CharacterWeaponCatalog>(
