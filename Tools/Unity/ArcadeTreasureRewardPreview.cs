@@ -59,20 +59,11 @@ public static class ArcadeTreasureRewardPreview
             floor.GetComponent<Renderer>().sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Game/Art/Arcade/Environment/Content/Slate.mat");
             camera.transform.position = new Vector3(0, 4.8f, -6.5f); camera.transform.LookAt(new Vector3(0, .35f, 0)); camera.orthographicSize = 1.65f;
             Layer(close.transform); Capture(camera, "models.png"); Object.DestroyImmediate(close);
-            foreach (string id in new[] { "arcade.treasure.first", "arcade.armory.second" })
-            {
-                var room = catalog.TreasureRooms.First(p => p.Id == id);
-                view.SetTreasureRoom(room, true, true, true, room.Rewards.Select(r => r.Id).ToArray()); view.TickPlayerFeedback(1.25f);
-                camera.transform.position = new Vector3(0, 21, -14); camera.transform.LookAt(Vector3.zero); camera.orthographicSize = 9.4f;
-                Layer(root.transform); foreach (var text in root.GetComponentsInChildren<TextMeshPro>(true)) text.ForceMeshUpdate(true, true);
-                Capture(camera, id == "arcade.treasure.first" ? "treasure-room.png" : "armory.png");
-                if (id == "arcade.treasure.first")
-                {
-                    typeof(SurvivorCombatViewController).GetMethod("EmitTreasurePickupFlash", Hidden).Invoke(view, new object[] { new Vector2(-1, -2) });
-                    var flash = root.GetComponentsInChildren<ParticleSystem>().First(p => p.name == "TreasurePickupFlash");
-                    flash.Simulate(.06f, false, false, false); Layer(root.transform); Capture(camera, "pickup-flash.png");
-                }
-            }
+            var room = catalog.TreasureRooms.Single(p => p.Id == "arcade.armory.second");
+            view.SetTreasureRoom(room, true, true, true, room.Rewards.Select(r => r.Id).ToArray()); view.TickPlayerFeedback(1.25f);
+            camera.transform.position = new Vector3(0, 21, -14); camera.transform.LookAt(Vector3.zero); camera.orthographicSize = 9.4f;
+            Layer(root.transform); foreach (var text in root.GetComponentsInChildren<TextMeshPro>(true)) text.ForceMeshUpdate(true, true);
+            Capture(camera, "armory.png");
             File.WriteAllText(Folder + "/verification.txt", "隔离资源预览，非实际双端游玩。\n" + string.Join("\n", drops.Bounds));
             return Path.GetFullPath(Folder);
         }

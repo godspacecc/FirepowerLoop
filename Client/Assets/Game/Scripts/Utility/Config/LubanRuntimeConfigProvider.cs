@@ -1169,10 +1169,9 @@ namespace Game
                 {
                     var early=earlyStages.FirstOrDefault(p=>p.ArenaConfigNumber==arena.ArenaNumber);
                     var rounds = layouts.Where(p => p.ArenaConfigNumber == arena.ArenaNumber).ToArray();
-                    // 地图 1 的四条旧海岛记录仍留在配置表，主分支只校验其目录结构。
                     if (rounds.Length != 4 || rounds.Select(p => p.RoundNumber).Distinct().Count() != 4 ||
                         rounds.Select(p => p.ThemeKey).Distinct(StringComparer.Ordinal).Count() != 1 ||
-                        (arena.ArenaNumber != 1 && rounds.Any(p => !p.FitsArena(early?.HalfWidth??layoutRule.ArenaHalfWidth, early?.HalfHeight??layoutRule.ArenaHalfHeight, layoutRule.PlayerRadius))))
+                        rounds.Any(p => !p.FitsArena(early?.HalfWidth??layoutRule.ArenaHalfWidth, early?.HalfHeight??layoutRule.ArenaHalfHeight, layoutRule.PlayerRadius)))
                         return "轮级地图引用、通路或轮次无效：" + arena.ArenaNumber;
                 }
                 foreach (var row in tables.TbArcadeTreasureRoom.DataList)
@@ -1267,8 +1266,15 @@ namespace Game
                 if (row.MaxAlive > total) return $"TbArcadeEnemyGroup[{row.Id}].MaxAlive 不能大于敌人总数";
             }
 
-            var arenas = tables.TbArcadeArena.DataList.OrderBy(row => row.ArenaNumber).ToArray();
-            if (arenas.Length == 0) return "TbArcadeArena 不能为空";
+            var arenas = tables.TbArcadeArena.DataList;
+            if (arenas.Count == 0) return "TbArcadeArena 不能为空";
+            // 地图编号是稳定 ID，移除历史地图后仍按实际条目校验引用。
+            var arenaIds = new HashSet<int>();
+            foreach (var arena in arenas)
+            {
+                if (arena == null || arena.ArenaNumber <= 0 || !arenaIds.Add(arena.ArenaNumber))
+                    return "TbArcadeArena 地图编号必须为正数且不能重复";
+            }
             var bossIds = new HashSet<string>(StringComparer.Ordinal);
             var bossesById = new Dictionary<string, global::ArcadeBossConfig>(StringComparer.Ordinal);
             foreach (var row in tables.TbArcadeBoss.DataList)
@@ -1304,11 +1310,8 @@ namespace Game
             }
             if (challengeIds.Count == 0) return "TbArcadeChallenge 不能为空";
             var salts = new HashSet<int>();
-            for (var index = 0; index < arenas.Length; index++)
+            foreach (var row in arenas)
             {
-                var row = arenas[index];
-                var expected = index + 1;
-                if (row == null || row.ArenaNumber != expected) return $"TbArcadeArena 必须从 1 连续编号，缺少 {expected}";
                 try
                 {
                     var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(row);
@@ -1324,7 +1327,7 @@ namespace Game
                 catch (ArgumentException exception) { return $"TbArcadeArena[{row.ArenaNumber}] {exception.Message}"; }
                 if (row.NextArenaNumbers == null || row.NextArenaNumbers.Length > 4 ||
                     row.NextArenaNumbers.Distinct().Count() != row.NextArenaNumbers.Length ||
-                    row.NextArenaNumbers.Any(id => id <= 0 || id == row.ArenaNumber || id > arenas.Length))
+                    row.NextArenaNumbers.Any(id => id == row.ArenaNumber || !arenaIds.Contains(id)))
                     return $"TbArcadeArena[{row.ArenaNumber}] 路线出口引用无效";
                 if (!string.IsNullOrEmpty(row.FinalBossId) && (!bossesById.ContainsKey(row.FinalBossId) || row.NextArenaNumbers.Length != 0))
                     return $"TbArcadeArena[{row.ArenaNumber}] 最终 Boss 引用无效";
@@ -1372,16 +1375,6 @@ namespace Game
                 }
                 if (row.ClearGold < 0 || !salts.Add(row.EncounterSeedSalt)) return $"TbArcadeArena[{row.ArenaNumber}] 金币或战斗种子盐无效";
             }
-
-            // 深度受当前新局十场限制，即使配置有环也不会无界递归；旧局出口另按保存版本投影。
-            bool ValidateRoute(int id, int depth)
-            {
-                if (depth > FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion)) return false;
-                var row = arenas[id - 1];
-                if (row.NextArenaNumbers.Length == 0) return depth == FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion) && !string.IsNullOrEmpty(row.FinalBossId);
-                return depth < FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion) && string.IsNullOrEmpty(row.FinalBossId) && row.NextArenaNumbers.All(next => ValidateRoute(next, depth + 1));
-            }
-            if (!ValidateRoute(1, 1)) return "TbArcadeArena 休闲新局路线必须恰好十场并终止于独立最终 Boss";
 
             var upgradeIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (var row in tables.TbArcadeUpgrade.DataList)

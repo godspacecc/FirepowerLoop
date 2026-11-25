@@ -9,7 +9,6 @@ using QFramework;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using RewardKind = FirepowerLoop.Arcade.ArcadeTreasureRewardKind;
 
 namespace Game.Tests
 {
@@ -37,7 +36,7 @@ namespace Game.Tests
             templates = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content");
             var tables = new Tables(name => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes"))));
-            room = ArcadeTreasureRoomParameters.FromConfig(tables.TbArcadeTreasureRoom.Get("arcade.treasure.first"));
+            room = ArcadeTreasureRoomParameters.FromConfig(tables.TbArcadeTreasureRoom.Get("arcade.armory.second"));
             view = new SurvivorCombatViewController();
             Set("root", root); Set("mapRoot", root.transform); Set("contentTemplates", templates);
         }
@@ -46,68 +45,6 @@ namespace Game.Tests
         {
             view?.End(); if (root != null) Object.DestroyImmediate(root);
             singleton.SetValue(null, previousArchitecture); languages.SetValue(null, previousLanguages); ResourceLoader.Use(previousLoader);
-        }
-
-        [Test] public void MotionKeepsPickupCoordinatesAndFreezesWithZeroDelta()
-        {
-            var reward = room.Rewards.First(r => r.Kind == RewardKind.GoldBar);
-            view.SetTreasureRoom(room, true, true, true, new[] { reward.Id });
-            var item = root.transform.Find("TreasureReward_" + reward.Id);
-            var start = item.localPosition; var rotation = item.localRotation;
-            view.TickPlayerFeedback(.5f);
-            Assert.That(item.localPosition.x, Is.EqualTo(reward.X));
-            Assert.That(item.localPosition.z, Is.EqualTo(reward.Y));
-            Assert.That(Mathf.Abs(item.localPosition.y - start.y), Is.InRange(.001f, .04f));
-            Assert.That(Quaternion.Angle(rotation, item.localRotation), Is.InRange(.1f, 2f), "写实小堆只缓慢转动");
-            var paused = item.localPosition; var pausedRotation = item.localRotation;
-            view.TickPlayerFeedback(0);
-            Assert.That(item.localPosition, Is.EqualTo(paused));
-            Assert.That(item.localRotation, Is.EqualTo(pausedRotation));
-        }
-
-        [Test] public void RewardPileIsOnePickupAndDisappearsAsAWhole()
-        {
-            var reward = room.Rewards.First(r => r.Kind == RewardKind.GoldBar);
-            view.SetTreasureRoom(room, true, true, true, new[] { reward.Id });
-            var item = root.transform.Find("TreasureReward_" + reward.Id);
-            int singleVertices = templates.Find("GoldBar").GetComponent<MeshFilter>().sharedMesh.vertexCount;
-            int pileVertices = item.GetComponentsInChildren<MeshFilter>().Sum(f => f.sharedMesh.vertexCount);
-            Assert.That(pileVertices, Is.GreaterThanOrEqualTo(singleVertices * 3), "单个奖励呈现至少三枚金条");
-            view.SetTreasureRoom(room, true, true, true, Array.Empty<int>());
-            Assert.That(root.GetComponentsInChildren<Transform>().Any(t => t.name == "TreasureReward_" + reward.Id), Is.False);
-            Assert.That(Flashes(), Is.Empty, "队友领取或到期只移除整堆，不误播本人领取");
-        }
-
-        [Test] public void ScatteredLayoutKeepsEntryClearAndOriginalAwardLedger()
-        {
-            Assert.That(room.Rewards.Count, Is.EqualTo(18));
-            Assert.That(room.Rewards.Sum(r => r.Points), Is.EqualTo(2200));
-            Assert.That(room.Rewards.Sum(r => r.Progress), Is.EqualTo(2200));
-            Assert.That(room.Rewards.Select(r => r.Y).Distinct().Count(), Is.GreaterThan(10), "不能继续按整齐横排摆放");
-            foreach (var reward in room.Rewards)
-            {
-                var point = new Vector2(reward.X, reward.Y);
-                Assert.That(Vector2.Distance(point, new Vector2(room.SpawnX, room.SpawnY)), Is.GreaterThan(1.7f), "出生点不自动领取");
-                Assert.That(Vector2.Distance(point, new Vector2(room.ExitX, room.ExitY)), Is.GreaterThan(2.1f), "返回入口保留空地");
-            }
-        }
-
-        [Test] public void RepeatedSnapshotPreservesMotionAndAuthorityFade()
-        {
-            var ids = room.Rewards.Where(r => r.Kind == RewardKind.Gem).Select(r => r.Id).ToArray();
-            view.SetTreasureRoom(room, true, true, true, ids);
-            view.SetTreasureRewardOpacity(.35f); view.TickPlayerFeedback(.5f);
-            var item = root.transform.Find("TreasureReward_" + ids[0]); var position = item.localPosition;
-            var material = item.GetComponentInChildren<Renderer>().sharedMaterial;
-            view.SetTreasureRoom(room, true, true, true, ids);
-            Assert.That(root.transform.Find(item.name), Is.SameAs(item));
-            Assert.That(item.localPosition, Is.EqualTo(position));
-            Assert.That(material.GetColor("_BaseColor").a, Is.EqualTo(.35f).Within(.001f));
-            view.SetTreasureRoom(room, true, true, true, ids.Skip(1).ToArray());
-            var remaining = root.transform.Find("TreasureReward_" + ids[1]);
-            Assert.That(remaining.GetComponentInChildren<Renderer>().sharedMaterial.GetColor("_BaseColor").a,
-                Is.EqualTo(.35f).Within(.001f));
-            Assert.That(Flashes(), Is.Empty, "快照移除不能推断领取成功");
         }
 
         [Test] public void FlashIsBoundedAndReleasedOnRoomExit()

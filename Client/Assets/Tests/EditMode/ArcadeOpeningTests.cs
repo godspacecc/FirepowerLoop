@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game.Tests
 {
-    /// <summary>通过真实生成配置锁定开场四轮与武器池，防止通用敌群改动污染首场。</summary>
+    /// <summary>通过真实生成配置检查共用武器池。</summary>
     public sealed class ArcadeOpeningTests
     {
         private static ArcadeConfigCatalogDefinition Load()
@@ -15,22 +15,6 @@ namespace Game.Tests
                 new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes")))));
             Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
             return catalog;
-        }
-
-        [Test]
-        public void IslandFourWaves_UseOnlySlowBasicEnemiesAndFullSoloTotals()
-        {
-            var catalog = Load();
-            var arena = catalog.Arenas.Single(a => a.ArenaNumber == 1);
-            var totals = new[] { 110, 120, 130, 140 };
-            Assert.That(arena.WaveGroupIds.Count, Is.EqualTo(4));
-            for (var i = 0; i < 4; i++)
-            {
-                var group = catalog.EnemyGroups.Single(g => g.Id == arena.WaveGroupIds[i]);
-                Assert.That(group.Members.Sum(m => m.Count), Is.EqualTo(totals[i]), "轮次 " + (i + 1));
-                Assert.That(group.Members.All(m => m.EnemyId == "enemy.arcade.zombie.shambler"), Is.True);
-                Assert.That(group.MaxAlive, Is.LessThanOrEqualTo(catalog.Rule.MaxAliveEnemies));
-            }
         }
 
         [Test]
