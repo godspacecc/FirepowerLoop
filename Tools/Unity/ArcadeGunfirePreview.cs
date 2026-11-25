@@ -62,7 +62,7 @@ public static class ArcadeGunfirePreview
             foreach (var instance in instances)
             {
                 instance.GetComponent<MeshFilter>().sharedMesh = baselineMesh;
-                instance.GetComponent<MeshRenderer>().sharedMaterials = new[] { AssetDatabase.LoadAssetAtPath<Material>("Assets/Game/Config/GrayboxMaterial.mat") };
+                instance.GetComponent<MeshRenderer>().sharedMaterials = new[] { AssetDatabase.LoadAssetAtPath<Material>("Assets/Game/Materials/Graybox/GrayboxMaterial.mat") };
             }
             Render(camera, output + "/Before.png");
             return Path.GetFullPath(output);

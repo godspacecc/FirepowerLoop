@@ -125,6 +125,19 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: startup
         UserData: 
+    - GroupName: SharedMaterials
+      GroupDesc: Shared materials
+      AssetTags:
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Materials/Graybox/GrayboxMaterial.mat
+        CollectorGUID: 1a39c7d2bd5b8b2418e3d78682462dd1
+        CollectorType: 0
+        AddressRuleName: AddressByFileNameWithExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData:
     - GroupName: Dlls
       GroupDesc: "\u70ED\u66F4\u65B0DLL"
       AssetTags: 

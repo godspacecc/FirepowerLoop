@@ -280,7 +280,7 @@ namespace Game.Tests
         public void DefaultProfileUsesStraightPerspectiveView()
         {
             var loadedProfile = AssetDatabase.LoadAssetAtPath<TopDownCameraProfile>(
-                "Assets/Game/Config/DefaultCameraProfile.asset");
+                "Assets/Game/Config/Camera/DefaultCameraProfile.asset");
 
             Assert.That(loadedProfile, Is.Not.Null);
             Assert.That(loadedProfile.YawDegrees, Is.EqualTo(0f));
@@ -310,7 +310,7 @@ namespace Game.Tests
         [Test]
         public void ShoulderProfileAssetUsesFixedGameplayValues()
         {
-            var loaded = AssetDatabase.LoadAssetAtPath<ShoulderCameraProfile>("Assets/Game/Config/ShoulderCameraProfile.asset");
+            var loaded = AssetDatabase.LoadAssetAtPath<ShoulderCameraProfile>("Assets/Game/Config/Camera/ShoulderCameraProfile.asset");
             Assert.That(loaded, Is.Not.Null);
             Assert.That(loaded.TargetHeight, Is.EqualTo(1.6f));
             Assert.That(loaded.ShoulderOffset, Is.EqualTo(0.25f));
