@@ -38,14 +38,9 @@ public partial class Tables
     public TbArcadeUpgrade TbArcadeUpgrade {get; }
     public TbArcadeReward TbArcadeReward {get; }
     public TbArcadeRoundLayout TbArcadeRoundLayout {get; }
-    public TbArcadeSlayerMartItem TbArcadeSlayerMartItem {get; }
-    public TbArcadeSlayerMartRegion TbArcadeSlayerMartRegion {get; }
-    public TbArcadeSlayerMartAbility TbArcadeSlayerMartAbility {get; }
-    public TbArcadeSlayerChallenge TbArcadeSlayerChallenge {get; }
     public TbArcadeRoundReward TbArcadeRoundReward {get; }
     public TbArcadeWeaponUpgrade TbArcadeWeaponUpgrade {get; }
     public TbArcadeEarlyStage TbArcadeEarlyStage {get; }
-    public TbArcadeScoreShop TbArcadeScoreShop {get; }
     public TbSurvivorRule TbSurvivorRule {get; }
     public TbSurvivorMapLayout TbSurvivorMapLayout {get; }
     public TbSurvivorUpgrade TbSurvivorUpgrade {get; }
@@ -54,8 +49,6 @@ public partial class Tables
     public TbSurvivorEnemy TbSurvivorEnemy {get; }
     public TbSurvivorCharacter TbSurvivorCharacter {get; }
     public TbMissionRule TbMissionRule {get; }
-    public TbChallengeWeapon TbChallengeWeapon {get; }
-    public TbChallengeCombat TbChallengeCombat {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
@@ -85,14 +78,9 @@ public partial class Tables
         TbArcadeUpgrade = new TbArcadeUpgrade(loader("tbarcadeupgrade"));
         TbArcadeReward = new TbArcadeReward(loader("tbarcadereward"));
         TbArcadeRoundLayout = new TbArcadeRoundLayout(loader("tbarcaderoundlayout"));
-        TbArcadeSlayerMartItem = new TbArcadeSlayerMartItem(loader("tbarcadeslayermartitem"));
-        TbArcadeSlayerMartRegion = new TbArcadeSlayerMartRegion(loader("tbarcadeslayermartregion"));
-        TbArcadeSlayerMartAbility = new TbArcadeSlayerMartAbility(loader("tbarcadeslayermartability"));
-        TbArcadeSlayerChallenge = new TbArcadeSlayerChallenge(loader("tbarcadeslayerchallenge"));
         TbArcadeRoundReward = new TbArcadeRoundReward(loader("tbarcaderoundreward"));
         TbArcadeWeaponUpgrade = new TbArcadeWeaponUpgrade(loader("tbarcadeweaponupgrade"));
         TbArcadeEarlyStage = new TbArcadeEarlyStage(loader("tbarcadeearlystage"));
-        TbArcadeScoreShop = new TbArcadeScoreShop(loader("tbarcadescoreshop"));
         TbSurvivorRule = new TbSurvivorRule(loader("tbsurvivorrule"));
         TbSurvivorMapLayout = new TbSurvivorMapLayout(loader("tbsurvivormaplayout"));
         TbSurvivorUpgrade = new TbSurvivorUpgrade(loader("tbsurvivorupgrade"));
@@ -101,8 +89,6 @@ public partial class Tables
         TbSurvivorEnemy = new TbSurvivorEnemy(loader("tbsurvivorenemy"));
         TbSurvivorCharacter = new TbSurvivorCharacter(loader("tbsurvivorcharacter"));
         TbMissionRule = new TbMissionRule(loader("tbmissionrule"));
-        TbChallengeWeapon = new TbChallengeWeapon(loader("tbchallengeweapon"));
-        TbChallengeCombat = new TbChallengeCombat(loader("tbchallengecombat"));
         ResolveRef();
     }
     
@@ -134,14 +120,9 @@ public partial class Tables
         TbArcadeUpgrade.ResolveRef(this);
         TbArcadeReward.ResolveRef(this);
         TbArcadeRoundLayout.ResolveRef(this);
-        TbArcadeSlayerMartItem.ResolveRef(this);
-        TbArcadeSlayerMartRegion.ResolveRef(this);
-        TbArcadeSlayerMartAbility.ResolveRef(this);
-        TbArcadeSlayerChallenge.ResolveRef(this);
         TbArcadeRoundReward.ResolveRef(this);
         TbArcadeWeaponUpgrade.ResolveRef(this);
         TbArcadeEarlyStage.ResolveRef(this);
-        TbArcadeScoreShop.ResolveRef(this);
         TbSurvivorRule.ResolveRef(this);
         TbSurvivorMapLayout.ResolveRef(this);
         TbSurvivorUpgrade.ResolveRef(this);
@@ -150,8 +131,6 @@ public partial class Tables
         TbSurvivorEnemy.ResolveRef(this);
         TbSurvivorCharacter.ResolveRef(this);
         TbMissionRule.ResolveRef(this);
-        TbChallengeWeapon.ResolveRef(this);
-        TbChallengeCombat.ResolveRef(this);
     }
 }
 

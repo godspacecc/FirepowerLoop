@@ -114,22 +114,22 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ArcadeJoystickPrefab_HasGeneratedViewValidReferencesAndRaycastSurfaces()
+        public void SurvivorJoystickPrefab_HasGeneratedViewValidReferencesAndRaycastSurfaces()
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab");
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab");
             Assert.That(prefab, Is.Not.Null);
             var collector = prefab.GetComponent<ReferenceCollector>();
-            var ui = prefab.GetComponent<ArcadeHudUI>();
+            var ui = prefab.GetComponent<SurvivorHudUI>();
             Assert.That(collector, Is.Not.Null); Assert.That(ui, Is.Not.Null);
             foreach (var item in collector.data)
             {
-                var field = typeof(ArcadeHudUI).GetField(item.key);
+                var field = typeof(SurvivorHudUI).GetField(item.key);
                 Assert.That(field, Is.Not.Null, item.key);
                 Assert.That(field.GetValue(ui) as UnityEngine.Object, Is.Not.Null, item.key);
             }
-            var sticks = new[] { ui.MoveJoystick, ui.AimJoystick };
-            var wrappers = new[] { ui.MoveJoystickRoot, ui.AimJoystickRoot };
-            var paths = new[] { "<Gamepad>/leftStick", "<Gamepad>/rightStick" };
+            var sticks = new[] { ui.MoveJoystick };
+            var wrappers = new[] { ui.MoveJoystickRoot };
+            var paths = new[] { "<Gamepad>/leftStick" };
             for (var i = 0; i < sticks.Length; i++)
             {
                 var stick = sticks[i];
@@ -144,11 +144,10 @@ namespace Game.Tests
                 {
                     Assert.That(label.raycastTarget, Is.False, "摇杆提示文字不能截获拖动触点");
                     Assert.That(label.GetComponent<LocalizedText>()?.Key,
-                        Is.EqualTo(i == 0 ? "ui.arcade.hud.move_stick" : "ui.arcade.hud.aim_stick"));
+                        Is.EqualTo("ui.arcade.hud.move_stick"));
                 }
             }
-            foreach (var button in new[] { ui.BtnPause, ui.BtnBomb, ui.BtnDash, ui.BtnFieldUpgrade, ui.BtnDonateLife })
-                Assert.That(button.image.raycastTarget, Is.True, button.name);
+            Assert.That(ui.BtnPause.image.raycastTarget, Is.True);
         }
         [Test]
         public void JoystickNormalization_PreservesSmallInputAndCapsDiagonalMagnitude()
@@ -178,24 +177,6 @@ namespace Game.Tests
             Assert.That(attack.bindings.Any(binding => binding.path == "<Mouse>/leftButton"), Is.True);
             Assert.That(attack.bindings.Any(binding => binding.path == "<Touchscreen>/touch*/press"), Is.False);
             Assert.That(pointer.bindings.Any(binding => binding.path == "<Pointer>/position"), Is.True);
-        }
-
-        [Test]
-        public void OnlineArcadeInput_UsesRightStickMouseAndPhysicalTriggerWithoutTouchFire()
-        {
-            using var input = new OnlineArcadeInputController();
-            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var aim = (InputAction)typeof(OnlineArcadeInputController).GetField("aimAction", flags)?.GetValue(input);
-            var fire = (InputAction)typeof(OnlineArcadeInputController).GetField("fireAction", flags)?.GetValue(input);
-            var trigger = (InputAction)typeof(OnlineArcadeInputController).GetField("triggerAction", flags)?.GetValue(input);
-
-            Assert.That(aim, Is.Not.Null);
-            Assert.That(fire, Is.Not.Null);
-            Assert.That(trigger, Is.Not.Null);
-            Assert.That(aim.bindings.Any(binding => binding.path == "<Gamepad>/rightStick"), Is.True);
-            Assert.That(fire.bindings.Any(binding => binding.path == "<Mouse>/leftButton"), Is.True);
-            Assert.That(fire.bindings.Any(binding => binding.path == "<Touchscreen>/touch*/press"), Is.False);
-            Assert.That(trigger.bindings.Any(binding => binding.path == "<Gamepad>/rightTrigger"), Is.True);
         }
 
         [Test]

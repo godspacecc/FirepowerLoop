@@ -1,6 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System;
-using System.Collections.Generic;
 using QFramework;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,15 +13,13 @@ namespace Game
         private PauseUI UI => BaseUI as PauseUI;
         /// <summary>当前 View 的离开请求尚未完成时拒绝重复点击，隐藏菜单不会取消地图事务。</summary>
         private bool leavingMap;
-        /// <summary>每次显示或隐藏递增；旧确认框不能操作重新打开的菜单或另一局街机。</summary>
-        private long confirmationGeneration;
         protected override string Path() => "Home/Pause";
         public override UILayer Layer() => UILayer.Dialog;
 
         protected override void OnInit()
         {
             Bind(UI.BtnContinue, Resume);
-            Bind(UI.BtnOnline, OpenOnlineOrLeaveArcade);
+            Bind(UI.BtnOnline, ReturnToMenu);
             Bind(UI.BtnSetting, () => UIHelper.ShowUI<SettingUICtrl>());
 
             Bind(UI.BtnExit, () => this.SendCommand<QuitGameCommand>());
@@ -35,7 +31,7 @@ namespace Game
             this.RegisterEvent<MapCurrentReleasedEvent>(_ => Hide()).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<LanguageChangedEvent>(_ =>
             {
-                if (IsShow()) RefreshOnlineAction();
+                if (IsShow()) RefreshMenuActions();
             }).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
 
@@ -53,7 +49,6 @@ namespace Game
 
         protected override void OnShow()
         {
-            confirmationGeneration++;
             if (this.GetModel<AppStateModel>().CurrentState.Value != AppState.Paused)
             {
                 Hide();
@@ -61,56 +56,41 @@ namespace Game
             }
             UI.BtnContinue.interactable = HasRecoverableWorld;
 
-            RefreshOnlineAction();
+            RefreshMenuActions();
             // 显隐变化后立即由 Prefab 布局计算标题、按钮组与背景高度，避免首帧保留上一张地图的尺寸。
             LayoutRebuilder.ForceRebuildLayoutImmediate(UI.PausePanel);
         }
 
-        private bool IsArcadeMap => this.GetModel<MapSceneModel>().CurrentMapId == MapIds.Arcade;
-        /// <summary>独立挑战使用自己的世界所有者，不伪装成旧街机地图。</summary>
-        private bool HasRecoverableWorld => this.GetSystem<ChallengeSceneFlowSystem>()?.HasWorld==true || this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld();
+        private bool HasRecoverableWorld => this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld();
 
         /// <summary>暂停菜单只呈现街机继续与离开意图；离开事务完成前拒绝重复请求。</summary>
-        private void RefreshOnlineAction()
+        private void RefreshMenuActions()
         {
             UI.OnlineActionText.text = Loc.T("ui.pause.main_menu");
             UI.BtnOnline.interactable = !leavingMap;
             UI.BtnContinue.interactable = !leavingMap && HasRecoverableWorld;
         }
 
-        /// <summary>根据领域地图身份提交意图，不以按钮显示文字决定行为。</summary>
-        private void OpenOnlineOrLeaveArcade()
+        /// <summary>活动的幸存者先完成退场，再由场景流程显示主菜单。</summary>
+        private void ReturnToMenu()
         {
             if (leavingMap) return;
-            if (this.GetSystem<ChallengeSceneFlowSystem>()?.HasWorld==true) { this.GetSystem<ChallengeSceneFlowSystem>().ReturnToMenu(); return; }
-            if (this.GetModel<SurvivorModel>().Snapshot.Active) { LeaveSurvivorAsync().Forget(); return; }
-            if (!IsArcadeMap) { Hide(); UIHelper.ShowUI<StartUICtrl>(); return; }
-            var run = this.GetModel<ArcadeRunModel>()?.Current;
-            if (run?.IslandRoundCheckpoint == null && run?.RoundCheckpoint == null) { LeaveArcadeAsync().Forget(); return; }
-            long generation = ++confirmationGeneration;
-            var checkpoint = run.RoundCheckpoint?.PlayerState ?? run.IslandRoundCheckpoint;
-            var nameKey = run.RoundCheckpoint != null ? "ui.arcade.theme." + run.RoundCheckpoint.ArenaConfigNumber
-                : ArcadeIslandLayout.GetNameKey(checkpoint.RoundNumber);
-            Notify.ShowMessage(Loc.T("ui.arcade.island.leave.title"),
-                Loc.T("ui.arcade.island.resume", checkpoint.RoundNumber, Loc.T(nameKey)),
-                new List<MessageButtonConfig>
-                {
-                    new() { ButtonText = Loc.T("ui.common.confirm"), Role = MessageButtonRole.Confirm,
-                        OnClick = () => {
-                            if (generation == confirmationGeneration && IsShow() && IsArcadeMap &&
-                                this.GetModel<ArcadeRunModel>().Current?.RunId == run.RunId) LeaveArcadeAsync().Forget();
-                        } },
-                    new() { ButtonText = Loc.T("ui.common.cancel"), Role = MessageButtonRole.Cancel }
-                });
-        }
+            if (this.GetModel<SurvivorModel>().Snapshot.Active)
+            {
+                LeaveSurvivorAsync().Forget();
+                return;
+            }
 
+            Hide();
+            UIHelper.ShowUI<StartUICtrl>();
+        }
         /// <summary>幸存者退出走独立地图事务，绝不回滚或保存闯关安全节点。</summary>
         private async UniTask LeaveSurvivorAsync()
         {
             if (leavingMap) return;
             var owner = UI;
             leavingMap = true;
-            RefreshOnlineAction();
+            RefreshMenuActions();
             try
             {
                 var result = await this.GetSystem<SurvivorSceneFlowSystem>().ReturnToMenuAsync();
@@ -123,36 +103,7 @@ namespace Game
             finally
             {
                 leavingMap = false;
-                if (owner != null && owner == UI && IsShow()) RefreshOnlineAction();
-            }
-        }
-        private async UniTask LeaveArcadeAsync()
-        {
-            if (leavingMap || !IsArcadeMap) return;
-            var owner = UI;
-            leavingMap = true;
-            RefreshOnlineAction();
-            try
-            {
-                var result = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
-                if (!result.Success)
-                {
-                    if (UI == owner && owner != null && IsArcadeMap &&
-                        this.GetModel<AppStateModel>().CurrentState.Value == AppState.Paused) Show();
-                    Notify.ShowFloatTips(result.Error);
-                    return;
-                }
-                // 地图提交后才回滚瞬时战斗，加载失败仍可继续原局；此入口不修改落盘节点。
-                var run = this.GetModel<ArcadeRunModel>();
-                if (run != null && (run.Phase == ArcadeRunPhase.Arena || run.Phase == ArcadeRunPhase.Challenge) &&
-                    !this.GetSystem<ArcadeRunSystem>().TryReturnToSafeNode(out _, out var error))
-                    Notify.ShowFloatTips(error);
-            }
-            finally
-            {
-                leavingMap = false;
-                // 异步完成时只刷新原 View，防止旧请求写入被卸载后重建的界面。
-                if (owner != null && UI == owner && IsShow()) RefreshOnlineAction();
+                if (owner != null && owner == UI && IsShow()) RefreshMenuActions();
             }
         }
 
@@ -165,7 +116,6 @@ namespace Game
 
         protected override void OnHide()
         {
-            confirmationGeneration++;
             var selected = EventSystem.current?.currentSelectedGameObject;
             if (selected != null && selected.transform.IsChildOf(UI.transform))
                 EventSystem.current.SetSelectedGameObject(null);

@@ -7,7 +7,7 @@ using Luban;
 
 namespace ET
 {
-    public sealed partial class ServerConfig : Singleton<ServerConfig>, ISingletonAwake<string>
+    public sealed class ServerConfig : Singleton<ServerConfig>, ISingletonAwake<string>
     {
         private Tables tables;
         private readonly Dictionary<int, UnitConfig> units = new();
@@ -27,15 +27,6 @@ namespace ET
         private readonly List<StartSceneConfig> realms = new();
         private readonly List<StartSceneConfig> routers = new();
         private readonly List<StartSceneConfig> maps = new();
-        private ArcadeRuleConfig arcadeRule;
-        /// <summary>同源新商店目录；正式能力未完成时目录可验证但入口关闭。</summary>
-        public FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration SlayerMart { get; private set; }
-        /// <summary>独立Slayer挑战正式配置，启动时完整校验。</summary>
-        public FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration SlayerChallenge {get;private set;}
-        // 街机敌人及其投射物仍消费共用表现配置，不加载开放世界库存或地图规则。
-        private readonly Dictionary<string, EnemyConfig> enemies = new(StringComparer.Ordinal);
-        private readonly Dictionary<string, ProjectileConfig> projectiles = new(StringComparer.Ordinal);
-
         public Tables Tables => this.tables;
         public string Profile { get; private set; }
         public IReadOnlyDictionary<int, UnitConfig> Units => this.units;
@@ -51,16 +42,6 @@ namespace ET
         public StartSceneConfig LocationConfig { get; private set; }
         public StartSceneConfig Match { get; private set; }
         public StartSceneConfig Benchmark { get; private set; }
-        public ArcadeRuleConfig ArcadeRule => this.arcadeRule;
-        /// <summary>双端同源临时无人机规则，启动时校验。</summary>
-        public FirepowerLoop.Arcade.ArcadeDroneTuning Drone {get;private set;}
-        /// <summary>每轮奖励及中央传送门的配置参数。</summary>
-        public FirepowerLoop.Arcade.ArcadeRoundRewardTuning RoundReward {get;private set;}
-        /// <summary>同枪与头骨的共用强化参数。</summary>
-        public FirepowerLoop.Arcade.ArcadeWeaponUpgradeTuning WeaponUpgrade {get;private set;}
-        /// <summary>新场地独立尺寸与牛群参数，只读目录不改写生成表。</summary>
-        public IReadOnlyDictionary<int,FirepowerLoop.Arcade.ArcadeEarlyStageParameters> EarlyStages {get;private set;}
-
         public void Awake(string profile)
         {
             this.Initialize(profile, LoadTable);
@@ -141,12 +122,6 @@ namespace ET
         public IReadOnlyList<StartMachineConfig> GetMachines() => this.machineList;
 
         public IReadOnlyList<StartProcessConfig> GetProcesses() => this.processList;
-
-        public EnemyConfig GetEnemy(string id) => this.enemies.TryGetValue(id ?? string.Empty, out EnemyConfig value)
-            ? value : throw this.Missing("TbEnemy", id);
-
-        public ProjectileConfig GetProjectile(string id) => this.projectiles.TryGetValue(id ?? string.Empty, out ProjectileConfig value)
-            ? value : throw this.Missing("TbProjectile", id);
 
         public IReadOnlyList<StartSceneConfig> GetScenesByProcess(int process)
         {
@@ -233,15 +208,6 @@ namespace ET
 
         private void IndexSharedTables()
         {
-            foreach (EnemyConfig enemy in this.tables.TbEnemy.DataList)
-                if (!this.enemies.TryAdd(enemy.Id, enemy))
-                    throw ConfigError(this.Profile, "TbEnemy", enemy.Id, "duplicate Id.");
-            foreach (ProjectileConfig projectile in this.tables.TbProjectile.DataList)
-                if (string.IsNullOrWhiteSpace(projectile.Id) || !Finite(projectile.MoveSpeed, projectile.MaxTravelDistance) ||
-                    projectile.MoveSpeed <= 0f || projectile.MaxTravelDistance <= 0f || !this.projectiles.TryAdd(projectile.Id, projectile))
-                    throw ConfigError(this.Profile, "TbProjectile", projectile.Id, "invalid or duplicate projectile.");
-            this.ValidateArcadeConfig();
-
             HashSet<int> unitIds = new();
             foreach (UnitConfig unitConfig in this.tables.TbUnitConfig.DataList)
             {
@@ -284,244 +250,6 @@ namespace ET
         }
 
         /// <summary>新积分商店只引用正式空投，与旧现金商店门禁隔离。</summary>
-        public FirepowerLoop.Arcade.ArcadeScoreShopConfiguration ScoreShop { get; private set; }
-        /// <summary>服务启动时拒绝不能创建权威安全节点的街机配置。</summary>
-        private void ValidateArcadeConfig()
-        {
-            var early=this.tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig).ToArray();
-            if(!early.Select(p=>p.ArenaConfigNumber).OrderBy(p=>p).SequenceEqual(new[]{5,7,10,20,21,22,23,24,25}))throw ConfigError(this.Profile,"TbArcadeEarlyStage","count","expected adopted environments 5/7/10/20/21/22/23/24/25 without omissions or duplicates");
-            this.EarlyStages=new System.Collections.ObjectModel.ReadOnlyDictionary<int,FirepowerLoop.Arcade.ArcadeEarlyStageParameters>(early.ToDictionary(p=>p.ArenaConfigNumber));
-            this.SlayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(this.tables);
-            this.ScoreShop=FirepowerLoop.Arcade.ArcadeScoreShopConfiguration.FromTables(this.tables);
-            this.SlayerChallenge=FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration.FromTables(this.tables);
-            foreach (var row in this.tables.TbArcadeTreasureRoom.DataList)
-            {
-                var room = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);
-                foreach (var reward in room.Rewards.Where(r => r.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Weapon))
-                {
-                    var drop = this.tables.TbArcadeDrop.GetOrDefault(reward.DropId);
-                    if (drop == null || drop.Kind != ArcadeDropKind.TemporaryWeapon)
-                        throw ConfigError(this.Profile, "TbArcadeTreasureRoom", room.Id, "invalid weapon drop: " + reward.DropId);
-                }
-                var target = this.tables.TbArcadeArena.GetOrDefault(room.ArenaConfigNumber);
-                var arenaRule = this.tables.TbArcadeRule.DataList.FirstOrDefault();
-                if (target == null || room.WaveNumber > target.WaveGroupIds.Length || arenaRule == null ||
-                    !room.FitsArena(arenaRule.ArenaHalfWidth, arenaRule.ArenaHalfHeight, arenaRule.PlayerRadius))
-                    throw ConfigError(this.Profile, "TbArcadeTreasureRoom", room.Id, "invalid arena or wave");
-            }
-            if(this.tables.TbArcadeWeaponUpgrade.DataList.Count!=1)throw ConfigError(this.Profile,"TbArcadeWeaponUpgrade","arcade.weapon.upgrade","expected one row");
-            var upgrade=this.tables.TbArcadeWeaponUpgrade.DataList[0];
-            this.WeaponUpgrade=FirepowerLoop.Arcade.ArcadeWeaponUpgradeTuning.FromConfig(upgrade);
-            if(upgrade.Id!="arcade.weapon.upgrade"||!FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.Valid(this.WeaponUpgrade)||
-                upgrade.RedPowerupId_Ref.Behavior!=ArcadePowerupBehavior.WeaponSkull||upgrade.RedPowerupId_Ref.Magnitude!=2||
-                upgrade.PurplePowerupId_Ref.Behavior!=ArcadePowerupBehavior.WeaponSkull||upgrade.PurplePowerupId_Ref.Magnitude!=3)throw ConfigError(this.Profile,"TbArcadeWeaponUpgrade",upgrade.Id,"invalid tuning or skull reference");
-            this.RoundReward=FirepowerLoop.Arcade.ArcadeRoundRewardTuning.FromConfig(this.tables.TbArcadeRoundReward.DataList.FirstOrDefault());
-            if(this.tables.TbArcadeRoundReward.DataList.Count!=1||this.tables.TbArcadeRoundReward.DataList[0].Id!="arcade.round.reward"||!FirepowerLoop.Arcade.ArcadeRoundRewardRules.IsValid(this.RoundReward)||!float.IsFinite(this.RoundReward.PortalRadius)||this.RoundReward.PortalRadius<=0||!float.IsFinite(this.RoundReward.PortalAppearSeconds)||this.RoundReward.PortalAppearSeconds<=0)
-                throw ConfigError(this.Profile,"TbArcadeRoundReward","arcade.round.reward","invalid round reward tuning");
-            this.Drone=FirepowerLoop.Arcade.ArcadeDroneTuning.FromConfig(this.tables.TbArcadeDrone.DataList.FirstOrDefault());
-            if(this.tables.TbArcadeDrone.DataList.Count!=1||this.tables.TbArcadeDrone.DataList[0].Id!="arcade.support.drone"||!FirepowerLoop.Arcade.ArcadeDroneRules.IsValid(this.Drone))
-                throw ConfigError(this.Profile,"TbArcadeDrone","arcade.support.drone","invalid drone tuning");
-            if (this.tables.TbArcadeRule.DataList.Count != 1)
-                throw ConfigError(this.Profile, "TbArcadeRule", "arcade.default", "expected exactly one row.");
-            this.arcadeRule = this.tables.TbArcadeRule.DataList[0];
-            if(Math.Abs(this.RoundReward.PortalX)+this.RoundReward.PortalRadius>=this.arcadeRule.ArenaHalfWidth||Math.Abs(this.RoundReward.PortalZ)+this.RoundReward.PortalRadius>=this.arcadeRule.ArenaHalfHeight)throw ConfigError(this.Profile,"TbArcadeRoundReward","arcade.round.reward","portal outside arena");
-            if (!string.Equals(this.arcadeRule.Id, "arcade.default", StringComparison.Ordinal) ||
-                string.IsNullOrWhiteSpace(this.arcadeRule.ConfigFingerprint) || this.arcadeRule.ConfigFingerprint.Length > 128 ||
-                this.arcadeRule.InitialLives <= 0 || this.arcadeRule.InitialBombs < 0 || this.arcadeRule.InitialDashes < 0 ||
-                !float.IsFinite(this.arcadeRule.DropChance) || this.arcadeRule.DropChance < 0 || this.arcadeRule.DropChance > 1 ||
-                !float.IsFinite(this.arcadeRule.EnemyDropHealthUnit) || this.arcadeRule.EnemyDropHealthUnit <= 0 ||
-                !float.IsFinite(this.arcadeRule.EnemyDropDamageUnit) || this.arcadeRule.EnemyDropDamageUnit <= 0 ||
-                !float.IsFinite(this.arcadeRule.EnemyDropMaxChance) || this.arcadeRule.EnemyDropMaxChance < this.arcadeRule.DropChance || this.arcadeRule.EnemyDropMaxChance > 1 ||
-                !float.IsFinite(this.arcadeRule.CoopDownedSeconds) || this.arcadeRule.CoopDownedSeconds<=0 ||
-                !float.IsFinite(this.arcadeRule.CoopRescueRadius) || this.arcadeRule.CoopRescueRadius<=0 ||
-                !float.IsFinite(this.arcadeRule.WeaponDeliverySeconds) || this.arcadeRule.WeaponDeliverySeconds<=0 ||
-                !float.IsFinite(this.arcadeRule.CoopRescueSpeed) || this.arcadeRule.CoopRescueSpeed<1 || this.arcadeRule.CoopDonationMinLives<2 ||
-                string.IsNullOrWhiteSpace(this.arcadeRule.BaseWeaponId) ||
-                this.tables.TbArcadeWeapon.GetOrDefault(this.arcadeRule.BaseWeaponId) == null)
-                throw ConfigError(this.Profile, "TbArcadeRule", this.arcadeRule.Id, "identity or initial resources are invalid.");
-
-            HashSet<string> weaponIds = new(StringComparer.Ordinal);
-            foreach (ArcadeWeaponConfig weapon in this.tables.TbArcadeWeapon.DataList)
-            {
-                if (weapon == null || string.IsNullOrWhiteSpace(weapon.Id) || !weaponIds.Add(weapon.Id))
-                    throw ConfigError(this.Profile, "TbArcadeWeapon", weapon?.Id ?? "<null>",
-                        "missing or duplicate weapon identity.");
-                bool validBehavior = weapon.Behavior switch
-                {
-                    ArcadeWeaponBehavior.Melee => weapon.ProjectileCount == 1 && weapon.SpreadDegrees == 0f &&
-                        weapon.MaxHits == 1 && weapon.ExplosionRadius == 0f &&
-                        string.IsNullOrWhiteSpace(weapon.ProjectileVisualResourceName) &&
-                        Finite(weapon.MeleeRange, weapon.MeleeArcDegrees, 0f, 0f) &&
-                        weapon.MeleeRange > 0f && weapon.MeleeArcDegrees > 0f && weapon.MeleeArcDegrees <= 360f,
-                    ArcadeWeaponBehavior.Direct => weapon.MaxHits == 1 && weapon.ExplosionRadius == 0f,
-                    ArcadeWeaponBehavior.Piercing => weapon.MaxHits > 1 && weapon.ExplosionRadius == 0f,
-                    ArcadeWeaponBehavior.Explosive => weapon.MaxHits == 1 && weapon.ExplosionRadius > 0f,
-                    ArcadeWeaponBehavior.TimedExplosive => weapon.MaxHits == 1 && weapon.ExplosionRadius > 0f,
-                    _ => false,
-                };
-                if (weapon.Damage <= 0 || weapon.ProjectileCount <= 0 || weapon.ProjectileCount > 12 ||
-                    !Finite(weapon.FireIntervalSeconds, weapon.ProjectileSpeed, weapon.ProjectileLifetimeSeconds,
-                        weapon.SpreadDegrees) || weapon.FireIntervalSeconds <= 0f ||
-                    (weapon.Behavior == ArcadeWeaponBehavior.Melee
-                        ? weapon.ProjectileSpeed != 0f || weapon.ProjectileLifetimeSeconds != 0f
-                        : weapon.ProjectileSpeed <= 0f || weapon.ProjectileLifetimeSeconds <= 0f) ||
-                    weapon.SpreadDegrees < 0f ||
-                    weapon.SpreadDegrees > 180f || !Finite(weapon.ExplosionRadius, 1f, 1f, 1f) || !validBehavior ||
-                    (weapon.Behavior != ArcadeWeaponBehavior.Melee && (weapon.MeleeRange != 0f || weapon.MeleeArcDegrees != 0f)))
-                    throw ConfigError(this.Profile, "TbArcadeWeapon", weapon?.Id ?? "<null>",
-                        "invalid weapon values or behavior contract.");
-            }
-
-            HashSet<string> powerupIds = new(StringComparer.Ordinal);
-            foreach (ArcadePowerupConfig powerup in this.tables.TbArcadePowerup.DataList)
-            {
-                if (powerup == null || string.IsNullOrWhiteSpace(powerup.Id) || !powerupIds.Add(powerup.Id) ||
-                    !Enum.IsDefined(powerup.Behavior) ||
-                    !Finite(powerup.Magnitude, powerup.IntervalSeconds, powerup.Radius, powerup.ProjectileSpeed) ||
-                    powerup.Magnitude < 0f || powerup.Damage < 0 || powerup.IntervalSeconds < 0f ||
-                    (powerup.Behavior==ArcadePowerupBehavior.WeaponSkull&&powerup.Magnitude!=2f&&powerup.Magnitude!=3f) ||
-                    powerup.Radius < 0f || powerup.ProjectileSpeed < 0f || powerup.Charges < 0)
-                    throw ConfigError(this.Profile, "TbArcadePowerup", powerup?.Id ?? "<null>",
-                        "invalid powerup values.");
-            }
-
-            HashSet<string> dropIds = new(StringComparer.Ordinal);
-            foreach (ArcadeDropConfig drop in this.tables.TbArcadeDrop.DataList)
-            {
-                bool timed = drop?.Kind is ArcadeDropKind.TemporaryWeapon or ArcadeDropKind.Support or
-                    ArcadeDropKind.Powerup;
-                if (drop == null || string.IsNullOrWhiteSpace(drop.Id) || !dropIds.Add(drop.Id) ||
-                    drop.MinArena <= 0 || drop.MaxArena < 0 || drop.MaxArena != 0 && drop.MaxArena < drop.MinArena ||
-                    drop.EnemyMinArena < 0 || drop.Weight <= 0 || string.IsNullOrWhiteSpace(drop.ProductId) || drop.Amount <= 0 ||
-                    !Finite(drop.DurationSeconds, 1f, 1f, 1f) || drop.DurationSeconds < 0f ||
-                    timed != (drop.DurationSeconds > 0f) ||
-                    drop.Kind == ArcadeDropKind.TemporaryWeapon && !weaponIds.Contains(drop.ProductId) ||
-                    drop.Kind == ArcadeDropKind.Powerup && !powerupIds.Contains(drop.ProductId)||
-                    drop.Kind==ArcadeDropKind.Support&&(drop.ProductId!="arcade.support.drone"||!powerupIds.Contains(drop.ProductId)||drop.DurationSeconds!=this.Drone.DurationSeconds))
-                    throw ConfigError(this.Profile, "TbArcadeDrop", drop?.Id ?? "<null>",
-                        "invalid drop values or product reference.");
-            }
-
-            // 支援视觉仅服务旧局已持有装备，不提供商品与价格。
-            HashSet<string> supportIds = new(StringComparer.Ordinal);
-            foreach (ArcadeSupportVisualConfig visual in this.tables.TbArcadeSupportVisual.DataList)
-                if (string.IsNullOrWhiteSpace(visual.Id) || !supportIds.Add(visual.Id) ||
-                    string.IsNullOrWhiteSpace(visual.ProductId) || visual.EquipmentSlotId != "support" ||
-                    !float.IsFinite(visual.VisualOffsetX) || !float.IsFinite(visual.VisualOffsetY) || !float.IsFinite(visual.VisualOffsetZ))
-                    throw ConfigError(this.Profile, "TbArcadeSupportVisual", visual.Id, "invalid support visual.");
-
-            Dictionary<string, ArcadeBossConfig> bosses = new(StringComparer.Ordinal);
-            foreach (ArcadeBossConfig boss in this.tables.TbArcadeBoss.DataList)
-            {
-                ArcadeEnemyGroupConfig group = string.IsNullOrWhiteSpace(boss?.EnemyGroupId)
-                    ? null
-                    : this.tables.TbArcadeEnemyGroup.GetOrDefault(boss.EnemyGroupId);
-                if (boss == null || string.IsNullOrWhiteSpace(boss.Id) || !bosses.TryAdd(boss.Id, boss) ||
-                    group?.Members == null || group.Members.Length != 1 || group.Members[0].Count != 1 ||
-                    !Finite(boss.SkillCooldownSeconds, boss.TelegraphSeconds, boss.ChargeDurationSeconds,
-                        boss.ChargeSpeedMultiplier) ||
-                    !Finite(boss.ImpactRadius, boss.ImpactDamageMultiplier, 1f, 1f) ||
-                    boss.SkillCooldownSeconds <= 0f || boss.TelegraphSeconds <= 0f ||
-                    boss.ChargeDurationSeconds <= 0f || boss.ChargeSpeedMultiplier <= 1f ||
-                    boss.ImpactRadius <= 0f || boss.ImpactDamageMultiplier <= 0f)
-                    throw ConfigError(this.Profile, "TbArcadeBoss", boss?.Id ?? "<null>",
-                        "invalid boss values or enemy group reference.");
-                if (!Finite(boss.RayIntervalSeconds, boss.RayTelegraphSeconds, boss.RaySpeed, boss.RayDamageMultiplier) ||
-                    (boss.RayIntervalSeconds == 0f ? boss.RayTelegraphSeconds != 0f || boss.RaySpeed != 0f || boss.RayDamageMultiplier != 0f :
-                        boss.RayIntervalSeconds < 0f || boss.RayTelegraphSeconds <= 0f || boss.RaySpeed <= 0f || boss.RayDamageMultiplier <= 0f) ||
-                    !Finite(boss.ReinforcementIntervalSeconds, 1f, 1f, 1f) ||
-                    (string.IsNullOrEmpty(boss.ReinforcementGroupId) ? boss.ReinforcementIntervalSeconds != 0f :
-                        boss.ReinforcementIntervalSeconds <= 0f || this.tables.TbArcadeEnemyGroup.GetOrDefault(boss.ReinforcementGroupId) == null))
-                    throw ConfigError(this.Profile, "TbArcadeBoss", boss.Id, "invalid ray or reinforcement values.");
-            }
-
-            HashSet<string> challengeIds = new(StringComparer.Ordinal);
-            foreach (ArcadeChallengeConfig challenge in this.tables.TbArcadeChallenge.DataList)
-            {
-                if (challenge == null || string.IsNullOrWhiteSpace(challenge.Id) ||
-                    !challengeIds.Add(challenge.Id) || string.IsNullOrWhiteSpace(challenge.EnemyGroupId) ||
-                    this.tables.TbArcadeEnemyGroup.GetOrDefault(challenge.EnemyGroupId) == null ||
-                    challenge.StartArena <= 0 || challenge.Interval <= 0 ||
-                    !Finite(challenge.TimeLimitSeconds, 1f, 1f, 1f) || challenge.TimeLimitSeconds <= 0f)
-                    throw ConfigError(this.Profile, "TbArcadeChallenge", challenge?.Id ?? "<null>",
-                        "invalid challenge values or enemy group reference.");
-            }
-            if (challengeIds.Count == 0)
-                throw ConfigError(this.Profile, "TbArcadeChallenge", "count", "expected at least one challenge.");
-
-            foreach (ArcadeArenaConfig arena in this.tables.TbArcadeArena.DataList)
-            {
-                var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(arena);
-                var content = FirepowerLoop.Arcade.ArcadeBabylonParameters.FromConfig(arena);
-                if (content.Crates.Any(c => Math.Abs(c.X) + c.Radius > this.arcadeRule.ArenaHalfWidth || Math.Abs(c.Y) + c.Radius > this.arcadeRule.ArenaHalfHeight))
-                    throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), "invalid crate position");
-                if (opening.Enabled && (opening.WaterMinY <= -this.arcadeRule.ArenaHalfHeight || opening.WaterMinY >= this.arcadeRule.ArenaHalfHeight ||
-                    Math.Abs(opening.CampfireX) + opening.CampfireRadius > this.arcadeRule.ArenaHalfWidth ||
-                    Math.Abs(opening.CampfireY) + opening.CampfireRadius > this.arcadeRule.ArenaHalfHeight ||
-                    arena.WaveGroupIds.Any(id => this.tables.TbArcadeEnemyGroup.GetOrDefault(id)?.Members.Length != 1)))
-                    throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), "invalid island zones or opening group.");
-                if (arena.NextArenaNumbers == null || arena.NextArenaNumbers.Length > 4 ||
-                    arena.NextArenaNumbers.Distinct().Count() != arena.NextArenaNumbers.Length ||
-                    arena.NextArenaNumbers.Any(next => next == arena.ArenaNumber || this.tables.TbArcadeArena.GetOrDefault(next) == null) ||
-                    (!string.IsNullOrEmpty(arena.FinalBossId) && (!bosses.ContainsKey(arena.FinalBossId) || arena.NextArenaNumbers.Length != 0)))
-                    throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), "invalid route or final Boss reference.");
-                if (arena.Hazards == null || arena.Hazards.Length > 8)
-                    throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), "invalid hazard count.");
-                HashSet<int> hazardIds = new();
-                foreach (ArcadeHazardConfig hazard in arena.Hazards)
-                {
-                    if (hazard == null || !hazardIds.Add(hazard.Id))
-                        throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), "duplicate hazard identity.");
-                    var parameters = GetHazardParameters(hazard);
-                    string hazardError = FirepowerLoop.Arcade.ArcadeHazardRules.Validate(parameters,
-                        this.arcadeRule.ArenaHalfWidth, this.arcadeRule.ArenaHalfHeight, this.arcadeRule.PlayerRadius);
-                    if (hazardError != null) throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), hazardError);
-                    foreach (ArcadeObstacleConfig obstacle in arena.Obstacles)
-                    {
-                        float dx = Math.Max(0f, Math.Abs(parameters.X - obstacle.CenterX) - obstacle.HalfWidth);
-                        float dy = Math.Max(0f, Math.Abs(parameters.Y - obstacle.CenterY) - obstacle.HalfHeight);
-                        if (dx * dx + dy * dy <= Math.Pow(parameters.Extent + this.arcadeRule.PlayerRadius * 2f, 2))
-                            throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), "hazard blocks obstacle safety passage.");
-                    }
-                }
-                if (string.IsNullOrWhiteSpace(arena.BossId)) continue;
-                if (!arena.IsBoss || !bosses.TryGetValue(arena.BossId, out ArcadeBossConfig boss) ||
-                    arena.WaveGroupIds == null || arena.WaveGroupIds.Length == 0 ||
-                    !string.Equals(arena.WaveGroupIds[^1], boss.EnemyGroupId, StringComparison.Ordinal))
-                    throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(),
-                        "BossId must match the final wave enemy group.");
-            }
-            var roundLayouts=this.tables.TbArcadeRoundLayout.DataList.Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig).ToArray();
-            if(roundLayouts.Length!=this.tables.TbArcadeArena.DataList.Count*4)throw ConfigError(this.Profile,"TbArcadeRoundLayout","count","incomplete directory");
-            foreach(var arena in this.tables.TbArcadeArena.DataList)
-            {
-                this.EarlyStages.TryGetValue(arena.ArenaNumber,out var stage);var rounds=roundLayouts.Where(p=>p.ArenaConfigNumber==arena.ArenaNumber).ToArray();
-                if(rounds.Length!=4||rounds.Select(p=>p.RoundNumber).Distinct().Count()!=4||rounds.Select(p=>p.ThemeKey).Distinct().Count()!=1||rounds.Any(p=>!p.FitsArena(stage?.HalfWidth??this.arcadeRule.ArenaHalfWidth,stage?.HalfHeight??this.arcadeRule.ArenaHalfHeight,this.arcadeRule.PlayerRadius)))throw ConfigError(this.Profile,"TbArcadeRoundLayout",arena.ArenaNumber.ToString(),"invalid connected layout");
-            }
-            bool ValidateRoute(int id, int depth)
-            {
-                if (depth > FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion)) return false;
-                var arena = this.tables.TbArcadeArena.Get(id);
-                if (arena.NextArenaNumbers.Length == 0) return depth == FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion) && !string.IsNullOrEmpty(arena.FinalBossId);
-                return depth < FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion) && string.IsNullOrEmpty(arena.FinalBossId) &&
-                    arena.NextArenaNumbers.All(next => ValidateRoute(next, depth + 1));
-            }
-            if (!ValidateRoute(1, 1))
-                throw ConfigError(this.Profile, "TbArcadeArena", "route", "casual routes must have thirteen arenas and a final Boss.");
-        }
-
-        /// <summary>将 Luban 行转换为与客户端完全相同的纯机关参数；不保存运行态。</summary>
-        public static FirepowerLoop.Arcade.ArcadeHazardParameters GetHazardParameters(ArcadeHazardConfig row) =>
-            new(row.Id, (int)row.Kind, row.CenterX, row.CenterY, row.DirectionDegrees, row.Radius,
-                row.ArmLength, row.ArmHalfWidth, row.IdleSeconds, row.WarningSeconds, row.ActiveSeconds,
-                row.AngularSpeedDegrees, row.HitIntervalSeconds, row.PlayerDamageRatio, row.BossDamageRatio);
-
-        private static bool Finite(params float[] values)
-        {
-            foreach (float value in values) if (float.IsNaN(value) || float.IsInfinity(value)) return false;
-            return true;
-        }
-
         private void IndexProfileTables()
         {
             foreach (StartMachineConfig machine in this.tables.TbStartMachine.DataList)

@@ -1,56 +1,5 @@
 ##var,Id,CategoryId,Order,LabelText,CommandTemplate,DescriptionText,UsageText,ExampleText
 ##type,string,string,int,string,string,string,string,string
-,arcade.solo,mode-entry,100,打开单人闯关,#arcade solo,"适用：主菜单 · 模式入口
-条件：先关闭选角、登录或存档详情。
-效果：打开闯关；缺少资源时先提示下载。",用法：#arcade solo,示例：#arcade solo
-,arcade.online,mode-entry,200,打开双人联机,#arcade online,"适用：主菜单 · 模式入口
-条件：先关闭选角、登录或存档详情。
-效果：未登录时打开登录；已登录时进入大厅。",用法：#arcade online,示例：#arcade online
-,arcade.crater,mode-entry,300,打开巨人城（开发中）,#arcade crater,"适用：主菜单 · 开发中
-条件：主菜单可见且未在准备开局。
-效果：准备挑战资源后进入巨人城废墟。",用法：#arcade crater,示例：#arcade crater
-,arcade.status,arcade-game,100,查看战斗状态,#arcade status,"适用：单人闯关 · 只读查询
-条件：已进入闯关战斗。
-效果：查看波次、生命、金币和敌人数量。",用法：#arcade status,示例：#arcade status
-,arcade.heal,arcade-game,200,恢复满血,#arcade heal,"适用：单人闯关 · 战斗测试
-条件：闯关战斗中，角色未处于等待复活。
-效果：将当前单人街机角色恢复到最大生命。",用法：#arcade heal,示例：#arcade heal
-,arcade.damage,arcade-game,300,施加测试伤害,"#arcade damage ","适用：单人闯关 · 战斗测试
-条件：已进入闯关战斗。
-效果：按正式规则受伤，测试护盾与失败。",用法：#arcade damage <正整数>,示例：#arcade damage 30
-,arcade.god-on,arcade-game,400,开启无敌,#arcade god on,"适用：单人闯关 · 战斗测试
-条件：闯关战斗中，非加载、结算或切换阶段。
-效果：仅当前现场生效；离场或新局清除。",用法：#arcade god on,示例：#arcade god on
-,arcade.god-off,arcade-game,500,关闭无敌,#arcade god off,"适用：单人闯关 · 战斗测试
-条件：闯关战斗中，非加载、结算或切换阶段。
-效果：关闭后恢复正式伤害规则。",用法：#arcade god off,示例：#arcade god off
-,arcade.spawn,arcade-game,600,生成指定敌人,"#arcade spawn ","适用：单人闯关 · 战斗测试
-条件：普通战斗中；非加载或结算。
-效果：生成1至20个敌人，超过上限拒绝。",用法：#arcade spawn <EnemyId> <数量>,示例：#arcade spawn enemy.arcade.basic 1
-,arcade.clear-wave,arcade-game,700,清除当前波次,#arcade clear wave,"适用：单人闯关 · 战斗测试
-条件：已进入闯关战斗。
-效果：清空本波已生成及待生成敌人并结算。",用法：#arcade clear wave,示例：#arcade clear wave
-,arcade.clear-arena,arcade-game,800,完成当前竞技场,#arcade clear arena,"适用：单人闯关 · 战斗测试
-条件：已进入闯关战斗。
-效果：清场并执行正式完成与安全节点流程。",用法：#arcade clear arena,示例：#arcade clear arena
-,arcade.goto,stage-items,100,跳转指定关卡与轮次,"#arcade goto ","适用：单人闯关 · 关卡与道具
-条件：已进入闯关战斗。
-效果：跳关创建临时测试局，保留正常存档。",用法：#arcade goto <关卡序号> <轮次>,示例：#arcade goto 2 3
-,arcade.gold,stage-items,200,增加局内金币,"#arcade gold ","适用：单人闯关 · 关卡与道具
-条件：已进入闯关战斗。
-效果：增加本场金币，完成后进入安全节点。",用法：#arcade gold <正整数>,示例：#arcade gold 100
-,arcade.bombs,stage-items,300,设置炸弹数量,"#arcade bombs ","适用：单人闯关 · 关卡与道具
-条件：已进入闯关战斗。
-效果：设置当前竞技场持有的炸弹数量。",用法：#arcade bombs <0-9999>,示例：#arcade bombs 3
-,arcade.dashes,stage-items,400,设置冲刺数量,"#arcade dashes ","适用：单人闯关 · 关卡与道具
-条件：已进入闯关战斗。
-效果：设置当前竞技场持有的冲刺数量。",用法：#arcade dashes <0-9999>,示例：#arcade dashes 5
-,arcade.drops,stage-items,500,查看掉落配置,#arcade drops,"适用：单人闯关 · 只读查询
-条件：已进入闯关战斗。
-效果：输出实际掉落ID和名称或明确类型。",用法：#arcade drops,示例：#arcade drops
-,arcade.drop,stage-items,600,模拟拾取掉落,"#arcade drop ","适用：单人闯关 · 关卡与道具
-条件：已进入闯关战斗。
-效果：立即应用掉落效果，不生成地面物件。",用法：#arcade drop <DropId>,示例：#arcade drop arcade.drop.powerup.shield
 ,camera.topdown,camera-view,100,切换俯视视角,#camera topdown,"适用：客户端 · 视角切换
 条件：进入场景后观察切换效果。
 效果：切换到固定俯视操作。",用法：#camera topdown,示例：#camera topdown
@@ -84,6 +33,9 @@
 ,diagnostics.terrain-instancing-restore,diagnostics,400,恢复地形实例化,#terrain instancing restore,"适用：当前地图 · 渲染对照
 条件：当前地图已加载完成。
 效果：恢复本次测试前的地形实例化设置。",用法：#terrain instancing restore,示例：#terrain instancing restore
+,arcade.online,mode-entry,200,打开联机大厅,#arcade online,"适用：主菜单 · 模式入口
+条件：先关闭选角、登录或存档详情。
+效果：未登录时打开登录；已登录时进入大厅。",用法：#arcade online,示例：#arcade online
 ,network.netlog-on,diagnostics,500,开启网络日志,#netlog on,"适用：客户端 · 网络诊断
 条件：无需进入战斗。
 效果：开启连接、发送、接收及超时日志。",用法：#netlog on,示例：#netlog on

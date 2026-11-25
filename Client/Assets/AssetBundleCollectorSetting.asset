@@ -81,7 +81,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: startup;arcade;arcade-online
+        AssetTags: startup;arcade
         UserData: 
       - CollectPath: Assets/Game/Art/UI/Loading
         CollectorGUID: 38518e4660df86d42bbcbd65c5f56bcd
@@ -143,62 +143,6 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab
-        CollectorGUID: ac2643d9b8897ff478844019ebe4c227
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeResume.prefab
-        CollectorGUID: 42e9f6328672a3b428d90631bcfccd51
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeRoundTransition.prefab
-        CollectorGUID: 8fd4d83113e6701498ab1fc07a8d1dc0
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeScoreShop.prefab
-        CollectorGUID: 48d1247902f3fff4995cfaf80685ec69
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeShop.prefab
-        CollectorGUID: 43e180362c86df749bddcd61ccad2813
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/UI/Arcade/Box/ArcadePlayerStatusBox.prefab
-        CollectorGUID: 9b41bdce5f4757a4a801b979ea7a56f9
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/UI/Arcade/Box/ArcadeShopOfferBox.prefab
-        CollectorGUID: 3cb2c0a56a29d55468fd843429a6d47a
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
       - CollectPath: Assets/Game/Prefabs/UI/Common
         CollectorGUID: 663d4b4bea1ffa148b863fde12083f31
         CollectorType: 0
@@ -255,35 +199,11 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: startup;arcade
         UserData:
-      - CollectPath: Assets/Game/Art/Challenge/Crater/CraterMap.prefab
-        CollectorGUID: cedd2e8fa510ed04b84041787669f0c3
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: crater
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/UI/Challenge/ChallengeHud.prefab
-        CollectorGUID: def4e2ca204b7254ca587a01df82f076
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: crater
-        UserData:
     - GroupName: PrefabsCharacters
       GroupDesc: "\u89D2\u8272\u9884\u5236\u4F53"
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeEnemyArcher.prefab
-        CollectorGUID: 9ea1f4c8ff759fa42acb434c71c3b195
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: campaign
-        UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/ArcadeShadowZombie.prefab
         CollectorGUID: e72d3187e4d9fcc4683f850e7bbf96b1
         CollectorType: 0
@@ -346,7 +266,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: arcade;crater
+        AssetTags: arcade
         UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab
         CollectorGUID: 277522346e4f78e4fb04f2af31d7543b
@@ -371,22 +291,6 @@ MonoBehaviour:
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
         AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeEnemyBossArcher.prefab
-        CollectorGUID: b33f2c821b78b3546a9ce861d032a342
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: campaign
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeEnemyBrute.prefab
-        CollectorGUID: f7840b33585af214ab1980d44a7f5f2c
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: campaign
         UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/GrayboxArcher.prefab
         CollectorGUID: 287ee895903b5c546a40ad4461b3a54b
@@ -646,38 +550,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeHengeVisual.prefab
-        CollectorGUID: f860bd6fe1f9fa24ab03c1d049130dda
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeFortVisual.prefab
-        CollectorGUID: 01f6e78d7344ec84a89c6e732d7e45d6
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeKoiVisual.prefab
-        CollectorGUID: 687983d8b8b0c144daf7d89557abb49e
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeFinalNestVisual.prefab
-        CollectorGUID: 65cd730611393f74e9653dc337f68c95
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropDash.prefab
         CollectorGUID: 024b7be8209652c489bcef953e7c9384
         CollectorType: 0
@@ -894,22 +766,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeRoundRewardVisual.prefab
-        CollectorGUID: bf9a53612c95e764cb835bbc2c5288f6
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeStagePortalVisual.prefab
-        CollectorGUID: 5331395e53052ad4797abd82e2604e50
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/MissionExitVisual.prefab
         CollectorGUID: dcbe6e3626b106f439e5d4d862cd2e36
         CollectorType: 0
@@ -926,22 +782,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDocksVisual.prefab
-        CollectorGUID: d9d388a735fd02d4fb1c34f91e5a7705
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeFarmVisual.prefab
-        CollectorGUID: 5ae5ce788f3929740847320102627fc2
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab
         CollectorGUID: 3555341a889c2454986cd8349fc6d591
         CollectorType: 0
@@ -949,54 +789,6 @@ MonoBehaviour:
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
         AssetTags: survivor
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeGraveyardVisual.prefab
-        CollectorGUID: 8ca247d77a48b4f47812bc1044f39dd0
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeTempleVisual.prefab
-        CollectorGUID: 9b391f6eb26245d40b629a6dadf214dd
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeMarketplaceVisual.prefab
-        CollectorGUID: 3bd86f366974dea479d37ef61b5c47c6
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeShadowCrowVisual.prefab
-        CollectorGUID: 01f54d88acfc5474db095a890a28c4ec
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeShadowTravelVisual.prefab
-        CollectorGUID: 8a63de924e6d809439c76a6924f398ab
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeHerdVisual.prefab
-        CollectorGUID: 823611006318ba0468d778f774441e2b
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
         UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/TestResourcePickup.prefab
         CollectorGUID: 3b12d4b689c7f4e42883195658f54886

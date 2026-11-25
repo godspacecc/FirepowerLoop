@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using QFramework;
@@ -27,14 +27,6 @@ namespace Game
         private string entryStageKey;
         /// <summary>入口准备期固定幸存者身份，不能借用残留闯关或联机存档选图。</summary>
         private bool survivorEntryArtwork;
-        /// <summary>基础场景完成后的地图内容、相机与安全节点准备，独立于场景加载进度。</summary>
-        private bool arcadePreparationActive;
-        /// <summary>当前准备快照允许重试；不把普通结算保存失败当作地图失败。</summary>
-        private bool arcadePreparationFailed;
-        /// <summary>返回菜单期间继续遮挡未完成现场，阻止重复点击。</summary>
-        private bool returningFromPreparation;
-        /// <summary>地图准备请求代次；旧返回回调不能覆盖同一 View 上的新请求。</summary>
-        private int preparationVersion;
         /// <summary>最近地图请求是否为基地；下载覆盖显示期间仍保留，结束后恢复。</summary>
         private bool baseMapLoading;
         /// <summary>最近地图进度，范围 0～1；下载覆盖期间继续由地图事件更新。</summary>
@@ -52,8 +44,7 @@ namespace Game
         private OptionalGameplayDownloadProgress downloadProgress;
         private LoadingUI UI => BaseUI as LoadingUI;
         /// <summary>开局准备、地图加载或下载执行期间禁止普通关闭入口隐藏遮罩。</summary>
-        protected override bool CanHide() => !downloadActive && !entryPreparing && !mapLoadingActive &&
-            !arcadePreparationActive && !returningFromPreparation;
+        protected override bool CanHide() => !downloadActive && !entryPreparing && !mapLoadingActive;
         public bool ShouldResumeDownloadEntry => downloadActive && !downloadDismissed;
 
         public override UILayer Layer()
@@ -68,8 +59,7 @@ namespace Game
 
         protected override void OnInit()
         {
-            UI.BtnBack.onClick.AddListener(OnBackClicked);
-            UI.BtnRetry.onClick.AddListener(OnRetryPreparationClicked);
+            UI.BtnBack.onClick.AddListener(Hide);
             UI.BtnCopyLog.onClick.AddListener(OnCopyLogClicked);
             UI.BtnDownloadClose.onClick.AddListener(Hide);
             this.RegisterEvent<MapLoadingStartedEvent>(OnLoadingStarted)
@@ -84,123 +74,12 @@ namespace Game
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<LanguageChangedEvent>(_ => RefreshPresentation())
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<ArcadeCombatHudChangedEvent>(OnArcadePreparationChanged)
-                .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<MapCurrentReleasedEvent>(evt =>
-            {
-                // 返回事务在卸载后还要读取安全节点，释放事件不能提前丢失失败恢复入口。
-                if (evt.MapId == MapIds.Arcade && !returningFromPreparation) ClearArcadePreparation();
-            }).UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<ArcadeRunChangedEvent>(evt =>
-            {
-                RefreshArtwork();
-                if (evt.Phase != ArcadeRunPhase.Arena && evt.Phase != ArcadeRunPhase.Challenge)
-                    ClearArcadePreparation();
-            }).UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<OnlineArcadeRunChangedEvent>(_ => RefreshArtwork())
-                .UnRegisterWhenGameObjectDestroyed(BaseUI);
-        }
-
-        /// <summary>资源和安全节点仍在准备时保持顶层阻断；终态快照才释放战斗画面。</summary>
-        private void OnArcadePreparationChanged(ArcadeCombatHudChangedEvent evt)
-        {
-            if (evt.Snapshot == null) return;
-            if (!evt.Snapshot.IslandTransitioning)
-            {
-                ClearArcadePreparation();
-                return;
-            }
-            if (!arcadePreparationActive)
-            {
-                preparationVersion++;
-                returningFromPreparation = false;
-                loadingMapId = MapIds.Arcade;
-                mapLoadingStartedAt = DateTime.Now;
-            }
-            arcadePreparationActive = true;
-            entryProgress = Mathf.Max(entryProgress, .9f);
-            arcadePreparationFailed = evt.Snapshot.CanRetryCompletion;
-            mapFailureReason = evt.Snapshot.IslandPreparationError;
-            mapError = arcadePreparationFailed ? FormatMapFailure() : null;
-            failureLogsCopied = false;
-            displayMode = DisplayMode.Map;
-            // 普通局内切关由黑幕接管；首次进局和失败重试仍使用完整加载页。
-            if(!arcadePreparationFailed&&!mapLoadingActive&&!entryPreparing)
-            {
-                // 失败页已显示时，重试仍须清除旧错误；普通切轮继续只使用黑幕。
-                if(IsShow())RefreshPresentation();
-                return;
-            }
-            Show();
-            RefreshPresentation();
-        }
-
-        /// <summary>结束、卸载或准备成功时只清理地图准备所持有的显示状态。</summary>
-        private void ClearArcadePreparation()
-        {
-            if (!arcadePreparationActive) return;
-            arcadePreparationActive = arcadePreparationFailed = false;
-            mapError = mapFailureReason = null;
-            RefreshPresentation();
-            if (!mapLoadingActive && !entryPreparing) Hide();
-        }
-
-        /// <summary>失败现场必须先完成地图卸载及安全节点恢复，才能露出主菜单。</summary>
-        private void OnBackClicked()
-        {
-            if (arcadePreparationActive)
-            {
-                if (arcadePreparationFailed && !returningFromPreparation) ReturnFromPreparationAsync().Forget();
-                return;
-            }
-            Hide();
-        }
-
-        /// <summary>加载页提交专用重试意图，规则与候选状态仍由战斗系统裁决。</summary>
-        private void OnRetryPreparationClicked()
-        {
-            if (!arcadePreparationActive || !arcadePreparationFailed || returningFromPreparation) return;
-            if (this.GetModel<MapSceneModel>().CurrentMapId != MapIds.Arcade)
-            {
-                // 地图已释放时重试剩余的安全节点恢复，不能向旧现场重建资源。
-                ReturnFromPreparationAsync().Forget();
-                return;
-            }
-            this.GetSystem<ArcadeCombatSystem>().TryRetryMapPreparation();
-        }
-
-        /// <summary>异步返回只刷新发起请求的 View；返回期间保持顶层输入阻断。</summary>
-        private async UniTask ReturnFromPreparationAsync()
-        {
-            var owner = UI;
-            int version = preparationVersion;
-            returningFromPreparation = true;
-            RefreshPresentation();
-            try
-            {
-                var result = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnFromMapPreparationAsync();
-                if (owner == null || UI != owner || version != preparationVersion) return;
-                if (!result.Success)
-                {
-                    mapFailureReason = result.Error;
-                    mapError = FormatMapFailure();
-                }
-            }
-            finally
-            {
-                if (owner != null && UI == owner && version == preparationVersion)
-                {
-                    returningFromPreparation = false;
-                    RefreshPresentation();
-                    if (!arcadePreparationActive && string.IsNullOrEmpty(mapError)) Hide();
-                }
-            }
         }
 
         protected override void OnShow()
         {
             RefreshPresentation();
-            UI.BtnBack.interactable = !returningFromPreparation && (CanHide() || arcadePreparationFailed);
+            UI.BtnBack.interactable = CanHide();
         }
 
         protected override void OnHide()
@@ -214,8 +93,6 @@ namespace Game
         protected override void OnUnload()
         {
             survivorEntryArtwork=false;
-            preparationVersion++;
-            returningFromPreparation = false;
         }
 
         private void OnStageChanged(MapLoadingStageEvent evt)
@@ -229,7 +106,6 @@ namespace Game
         {
             if (entryPreparing && !mapLoadingActive && !string.IsNullOrEmpty(entryStageKey))
             { UI.MessageText.text = Loc.T(entryStageKey); return; }
-            if (arcadePreparationActive) { UI.MessageText.text = Loc.T("ui.arcade.island.loading"); return; }
             if(!mapStage.HasValue){UI.MessageText.text=Loc.T("ui.loading.scene_status");return;}
             UI.MessageText.text=Loc.T("ui.loading.stage."+mapStage.Value);
         }
@@ -237,8 +113,6 @@ namespace Game
         private void OnLoadingStarted(MapLoadingStartedEvent evt)
         {
             if(!entryPreparing||evt.MapId!=MapIds.Arcade)survivorEntryArtwork=false;
-            preparationVersion++;
-            arcadePreparationActive = arcadePreparationFailed = returningFromPreparation = false;
             loadingMapId=evt.MapId;mapStage=null;mapFailureReason=null;
             mapLoadingStartedAt=DateTime.Now;
             failureLogsCopied=false;
@@ -308,7 +182,7 @@ namespace Game
                 entryProgress = Mathf.Max(entryProgress, .8f);
                 entryStageKey = "ui.arcade.island.loading";
             }
-            if (!arcadePreparationActive) mapError = null;
+            mapError = null;
             if(!entryPreparing&&string.IsNullOrEmpty(mapError))survivorEntryArtwork=false;
             if (displayMode == DisplayMode.ResourceDownload) return;
             RefreshPresentation();
@@ -346,8 +220,7 @@ namespace Game
             var progress = UnityEngine.Mathf.Clamp01(value);
             // 地图占前80%，后续场地和入口持有者全部释放才允许100%；不按时间伪推进。
             if (!CanHide() || !string.IsNullOrEmpty(mapError))
-                progress = Mathf.Min(.99f, Mathf.Max(progress * .8f, entryProgress,
-                    arcadePreparationActive ? .9f : 0f));
+                progress = Mathf.Min(.99f, Mathf.Max(progress * .8f, entryProgress));
             UI.ProgressSlider.gameObject.SetActive(true);
             UI.PercentText.gameObject.SetActive(true);
             UI.ProgressSlider.value = progress;
@@ -367,9 +240,8 @@ namespace Game
             UI.MapRoot.SetActive(displayMode == DisplayMode.Map);
             UI.DownloadRoot.SetActive(displayMode == DisplayMode.ResourceDownload);
             UI.ErrorRoot.SetActive(displayMode == DisplayMode.Map && !string.IsNullOrEmpty(mapError));
-            UI.BtnBack.interactable = !returningFromPreparation && (CanHide() || arcadePreparationFailed);
-            UI.BtnRetry.gameObject.SetActive(displayMode == DisplayMode.Map && arcadePreparationFailed);
-            UI.BtnRetry.interactable = !returningFromPreparation;
+            UI.BtnBack.interactable = CanHide();
+            UI.BtnRetry.gameObject.SetActive(false);
             RefreshCopyPresentation();
             var isBase = displayMode == DisplayMode.Map && baseMapLoading;
             UI.BaseArtwork.SetActive(isBase);
@@ -386,21 +258,7 @@ namespace Game
         {
             // 资源下载覆盖及地图进度事件不能把幸存者插画换成旧存档的关卡图。
             if(survivorEntryArtwork&&loadingMapId==MapIds.Arcade){UI.LoadingArtwork.ShowSurvivor();return;}
-            int arena = 0;
-            if (displayMode == DisplayMode.Map && loadingMapId == MapIds.Arcade)
-            {
-                var online = this.GetModel<OnlineArcadeRunModel>()?.Snapshot.Value ?? OnlineArcadeRunClientSnapshot.Empty();
-                if (online.HasRun && online.Phase is OnlineArcadeRunPhase.Arena or OnlineArcadeRunPhase.Challenge && online.Battle != null)
-                    arena = online.Battle.ArenaConfigNumber;
-                else
-                {
-                    var run = this.GetModel<ArcadeRunModel>()?.Current;
-                    if (run != null && !run.HasResult)
-                        // 旧顺序局的关卡序号不等于场地编号；缺失真实身份时由View回退默认图。
-                        arena = run.IsCasualRoute ? run.ArenaConfigNumber : 0;
-                }
-            }
-            UI.LoadingArtwork.ShowArena(arena);
+            UI.LoadingArtwork.ShowArena(0);
         }
 
         private void RenderDownloadProgress()

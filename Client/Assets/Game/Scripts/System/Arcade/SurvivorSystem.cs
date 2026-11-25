@@ -224,7 +224,39 @@ namespace Game
             if(!m.State.TryRefresh(revision,slot,ids,ids.Select(UpgradeDrawWeight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision+7919)))return false;
             Offer();Publish();return true;
         }
-        private Vector2 Resolve(Vector2 position,float radius)=>ArcadeCombatSystem.ResolvePosition(position,radius,HalfWidth,HalfHeight,obstacles);
+        /// <summary>将角色中心限制在战场内，并沿最短方向推出矩形障碍。</summary>
+        private Vector2 Resolve(Vector2 position, float radius) =>
+            ResolvePosition(position, radius, HalfWidth, HalfHeight, obstacles);
+
+        internal static Vector2 ResolvePosition(Vector2 position, float radius, float halfWidth, float halfHeight,
+            IReadOnlyList<ArcadeObstacleDefinition> obstacles)
+        {
+            float horizontal = halfWidth - radius;
+            float vertical = halfHeight - radius;
+            Vector2 Clamp(Vector2 point) => new Vector2(
+                Mathf.Clamp(point.x, -horizontal, horizontal),
+                Mathf.Clamp(point.y, -vertical, vertical));
+
+            var result = Clamp(position);
+            if (obstacles == null) return result;
+            for (int pass = 0; pass < 2; pass++)
+            {
+                foreach (var obstacle in obstacles)
+                {
+                    var half = obstacle.HalfExtents + Vector2.one * radius;
+                    var local = result - obstacle.Center;
+                    if (Mathf.Abs(local.x) >= half.x || Mathf.Abs(local.y) >= half.y) continue;
+                    float pushX = half.x - Mathf.Abs(local.x);
+                    float pushY = half.y - Mathf.Abs(local.y);
+                    if (pushX <= pushY)
+                        result.x = obstacle.Center.x + (local.x < 0f ? -half.x : half.x);
+                    else
+                        result.y = obstacle.Center.y + (local.y < 0f ? -half.y : half.y);
+                    result = Clamp(result);
+                }
+            }
+            return result;
+        }
         /// <summary>将权威换弹计时投影到既有角色进度圈与动作；暂停只重绘，不推进计时。</summary>
         private void Publish()
         {

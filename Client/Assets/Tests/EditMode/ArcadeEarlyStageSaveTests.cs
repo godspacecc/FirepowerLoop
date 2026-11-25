@@ -24,11 +24,5 @@ namespace Game.Tests
             }
             finally{if(Directory.Exists(directory))Directory.Delete(directory,true);}
         }
-        [TestCase(21)] [TestCase(22)] public void ChallengeCanReturnToNewMapIdentity(int map)
-        {
-            var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));var config=ArcadeSlayerChallengeConfiguration.FromTables(tables);
-            var state=ArcadeSlayerChallengeRules.Create(config,"return-new-map",new long[]{1},3,map,1);state=ArcadeSlayerChallengeRules.SetEntryChoice(state,config,1,false);
-            Assert.That(state.ReturnMap,Is.EqualTo(map));Assert.That(state.Phase,Is.EqualTo(ArcadeSlayerChallengePhase.Returning));
-        }
     }
 }

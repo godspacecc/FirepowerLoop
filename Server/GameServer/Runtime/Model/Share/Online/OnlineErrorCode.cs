@@ -26,8 +26,5 @@ namespace ET
         public const int ERR_OnlineChatOperationConflict = 200122;
         public const int ERR_OnlineRoomPurposeMismatch = 200133;
         public const int ERR_OnlineRoomVersionMismatch = 200134;
-        public const int ERR_OnlineArcadeStateInvalid = 200135;
-        public const int ERR_OnlineArcadeSaveFailed = 200136;
-        public const int ERR_OnlineArcadeOperationConflict = 200137;
     }
 }

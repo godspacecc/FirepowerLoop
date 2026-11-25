@@ -9,7 +9,7 @@ namespace Game.Tests
     {
         private object NewRun()
         {
-            var type=typeof(ArcadeCombatSystem).Assembly.GetType("Game.SurvivorRunState");
+            var type=typeof(SurvivorSystem).Assembly.GetType("Game.SurvivorRunState");
             Assert.That(type,Is.Not.Null,"缺少独立幸存者运行态");
             return Activator.CreateInstance(type,new object[]{10,5});
         }
@@ -17,7 +17,7 @@ namespace Game.Tests
         private static T Read<T>(object state,string name)=>(T)state.GetType().GetProperty(name).GetValue(state);
         private static object Rule(string name,params object[] args)
         {
-            var type=typeof(ArcadeCombatSystem).Assembly.GetType("Game.SurvivorCombatRules");
+            var type=typeof(SurvivorSystem).Assembly.GetType("Game.SurvivorCombatRules");
             Assert.That(type,Is.Not.Null,"缺少自动瞄准及无尽刷怪规则");
             return type.GetMethod(name).Invoke(null,args);
         }

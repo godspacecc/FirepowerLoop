@@ -21,7 +21,8 @@ namespace FirepowerLoop.Arcade
         private ArcadeEarlyStageParameters(StageConfig row)
         {
             ArenaConfigNumber=row.ArenaConfigNumber;HalfWidth=row.HalfWidth;HalfHeight=row.HalfHeight;PortalX=row.PortalX;PortalY=row.PortalY;
-            EnvironmentAddress="Prefabs/SceneObjects/"+row.EnvironmentPrefabName;HerdAddress=row.HerdCount>0?"Prefabs/SceneObjects/"+row.HerdPrefabName:null;
+            EnvironmentAddress=string.IsNullOrEmpty(row.EnvironmentPrefabName)?null:"Prefabs/SceneObjects/"+row.EnvironmentPrefabName;
+            HerdAddress=row.HerdCount>0?"Prefabs/SceneObjects/"+row.HerdPrefabName:null;
             HerdCount=row.HerdCount;HerdSpacing=row.HerdSpacing;HerdFirstDelay=row.HerdFirstDelay;HerdPeriod=row.HerdPeriod;
             HerdPlayerDamage=row.HerdPlayerDamage;HerdEnemyDamage=row.HerdEnemyDamage;
             Herd=new ArcadeHerdTuning(row.HerdWindup,row.HerdSpeed,row.HerdDistance,row.HerdRadius);
@@ -33,9 +34,10 @@ namespace FirepowerLoop.Arcade
             bool Name(string name)=>!string.IsNullOrWhiteSpace(name)&&name.All(c=>char.IsLetterOrDigit(c)||c=='_');
             bool Finite(float v)=>!float.IsNaN(v)&&!float.IsInfinity(v);
             var values=new[]{row.HalfWidth,row.HalfHeight,row.PortalX,row.PortalY,row.HerdSpacing,row.HerdWindup,row.HerdSpeed,row.HerdDistance,row.HerdRadius,row.HerdFirstDelay,row.HerdPeriod,row.HerdPlayerDamage,row.HerdEnemyDamage};
-            if(values.Any(v=>!Finite(v))||(row.ArenaConfigNumber!=5&&row.ArenaConfigNumber!=7&&row.ArenaConfigNumber!=10&&row.ArenaConfigNumber!=20&&(row.ArenaConfigNumber<21||row.ArenaConfigNumber>25))||!Name(row.EnvironmentPrefabName)||
+            if(values.Any(v=>!Finite(v))||(row.ArenaConfigNumber!=5&&row.ArenaConfigNumber!=7&&row.ArenaConfigNumber!=10&&row.ArenaConfigNumber!=20&&(row.ArenaConfigNumber<21||row.ArenaConfigNumber>25))||
+                (!string.IsNullOrEmpty(row.EnvironmentPrefabName)&&!Name(row.EnvironmentPrefabName))||
                 row.HalfWidth<=5||row.HalfWidth>64||row.HalfHeight<=5||row.HalfHeight>64||Math.Abs(row.PortalX)+2>=row.HalfWidth||Math.Abs(row.PortalY)+2>=row.HalfHeight||
-                row.HerdCount<0||row.HerdCount>7||row.ArenaConfigNumber!=22&&row.HerdCount!=0||row.ArenaConfigNumber==22&&row.HerdCount==0||
+                row.HerdCount<0||row.HerdCount>7||row.ArenaConfigNumber!=22&&row.HerdCount!=0||
                 row.HerdCount>0&&(!Name(row.HerdPrefabName)||row.HerdWindup<=0||row.HerdSpeed<=0||row.HerdDistance<=0||row.HerdRadius<=0||row.HerdSpacing<row.HerdRadius*2||
                 row.HerdFirstDelay<=0||row.HerdPeriod<=row.HerdWindup+row.HerdDistance/row.HerdSpeed||row.HerdPlayerDamage<=0||row.HerdPlayerDamage>1||row.HerdEnemyDamage<=0||row.HerdEnemyDamage>1))
                 throw new ArgumentException("早期固定场地参数无效："+row.ArenaConfigNumber);

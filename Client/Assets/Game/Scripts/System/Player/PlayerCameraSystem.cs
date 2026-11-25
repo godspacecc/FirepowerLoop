@@ -264,7 +264,7 @@ namespace Game
 
         private bool CanAcceptLookInput()
         {
-            return HasCurrentMapAndPlayer(out _) && this.GetModel<AppStateModel>().CurrentState.Value == AppState.Playing && !UIHelper.HasUIOpen && PlayerAliveAndConnected();
+            return HasCurrentMapAndPlayer(out _) && this.GetModel<AppStateModel>().CurrentState.Value == AppState.Playing && !UIHelper.HasUIOpen && IsPlayerAlive();
         }
 
         /// <summary>取消旧临时构图，确保切图、失焦或阻断界面不留下相机偏移。</summary>
@@ -292,30 +292,12 @@ namespace Game
                 ClearShoulderAim(true);
         }
 
-        /// <summary>单人读取本局运行态，双人读取服务器本机快照与连接状态。</summary>
-        private bool PlayerAliveAndConnected()
+        /// <summary>死亡或复活等待期间屏蔽相机输入。</summary>
+        private bool IsPlayerAlive()
         {
-            var runtime = this.GetModel<ArcadeCombatModel>().Runtime;
-            if (runtime != null)
-                return runtime.PlayerHealth > 0 && runtime.RespawnRemaining <= 0;
-            var online = this.GetModel<OnlineArcadeRunModel>().Snapshot.Value;
-            if (online.HasRun)
-            {
-                var account = this.GetModel<OnlineAccountModel>().Snapshot.Value;
-                if (!account.IsAuthenticated || online.BattlePaused || online.Battle == null)
-                    return false;
-                foreach (var connection in online.Connections)
-                    if (connection.PlayerId == account.PlayerId && !connection.Connected)
-                        return false;
-                foreach (var player in online.Battle.Players)
-                    if (player.PlayerId == account.PlayerId)
-                        return player.Alive && player.CurrentHealth > 0 && player.RespawnSeconds <= 0;
-                return false;
-            }
-
-            return false;
+            var survivor = this.GetModel<SurvivorModel>()?.Snapshot;
+            return survivor.HasValue && survivor.Value.Active && survivor.Value.Health > 0 && !survivor.Value.Paused;
         }
-
         private bool IsCurrentUnitActive()
         {
             return unitId > 0 && mapInstanceId > 0 && cameraPort != null && this.GetSystem<UnitSystem>().TryGet(unitId, out var snapshot) && snapshot.MapInstanceId == mapInstanceId && snapshot.IsActive;

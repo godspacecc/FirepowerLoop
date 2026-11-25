@@ -47,29 +47,5 @@ namespace FirepowerLoop.Arcade
         public int BossContactDamage {get;private set;}
 
         /// <summary>启动时完整校验唯一挑战及跨表引用，配置坏则拒绝，不静默关闭或回退。</summary>
-        public static ArcadeSlayerChallengeConfiguration FromTables(ChallengeTables tables)
-        {
-            if(tables==null||tables.TbArcadeSlayerChallenge.DataList.Count!=1)throw new ArgumentException("Slayer配置必须恰好一行");
-            var r=tables.TbArcadeSlayerChallenge.DataList.Single();var challenge=tables.TbArcadeChallenge.GetOrDefault(r.ChallengeId);
-            var drop=tables.TbArcadeDrop.GetOrDefault(r.CoinDropId);
-            if(r.Id!="slayer.guardian"||r.AfterArena<1||r.AfterArena>=10||r.LayoutRound<1||r.LayoutRound>4||
-                tables.TbArcadeArena.GetOrDefault(r.ArenaConfigNumber)==null||challenge==null||drop==null||drop.Amount<=0||
-                tables.TbArcadeRoundLayout.DataList.All(p=>p.ArenaConfigNumber!=r.ArenaConfigNumber||p.RoundNumber!=r.LayoutRound)||
-                tables.TbEnemy.GetOrDefault(r.BossEnemyId)==null||r.DownLimit<1||r.CollectionWaveTotal<1||r.CollectionWaveTotal>1000||
-                r.MaxCollectionCash<drop.Amount||r.MaxCollectionCash>100000||r.BossBonusCash<0||r.BossBonusCash>100000||
-                r.BossHealthPerPlayer<1||r.BossHealthPerPlayer>int.MaxValue/2||r.FireballDamage<1||r.BurnDamage<1||r.BossContactDamage<1)
-                throw new ArgumentException("Slayer身份、预算或引用无效");
-            foreach(float value in new[]{r.PreparationSeconds,r.CollectionSeconds,r.RespawnSeconds,r.ShopSeconds,r.BossMoveSpeed,
-                r.AttackPeriod,r.AttackWarning,r.HammerRadius,r.FireballSpeed,r.FireballRadius,r.BurnSeconds,r.BurnInterval,r.FlameLength,r.FlameRadius})
-                if(float.IsNaN(value)||float.IsInfinity(value)||value<=0)throw new ArgumentException("Slayer参数必须为正有限数");
-            if(r.AttackWarning>=r.AttackPeriod||r.BurnInterval>r.BurnSeconds||r.CollectionSeconds!=challenge.TimeLimitSeconds)
-                throw new ArgumentException("Slayer时钟与挑战配置不一致");
-            return new ArcadeSlayerChallengeConfiguration {Id=r.Id,Enabled=r.Enabled,AfterArena=r.AfterArena,ArenaConfigNumber=r.ArenaConfigNumber,LayoutRound=r.LayoutRound,
-                ChallengeId=r.ChallengeId,PreparationSeconds=r.PreparationSeconds,CollectionSeconds=r.CollectionSeconds,DownLimit=r.DownLimit,RespawnSeconds=r.RespawnSeconds,
-                CollectionWaveTotal=r.CollectionWaveTotal,CoinDropId=r.CoinDropId,CoinAmount=drop.Amount,MaxCollectionCash=r.MaxCollectionCash,BossBonusCash=r.BossBonusCash,
-                ShopSeconds=r.ShopSeconds,BossEnemyId=r.BossEnemyId,BossHealthPerPlayer=r.BossHealthPerPlayer,BossMoveSpeed=r.BossMoveSpeed,AttackPeriod=r.AttackPeriod,
-                AttackWarning=r.AttackWarning,HammerRadius=r.HammerRadius,FireballSpeed=r.FireballSpeed,FireballDamage=r.FireballDamage,FireballRadius=r.FireballRadius,
-                BurnSeconds=r.BurnSeconds,BurnInterval=r.BurnInterval,BurnDamage=r.BurnDamage,FlameLength=r.FlameLength,FlameRadius=r.FlameRadius,BossContactDamage=r.BossContactDamage};
-        }
     }
 }

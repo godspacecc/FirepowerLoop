@@ -55,50 +55,6 @@ namespace Game.Tests
             Game.Interface.GetSystem<SettingsSystem>().SetClockForTests(settingsClock);
         }
 
-        /// <summary>隐藏玩法请求在关闭顶层指令窗后交还正式入口。</summary>
-        [UnityTest]
-        public IEnumerator HiddenModesCloseCommandWindowBeforeOpeningEntry()
-        {
-            Game.Interface.GetSystem<ArcadeRunSystem>().ConfigureForTests(tempRoot);
-            var preparation = new HiddenModePreparation();
-            Game.Interface.RegisterUtility<IGameplayResourcePreparation>(preparation);
-            var menu = UIHelper.PreloadUI<StartUICtrl>();
-            typeof(BaseUICtrl).GetField("_isActive", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(menu, true);
-            GetBaseUI<StartUI>(menu).gameObject.SetActive(true);
-            var cmd = UIHelper.ShowUI<TestCmdUICtrl>();
-            var ui = GetBaseUI<TestCmdUI>(cmd);
-            ui.InputCommand.text = "#arcade solo";
-            ui.BtnExecute.onClick.Invoke();
-            yield return null;
-            Assert.That(cmd.IsShow(), Is.False);
-            Assert.That(preparation.Calls, Is.EqualTo(1));
-            Assert.That(preparation.CommandWasVisible, Is.False);
-            Assert.That(GetBaseUI<StartUI>(menu).ArcadeModePanel.activeSelf, Is.False);
-            cmd.Show();
-            ui.InputCommand.text = "#arcade online";
-            ui.BtnExecute.onClick.Invoke();
-            yield return null;
-            Assert.That(cmd.IsShow(), Is.False);
-            Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>()?.IsShow(), Is.True);
-            Assert.That(preparation.Calls, Is.EqualTo(1));
-            var rejected = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#arcade solo", CancellationToken.None).GetAwaiter().GetResult();
-            Assert.That(rejected.Code, Is.EqualTo(TestCmdResultCode.StateRejected), "登录覆盖时拒绝另一个模式");
-        }
-
-        /// <summary>隔离真实下载，只记录入口是否在指令窗关闭后收到请求。</summary>
-        private sealed class HiddenModePreparation : IGameplayResourcePreparation
-        {
-            public int Calls;
-            public bool CommandWasVisible;
-            public Cysharp.Threading.Tasks.UniTask<bool> PrepareAsync(string mapId, Func<bool> isCurrent = null, CancellationToken cancellationToken = default)
-            {
-                Assert.That(mapId, Is.EqualTo(MapIds.Arcade));
-                Calls++;
-                CommandWasVisible = UIHelper.GetUICtrl<TestCmdUICtrl>().IsShow();
-                return Cysharp.Threading.Tasks.UniTask.FromResult(false);
-            }
-        }
-
         [UnityTest]
         public IEnumerator ServerCatalogMergesWithFullTemplateAndReopenStartsWithoutStaleEntries()
         {
@@ -624,7 +580,7 @@ namespace Game.Tests
             Assert.That(entries.Select(item => item.Id), Is.Unique);
 
             // 验证实际生成目录覆盖全部客户端指令，不锁定中文文案以免正常说明更新导致误报。
-            var requiredTemplates = new[] { "#arcade solo", "#arcade online", "#arcade crater", "#log", "#terrain", "#terrain instancing off", "#terrain instancing restore", "#mobileinput on", "#mobileinput off", "#netlog on", "#netlog off", "#camera topdown", "#camera shoulder", "#camera firstperson", "#arcade status", "#arcade heal", "#arcade damage ", "#arcade gold ", "#arcade bombs ", "#arcade dashes ", "#arcade drop ", "#arcade clear wave", "#arcade clear arena", "#unitbar on", "#unitbar off" };
+            var requiredTemplates = new[] { "#arcade online", "#log", "#terrain", "#terrain instancing off", "#terrain instancing restore", "#mobileinput on", "#mobileinput off", "#netlog on", "#netlog off", "#camera topdown", "#camera shoulder", "#camera firstperson", "#unitbar on", "#unitbar off" };
             Assert.That(entries.Select(item => item.CommandTemplate), Is.SupersetOf(requiredTemplates));
             var categoryIds = new HashSet<string>(categories.Select(item => item.Id));
             foreach (var entry in entries)
@@ -1864,7 +1820,3 @@ namespace Game.Tests
         }
     }
 }
-
-
-
-

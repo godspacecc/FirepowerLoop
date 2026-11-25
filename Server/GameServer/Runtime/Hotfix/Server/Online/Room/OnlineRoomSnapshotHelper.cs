@@ -174,12 +174,6 @@ namespace ET.Server
                 error = "街机房间必须提供有效版本与配置指纹";
                 return false;
             }
-            if (!string.Equals(arcadeConfigFingerprint, FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.NetworkFingerprint(ServerConfig.Instance.ArcadeRule.ConfigFingerprint),
-                    System.StringComparison.Ordinal))
-            {
-                error = "街机配置版本与服务器不一致";
-                return false;
-            }
             capacity = ArcadeCapacity;
             return true;
         }
@@ -194,7 +188,7 @@ namespace ET.Server
                 return false;
             }
             if (room.Purpose == OnlineRoomPurpose.Arcade &&
-                (!OnlineArcadeProtocolGuard.Matches(room.ArcadeConfigFingerprint)||!string.Equals(room.ClientVersion, clientVersion, System.StringComparison.Ordinal) ||
+                (!string.Equals(room.ClientVersion, clientVersion, System.StringComparison.Ordinal) ||
                  !string.Equals(room.ArcadeConfigFingerprint, arcadeConfigFingerprint, System.StringComparison.Ordinal)))
             {
                 error = ErrorCode.ERR_OnlineRoomVersionMismatch;

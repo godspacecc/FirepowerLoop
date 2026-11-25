@@ -232,14 +232,6 @@ namespace ET.Server
             member.ConnectionState = newState;
             member.SessionEpoch = sessionEpoch;
             self.MembershipRevision++;
-            if (self.Parent is OnlineRoomManagerComponent roomManager && roomManager.Parent is Scene roomScene)
-            {
-                R2R_OnlineArcadeConnectionChanged changed = R2R_OnlineArcadeConnectionChanged.Create();
-                changed.RoomId = self.RoomId;
-                changed.PlayerId = playerId;
-                changed.Connected = newState == OnlineRoomMemberConnectionState.Online;
-                self.Root().GetComponent<MessageSender>().Send(roomScene.GetActorId(), changed);
-            }
             OnlineRoomSnapshot snapshot = OnlineRoomSnapshotHelper.BuildSnapshot(self);
             self.SyncChatMembersInBackground().Coroutine();
             await self.Broadcast(snapshot, true, 0);
@@ -261,24 +253,6 @@ namespace ET.Server
             }
 
             return OnlineRoomSnapshotHelper.BuildSnapshot(self);
-        }
-
-        /// <summary>安全节点已落盘后锁定原始成员；重复调用不增加 Revision。</summary>
-        public static async ETTask LockForArcadeRun(this OnlineRoomActor self)
-        {
-            if (self.MembershipLocked) return;
-            self.MembershipLocked = true;
-            self.MembershipRevision++;
-            await self.Broadcast(OnlineRoomSnapshotHelper.BuildSnapshot(self), true, 0);
-        }
-
-        /// <summary>联机街机局已终止后解除成员锁；重复调用不增加房间版本。</summary>
-        public static async ETTask UnlockAfterArcadeRun(this OnlineRoomActor self)
-        {
-            if (!self.MembershipLocked) return;
-            self.MembershipLocked = false;
-            self.MembershipRevision++;
-            await self.Broadcast(OnlineRoomSnapshotHelper.BuildSnapshot(self), true, 0);
         }
 
         private static async ETTask Close(this OnlineRoomActor self)

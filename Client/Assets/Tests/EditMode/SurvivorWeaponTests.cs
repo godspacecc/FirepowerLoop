@@ -10,7 +10,7 @@ namespace Game.Tests
         [Test] public void MolotovIsAnIndependentFiveLevelWeapon() { var d=new FirepowerLoop.Arcade.SurvivorUpgradeDefinition("survivor.molotov","Molotov",1,5,5); Assert.That(d.IsWeapon,Is.True); var s=NewLoadout(); for(int i=0;i<5;i++) Assert.That(Call(s,"TryUpgrade","Molotov",5),Is.True); Assert.That(Slots(s),Is.EqualTo(2)); Assert.That(Call(s,"TryUpgrade","Molotov",5),Is.False); }
         private object NewLoadout(int slots=3)
         {
-            var type=typeof(ArcadeCombatSystem).Assembly.GetType("Game.SurvivorLoadout");
+            var type=typeof(SurvivorSystem).Assembly.GetType("Game.SurvivorLoadout");
             Assert.That(type,Is.Not.Null,"缺少幸存者武器槽规则");
             return Activator.CreateInstance(type,slots,"Rifle");
         }
@@ -35,7 +35,7 @@ namespace Game.Tests
         [Test] public void NewRunDoesNotInheritEquipment(){var old=NewLoadout();Call(old,"TryUpgrade","Drone",5);Assert.That(Call(NewLoadout(),"LevelOf","Drone"),Is.Zero);}
         [Test] public void WeightedFirstChoiceIsGuaranteedDistinctAndStable()
         {
-            var type=typeof(ArcadeCombatSystem).Assembly.GetType("Game.SurvivorRunState");
+            var type=typeof(SurvivorSystem).Assembly.GetType("Game.SurvivorRunState");
             var state=Activator.CreateInstance(type,5,3);Call(state,"AddExperience",5L);
             var method=type.GetMethod("OfferWeighted");Assert.That(method,Is.Not.Null,"缺少加权候选与首次武器保底");
             var args=new object[]{new[]{1,2,3,4},new[]{1,1,1,1},7,4};

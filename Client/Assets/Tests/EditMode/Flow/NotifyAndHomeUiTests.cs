@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System;
 using Boot;
 using System.IO;
@@ -400,7 +400,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void NotifyFloat_FormalPickupStaysBelowArenaHudAndAboveBattleCenter()
+        public void NotifyFloat_FormalPickupStaysBelowSurvivorHudAndAboveBattleCenter()
         {
             // 用单个完整 testMethod 覆盖两个比例，兼容 MCP 对参数化方法名的精确过滤。
             foreach (var size in new[] { new Vector2(1920, 1080), new Vector2(2028, 1080) })
@@ -420,7 +420,7 @@ namespace Game.Tests
             layer.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             layer.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
             var hud = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"), ui.transform.parent).GetComponent<ArcadeHudUI>();
+                "Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab"), ui.transform.parent).GetComponent<SurvivorHudUI>();
             try
             {
                 for (int i = 0; i < 4; i++)
@@ -433,13 +433,13 @@ namespace Game.Tests
                 var boxes = ui.TipsRoot.GetComponentsInChildren<FloatTextBoxUI>(false);
                 Assert.That(boxes.Length, Is.EqualTo(5));
                 var hudCorners = new Vector3[4];
-                hud.TextWave.rectTransform.GetWorldCorners(hudCorners);
+                hud.TimeText.rectTransform.GetWorldCorners(hudCorners);
                 var center = ((RectTransform)ui.transform).TransformPoint(((RectTransform)ui.transform).rect.center);
                 foreach (var box in boxes)
                 {
                     var corners = new Vector3[4];
                     ((RectTransform)box.transform).GetWorldCorners(corners);
-                    Assert.That(corners[2].y, Is.LessThan(hudCorners[0].y), "拾取提示不能覆盖顶部波次 HUD");
+                    Assert.That(corners[2].y, Is.LessThan(hudCorners[0].y), "拾取提示不能覆盖顶部时间 HUD");
                     Assert.That(corners[0].y, Is.GreaterThan(center.y), "密集提示不能延伸至玩家所在的战斗中心");
                     Assert.That(box.TextTips.raycastTarget, Is.False);
                 }
@@ -1368,8 +1368,6 @@ namespace Game.Tests
             architecture.RegisterSystem(new MobileInputSystem());
             architecture.RegisterSystem(new RedPointSystem());
             architecture.RegisterSystem(new ResourceUpdateSystem());
-            architecture.RegisterSystem(new ArcadeRunSystem());
-            architecture.GetSystem<ArcadeRunSystem>().ConfigureForTests(tempRoot);
             architecture.GetSystem<ResourceUpdateSystem>().InitializeStartupInfo(
                 new BootResourceStartupInfo(BootResourceSource.BuiltinFallback, string.Empty, string.Empty, string.Empty));
         }

@@ -32,8 +32,7 @@ namespace Game.Editor
             DevelopmentTag,
             "game-player",
             "campaign",
-            "survivor",
-            "crater"
+            "survivor"
         };
 
         private static readonly HashSet<string> FirstDownloadTags = new HashSet<string>(Boot.ResourceBoot.GetStartupResourceTags(), StringComparer.Ordinal);

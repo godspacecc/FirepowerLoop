@@ -98,7 +98,12 @@ namespace Game.Tests
                 .OrderBy(name => name)
                 .ToArray();
 
-            Assert.That(clientTableNames, Is.EquivalentTo(new[] { "TbItem", "TbWeapon", "TbWeaponAppearance", "TbProjectile", "TbMap", "TbMapScenePart", "TbMapSpawn", "TbPlayer", "TbEnemy", "TbLoot", "TbTestCmdCategory", "TbTestCmdEntry", "TbArcadeRule", "TbArcadeWeapon", "TbArcadeArena", "TbArcadeEnemyGroup", "TbArcadeBoss", "TbArcadeChallenge", "TbArcadeTreasureRoom", "TbArcadeDrop", "TbArcadePowerup", "TbArcadeDrone", "TbArcadeSupportVisual", "TbArcadeUpgrade", "TbArcadeReward", "TbArcadeRoundLayout", "TbArcadeSlayerMartItem", "TbArcadeSlayerMartRegion", "TbArcadeSlayerMartAbility", "TbArcadeSlayerChallenge", "TbArcadeRoundReward", "TbArcadeWeaponUpgrade", "TbArcadeEarlyStage", "TbArcadeScoreShop" }));
+            var schema = System.Xml.Linq.XDocument.Load(Path.Combine(repoRoot, "Config/Defines/tables.xml"));
+            var tableRows = schema.Root.Elements("table").ToArray();
+            var clientTables = tableRows.Where(row => (string)row.Attribute("group") is "c" or "e")
+                .Select(row => (string)row.Attribute("name"));
+            Assert.That(clientTableNames, Is.EquivalentTo(clientTables));
+            Assert.That(clientTableNames, Does.Not.Contain("TbArcadeScoreShop"));
 
             var configAssembly = typeof(Tables).Assembly;
             Assert.That(configAssembly.GetType("StartMachineConfig"), Is.Null);
@@ -115,7 +120,10 @@ namespace Game.Tests
                 .OrderBy(name => name)
                 .ToArray();
 
-            Assert.That(serverBytes, Is.EquivalentTo(new[] { "tbprojectile.bytes", "tbenemy.bytes", "tbarcaderule.bytes", "tbarcadeweapon.bytes", "tbarcadearena.bytes", "tbarcadeenemygroup.bytes", "tbarcadeboss.bytes", "tbarcadechallenge.bytes", "tbarcadetreasureroom.bytes", "tbarcadedrop.bytes", "tbarcadepowerup.bytes", "tbarcadedrone.bytes", "tbarcadesupportvisual.bytes", "tbarcadeupgrade.bytes", "tbarcadereward.bytes", "tbaiconfig.bytes", "tbunitconfig.bytes", "tbstartmachine.bytes", "tbstartprocess.bytes", "tbstartzone.bytes", "tbstartscene.bytes", "tbarcaderoundlayout.bytes", "tbarcadeslayermartitem.bytes", "tbarcadeslayermartregion.bytes", "tbarcadeslayermartability.bytes", "tbarcadeslayerchallenge.bytes", "tbarcaderoundreward.bytes", "tbarcadeweaponupgrade.bytes", "tbarcadeearlystage.bytes", "tbarcadescoreshop.bytes" }));
+            var serverTables = tableRows.Where(row => (string)row.Attribute("group") is "s" or "e")
+                .Select(row => ((string)row.Attribute("name")).ToLowerInvariant() + ".bytes");
+            Assert.That(serverBytes, Is.EquivalentTo(serverTables));
+            Assert.That(serverBytes, Does.Not.Contain("tbarcadeslayerchallenge.bytes"));
 
             var serverConfigRoot = Path.Combine(
                 repoRoot,

@@ -44,12 +44,9 @@ namespace Game
         {
             ApplyReleaseVisibility(UI);
             BindMenuButton(UI.BtnNewGame, OpenCharacterSelection);
-            BindMenuButton(UI.BtnArcadeSolo, OnNewGameClick);
             BindMenuButton(UI.BtnArcadeBack, CloseArcadeMode);
             BindMenuButton(UI.BtnSurvivor, OpenCharacterSelection);
             BindMenuButton(UI.BtnShop, OnShopClick);
-            this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
-                .UnRegisterWhenGameObjectDestroyed(BaseUI);
             BindMenuButton(UI.BtnContinue, OpenCharacterSelection);
             BindMenuButton(UI.BtnCheckUpdate, OnCheckUpdateClick);
             BindMenuButton(UI.BtnSetting, OnSettingClick);
@@ -60,8 +57,7 @@ namespace Game
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineAccountAttentionEvent>(OnOnlineAccountAttention)
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            // 开始页显示前完成存档读取与恢复窗口预建；点击时复用已准备的内容。
-            RefreshSaveButtons();
+            RefreshMenuButtons();
         }
 
         /// <summary>只按发布策略切换已有入口，布局继续由正式 Prefab 的布局组处理。</summary>
@@ -101,7 +97,7 @@ namespace Game
                 return;
             }
 
-            RefreshSaveButtons();
+            RefreshMenuButtons();
             RefreshUpdateText();
             // 每次返回开始页都重新查询版本；在途请求由更新系统复用，不触发提示或安装。
             CheckUpdate(false).Forget();
@@ -109,7 +105,6 @@ namespace Game
 
         protected override void OnHide()
         {
-            this.GetSystem<ChallengeSceneFlowSystem>()?.CancelEntry();
             ReleaseStartLoading();
             startGeneration++;
             startingRun = false;
@@ -119,7 +114,6 @@ namespace Game
 
         protected override void OnUnload()
         {
-            this.GetSystem<ChallengeSceneFlowSystem>()?.CancelEntry();
             ReleaseStartLoading();
             startGeneration++;
             startingRun = false;
@@ -127,12 +121,9 @@ namespace Game
             updatePresentationGeneration++;
         }
 
-        /// <summary>从正式存档快照决定单人入口并预备详情框；已有进度和结果都不能由新局按钮直接覆盖。</summary>
-        private void RefreshSaveButtons()
+        /// <summary>开局准备期间禁用可能打断当前入场的菜单操作。</summary>
+        private void RefreshMenuButtons()
         {
-            var pending = this.GetSystem<ArcadeRunSystem>().PrepareMenuEntry();
-            if (pending.IsValid)
-                UIHelper.PreloadUI<ArcadeResumeUICtrl>().PrepareMenuContent(pending.Data);
             UI.BtnNewGame.gameObject.SetActive(true);
             UI.BtnContinue.gameObject.SetActive(false);
             UI.BtnArcadeSolo.interactable = !startingRun;
@@ -172,39 +163,15 @@ namespace Game
         }
 
         /// <summary>隐藏模式只接受当前主菜单会话，准备期间拒绝重复请求。</summary>
+        /// <summary>联机诊断入口只打开登录和大厅；开局或选角期间不可切换入口。</summary>
         internal bool CanOpenTestMode => IsShow() && BaseUI != null && !startingRun &&
             UIHelper.GetUICtrl<SurvivorEntryUICtrl>()?.IsShow() != true &&
             UIHelper.GetUICtrl<OnlineLoginUICtrl>()?.IsShow() != true &&
-            UIHelper.GetUICtrl<OnlineRoomUICtrl>()?.IsShow() != true &&
-            UIHelper.GetUICtrl<ArcadeResumeUICtrl>()?.IsShow() != true;
+            UIHelper.GetUICtrl<OnlineRoomUICtrl>()?.IsShow() != true;
 
-        /// <summary>测试闯关复用资源确认、新局与存档恢复入口。</summary>
-        internal void OpenSoloForTests()
-        {
-            if (CanOpenTestMode) StartSinglePlayerAsync().Forget();
-        }
-
-        /// <summary>测试联机复用认证与大厅导航，不提前连接或创建房间。</summary>
         internal void OpenOnlineForTests()
         {
             if (CanOpenTestMode) OnlineLoginUICtrl.ShowForArcadeLobby();
-        }
-
-        /// <summary>测试指令沿用主菜单入场保护，仅在当前菜单仍有效时创建挑战现场。</summary>
-        internal async UniTask<string> StartChallengeForTestsAsync(System.Threading.CancellationToken token)
-        {
-            if (!IsShow() || startingRun) return "请先返回主菜单";
-            startingRun=true;RefreshSaveButtons();
-            var owner=BaseUI;int generation=++startGeneration;
-            bool IsCurrent()=>owner!=null&&ReferenceEquals(owner,BaseUI)&&IsShow()&&generation==startGeneration;
-            try
-            {
-                var preparation = this.GetUtility<IGameplayResourcePreparation>();
-                if (preparation != null && !await preparation.PrepareAsync(OptionalGameplayResourceSystem.CraterScope, IsCurrent, token))
-                    return "挑战资源准备未完成";
-                return await this.GetSystem<ChallengeSceneFlowSystem>().EnterAsync(() => IsCurrent() && !token.IsCancellationRequested);
-            }
-            finally{if(IsCurrent()){startingRun=false;RefreshSaveButtons();}}
         }
 
         /// <summary>每次从菜单进入都先选角；旧菜单会话的回调不能开局。</summary>
@@ -224,7 +191,7 @@ namespace Game
         {
             if (startingRun) return;
             startingRun = true;
-            RefreshSaveButtons();
+            RefreshMenuButtons();
             var owner = BaseUI;
             int generation = ++startGeneration;
             bool IsCurrent() => generation == startGeneration && owner != null && ReferenceEquals(owner, BaseUI) && IsShow();
@@ -251,7 +218,7 @@ namespace Game
                 {
                     ReleaseStartLoading();
                     startingRun = false;
-                    RefreshSaveButtons();
+                    RefreshMenuButtons();
                 }
             }
         }
@@ -267,82 +234,12 @@ namespace Game
             return Loc.T("ui.character." + key);
         }
 
-        /// <summary>模式选择页按本机当前清单显示缺失量；只查询，不启动下载。</summary>
-        private void RefreshCampaignResourceStatus()
-        {
-            var label = UI.CampaignResourceStatus;
-            if (label == null || !UI.ArcadeModePanel.activeInHierarchy) return;
-            var resources = this.GetSystem<OptionalGameplayResourceSystem>();
-            var query = resources != null ? resources.QueryMap(MapIds.Arcade) : default;
-            label.text = query.State switch
-            {
-                OptionalGameplayResourceState.Ready => Loc.T("ui.mode.solo.ready"),
-                OptionalGameplayResourceState.NeedsDownload => Loc.T("ui.mode.solo.download", ResourceDownloadSize.Format(query.TotalBytes)),
-                _ => Loc.T("ui.mode.solo.unavailable")
-            };
-            label.color = query.State == OptionalGameplayResourceState.Ready ? UI.ArcadeSoloText.color : new UnityEngine.Color(1f, .73f, .34f);
-        }
-
-        /// <summary>返回主菜单保留所有单人进度，开局准备中拒绝离开。</summary>
+        /// <summary>打开开始页时显示正常主菜单。</summary>
         private void CloseArcadeMode()
         {
             if (startingRun) return;
             UI.ArcadeModePanel.SetActive(false);
             UI.MainMenuPanel.SetActive(true);
-        }
-
-        private void OnNewGameClick()
-        {
-            StartSinglePlayerAsync().Forget();
-        }
-
-        /// <summary>无待处理存档时直接开局；先准备资源再落盘，失败保留菜单与已写入的安全节点。</summary>
-        private async UniTask StartSinglePlayerAsync()
-        {
-            if (startingRun) return;
-            var system = this.GetSystem<ArcadeRunSystem>();
-            startingRun = true;
-            RefreshSaveButtons();
-            var owner = BaseUI;
-            int generation = ++startGeneration;
-            bool IsCurrent() => generation == startGeneration && owner != null && ReferenceEquals(owner, BaseUI) && IsShow();
-            try
-            {
-                var preparation = this.GetUtility<IGameplayResourcePreparation>();
-                if (preparation != null && !await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) return;
-                if (!IsCurrent()) return;
-                if (system.InspectPending().Status != SaveFileStatus.Missing)
-                {
-                    OnContinueClick();
-                    return;
-                }
-                startLoading = UIHelper.ShowUI<LoadingUICtrl>();
-                startLoadingRequestId = startLoading.BeginEntryPreparation(MapIds.Arcade);
-                // 先让加载界面完成一帧绘制，再执行可能同步耗时的落盘和场景准备。
-                await UniTask.NextFrame();
-                if (!IsCurrent()) return;
-                if (!system.TryStartConfiguredRun(out _, out var error))
-                {
-                    Notify.ShowFloatTips(error);
-                    return;
-                }
-                await ArcadeResumeUICtrl.EnterNewRunAsync(system);
-            }
-            catch (Exception exception)
-            {
-                Log.Error($"[StartUICtrl] 单人开局失败：{exception}");
-                if (IsCurrent()) Notify.ShowFloatTips(Loc.T("ui.arcade.error.open"));
-            }
-            finally
-            {
-                if (IsCurrent())
-                {
-                    ReleaseStartLoading();
-                    startingRun = false;
-                    RefreshSaveButtons();
-                    RefreshCampaignResourceStatus();
-                }
-            }
         }
 
         /// <summary>取消等待或入口结束时恢复加载显示；失败地图仍保留错误和返回按钮。</summary>
@@ -351,11 +248,6 @@ namespace Game
             startLoading?.EndEntryPreparation(startLoadingRequestId);
             startLoading = null;
             startLoadingRequestId = 0;
-        }
-
-        private void OnContinueClick()
-        {
-            if (!ArcadeResumeUICtrl.TryOpenEntry(out var error)) Notify.ShowFloatTips(error);
         }
 
         /// <summary>Start 按钮和启动流程共用的恢复闸门；只有完整活动世界可以解除暂停。</summary>
@@ -389,8 +281,7 @@ namespace Game
 
         private void OnLanguageChanged(LanguageChangedEvent evt)
         {
-            RefreshCampaignResourceStatus();
-            RefreshSaveButtons();
+            RefreshMenuButtons();
             RefreshUpdateText();
         }
 
@@ -405,11 +296,12 @@ namespace Game
             RefreshUpdateText();
         }
 
+
+        /// <summary>联机账号失效或被替换时沿用现有提示。</summary>
         private void OnOnlineAccountAttention(OnlineAccountAttentionEvent evt)
         {
             Notify.ShowFloatTips(OnlineAccountText.Result(evt.Code));
         }
-
 
         /// <summary>主动检查优先展示 APK 候选；隐藏后丢弃展示结果，检查期间拒绝重复点击。</summary>
         private async UniTask CheckUpdate(bool userInitiated)

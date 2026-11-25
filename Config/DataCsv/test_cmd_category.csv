@@ -1,7 +1,5 @@
 ##var,Id,Order,LabelText
 ##type,string,int,string
-,mode-entry,100,模式入口
-,arcade-game,200,战斗测试
-,stage-items,300,关卡与道具
 ,camera-view,400,视角与操作
 ,diagnostics,500,运行诊断
+,mode-entry,100,模式入口

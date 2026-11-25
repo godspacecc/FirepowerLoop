@@ -15,16 +15,6 @@ namespace Game
         /// <summary>读取正式入场动作的身体体积；缺失时明确拒绝几何命中，不能退回计时无敌。</summary>
         bool TryGetDockHitPose(string prefabAddress,out FirepowerLoop.Arcade.ArcadeHitPoseSequence value,out string error)
         {value=null;error="码头身体碰撞配置不可用";return false;}
-        /// <summary>区分必须提供正式商店配置的数据源与旧测试提供者，避免配置读取失败时静默降级。</summary>
-        bool HasSlayerMartConfiguration => false;
-        /// <summary>首批Slayer只读规则；缺配置拒绝进入，不在旧提供者伪造默认值。</summary>
-        bool TryGetSlayerChallenge(out FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration value,out string error)
-        {value=null;error="Slayer挑战配置不可用";return false;}
-
-        /// <summary>读取新商店只读目录；旧测试提供者缺省不开放商店。</summary>
-        bool TryGetSlayerMart(out FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration value,out string error)
-        { value=null;error="SlayerMart配置不可用";return false; }
-
         /// <summary>独立幸存者规则，旧提供者缺配置明确拒绝。</summary>
         bool TryGetSurvivor(out FirepowerLoop.Arcade.SurvivorConfiguration value, out string error)
         { value = null; error = "幸存者配置不可用"; return false; }
@@ -33,14 +23,6 @@ namespace Game
         bool HasSurvivorEnemyRoster => false;
         bool TryGetSurvivorEnemyRoster(out SurvivorEnemyRoster value,out string error)
         {value=null;error="幸存者敌池配置不可用";return false;}
-
-        /// <summary>独立经典挑战配置；未提供时明确拒绝进入，不借用旧模式武器。</summary>
-        bool TryGetChallenge(out ChallengeConfiguration value,out string error)
-        {value=null;error="挑战配置不可用";return false;}
-
-        /// <summary>独立挑战战斗参数缺失时拒绝进入，不借用其他模式。</summary>
-        bool TryGetChallengeCombat(out ChallengeCombatConfiguration value,out string error)
-        {value=null;error="挑战战斗配置不可用";return false;}
 
         bool TryGetItem(int id, out ItemDefinition value, out string error)
         {

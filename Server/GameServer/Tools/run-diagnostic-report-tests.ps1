@@ -123,7 +123,6 @@ try {
     $start.ArgumentList.Add('--StartConfig=OnlineLocal')
     $start.ArgumentList.Add('--Console=0')
     $start.ArgumentList.Add("--OnlineStore=$tempRoot/Online/identity-store.json")
-    $start.ArgumentList.Add("--OnlineArcadeStore=$tempRoot/Online/arcade-runs.json")
     $start.ArgumentList.Add("--DiagnosticStoreRoot=$tempRoot/Diagnostics")
     $ownedProcess = [System.Diagnostics.Process]::Start($start)
     if ($null -eq $ownedProcess) { throw '测试服务启动失败。' }

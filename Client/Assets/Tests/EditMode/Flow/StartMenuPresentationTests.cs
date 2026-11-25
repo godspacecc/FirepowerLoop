@@ -150,7 +150,6 @@ namespace Game.Tests
             ResourceLoader.SetLoaderForTests(loader);
             var audioRoot = CreateAudioBindings();
             // 菜单初始化检查存档，音效测试使用独立空目录，不能读取玩家进度。
-            Game.Interface.GetSystem<ArcadeRunSystem>().ConfigureForTests(System.IO.Path.Combine(Application.temporaryCachePath, "MenuSound-" + Guid.NewGuid().ToString("N")));
             var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath));
             try
             {

@@ -24,7 +24,6 @@ namespace Game.Tests
         [Test]
         public void GameplayHud_LivesBelowDialogInFormalScene()
         {
-            Assert.That(new ArcadeHudUICtrl().Layer(), Is.EqualTo(UILayer.HUD));
             var scene = EditorSceneManager.OpenScene("Assets/Game/Scenes/Main.unity", OpenSceneMode.Additive);
             try
             {

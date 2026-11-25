@@ -832,8 +832,6 @@ namespace Game.Tests
             game.RegisterSystem(new OnlineAccountSystem());
             game.RegisterSystem(new OnlineRoomSystem());
             game.RegisterSystem(new OnlineRoomChatSystem());
-            // 大厅复用街机转场入口，语言测试提供其空快照依赖。
-            game.RegisterSystem(new OnlineArcadeRunSystem());
             Init(localizationModel);
             Init(accountModel);
             Init(roomModel);

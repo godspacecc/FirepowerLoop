@@ -104,10 +104,8 @@ namespace Game
             {
                 state.EnvironmentHandle=ResourceLoader.LoadAssetAsync<GameObject>(environmentAddress,p=>environment.TrySetResult(p));
                 if(hasHerd)state.HerdHandle=ResourceLoader.LoadAssetAsync<GameObject>(stage.HerdAddress,p=>herd.TrySetResult(p));
-                var stageTemplates=LoadNextStageTemplates(state,stage.ArenaConfigNumber);
                 var prefab=await environment.Task;
                 var cow=hasHerd?await herd.Task:null;
-                await stageTemplates;
                 if(!EarlyStageLoadIsCurrent(state))return;
                 if(prefab==null||prefab.GetComponentsInChildren<Renderer>(true).Length==0||prefab.GetComponentsInChildren<Collider>(true).Length>0||prefab.GetComponentsInChildren<MonoBehaviour>(true).Any(component => string.IsNullOrEmpty(survivorEnvironmentAddress) || !(component is SurvivorBuildingSurface))||prefab.GetComponentsInChildren<Animator>(true).Length>0||
                     prefab.GetComponentsInChildren<Renderer>(true).Any(r=>r.sharedMaterials.Any(m=>m==null||m.shader==null)))throw new InvalidOperationException("已确认场地环境资源不完整");

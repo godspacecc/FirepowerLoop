@@ -23,12 +23,6 @@ namespace Game
             if (score > 0 || gold > 0) PlayTreasurePickupFlash();
             if (score > 0 && IsActive)
             {
-                var camera = Camera.main;
-                if (camera != null && mapRoot != null)
-                {
-                    var screen = camera.WorldToScreenPoint(mapRoot.TransformPoint(new Vector3(position.x, .65f, position.y)));
-                    if (screen.z > 0) UIHelper.GetUICtrl<ArcadeHudUICtrl>()?.TryPlayScorePickup(score, screen);
-                }
                 PlayPickupSound();
             }
             if (gold > 0) ShowPickup("gold", gold, total => Loc.T("ui.arcade.hud.gold", "+" + total));
@@ -81,7 +75,6 @@ namespace Game
             ClearTreasurePickupFlash();
             pickupFeedback.Clear();
             UIHelper.GetUICtrl<SurvivorHudUICtrl>()?.ClearGoldPickupFeedback();
-            UIHelper.GetUICtrl<ArcadeHudUICtrl>()?.ClearScorePickupFeedback();
             UIHelper.GetUICtrl<FloatUICtrl>()?.RemoveTipsByPrefix("arcade.pickup.");
             if (pickupSound.IsValid) Game.Interface.GetSystem<AudioSystem>()?.Stop(pickupSound);
             pickupSound = AudioPlaybackHandle.Empty;

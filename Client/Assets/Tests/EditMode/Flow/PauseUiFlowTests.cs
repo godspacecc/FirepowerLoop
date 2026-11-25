@@ -20,8 +20,6 @@ namespace Game.Tests
     public sealed class PauseUiFlowTests
     {
         private GameObject closablePrefab;
-        private GameObject poolRoot;
-        private string leaveTestRoot;
 
         [SetUp]
         public void SetUp()
@@ -54,134 +52,9 @@ namespace Game.Tests
             Object.DestroyImmediate(closablePrefab);
             UIHelper.ResetForTests();
             GameObjectPoolHelper.ClearForTests();
-            if (poolRoot != null) Object.DestroyImmediate(poolRoot);
             ResourceLoader.ResetForTests();
             LocalizationLanguages.ResetForTests();
             ResetArchitecture();
-            if (leaveTestRoot != null && System.IO.Directory.Exists(leaveTestRoot))
-                System.IO.Directory.Delete(leaveTestRoot, true);
-            leaveTestRoot = null;
-        }
-
-        [Test]
-        public void MapPreparationFailure_BackKeepsFailedSceneCoveredUntilSafeNodeIsRestored()
-        {
-            InstallArcadeLeaveDependencies();
-            var runs = Game.Interface.GetSystem<ArcadeRunSystem>();
-            Assert.That(runs.TryStartNewRun(null, out var saved, out var error), Is.True, error);
-            var runModel = Game.Interface.GetModel<ArcadeRunModel>();
-            runModel.EnterArena();
-            runModel.SetTransientLives(1);
-            var combat = new ArcadeCombatModel();
-            Game.Interface.RegisterModel(combat);
-            combat.Begin(new ArcadeCombatRuntime { IslandTransitionPending = true, CompletionAwaitingRetry = true });
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
-            var bytes = System.IO.File.ReadAllBytes(new ArcadeRunFileStore(leaveTestRoot).RunPath);
-            var loading = UIHelper.ShowUI<LoadingUICtrl>();
-            Game.Interface.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot
-            { IslandTransitioning = true, CanRetryCompletion = true, IslandPreparationError = "resource failure" }));
-            var view = GetBaseUI<LoadingUI>(loading);
-            var flow = Game.Interface.GetSystem<ArcadeSceneFlowSystem>();
-            var busy = typeof(ArcadeSceneFlowSystem).GetField("busy", BindingFlags.Instance | BindingFlags.NonPublic);
-            busy.SetValue(flow, true);
-            view.BtnBack.onClick.Invoke();
-            Assert.That(loading.IsShow(), Is.True, "返回失败不能露出未完成战斗");
-            Assert.That(view.ErrorRoot.activeSelf, Is.True);
-            Assert.That(view.BtnBack.interactable, Is.True);
-            Assert.That(runModel.Phase, Is.EqualTo(ArcadeRunPhase.Arena));
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.EqualTo(MapIds.Arcade));
-            busy.SetValue(flow, false);
-            view.BtnBack.onClick.Invoke();
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.Null);
-            Assert.That(runModel.Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
-            Assert.That(runModel.Current.RunId, Is.EqualTo(saved.RunId));
-            Assert.That(runModel.Current.RemainingLives, Is.EqualTo(saved.RemainingLives));
-            Assert.That(System.IO.File.ReadAllBytes(new ArcadeRunFileStore(leaveTestRoot).RunPath), Is.EqualTo(bytes));
-            Assert.That(loading.IsShow(), Is.False);
-            Assert.That(UIHelper.GetUICtrl<StartUICtrl>()?.IsShow(), Is.True);
-        }
-
-        [UnityTest]
-        public IEnumerator MapPreparationReturn_RetriesSafeNodeRecoveryAfterActualMapRelease()
-        {
-            InstallArcadeLeaveDependencies();
-            var runs = Game.Interface.GetSystem<ArcadeRunSystem>();
-            Assert.That(runs.TryStartNewRun(null, out _, out var error), Is.True, error);
-            var file = new ArcadeRunFileStore(leaveTestRoot).RunPath;
-            var bytes = System.IO.File.ReadAllBytes(file);
-            Game.Interface.GetModel<ArcadeRunModel>().EnterArena();
-            var combat = new ArcadeCombatModel();
-            Game.Interface.RegisterModel(combat);
-            combat.Begin(new ArcadeCombatRuntime { IslandTransitionPending = true, CompletionAwaitingRetry = true });
-            Game.Interface.RegisterModel(new UnitModel());
-            Game.Interface.RegisterSystem(new UnitSystem());
-            Game.Interface.RegisterSystem(new AudioSystem());
-            var loader = new DeferredMapRelease();
-            Game.Interface.RegisterUtility<IMapContentLoader>(loader);
-            using (var handle = new PreparationMapHandle())
-            {
-                Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, handle, MapPreparationMode.ArcadePlayerOnly);
-                var loading = UIHelper.ShowUI<LoadingUICtrl>();
-                Game.Interface.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot
-                { IslandTransitioning = true, CanRetryCompletion = true, IslandPreparationError = "resource failure" }));
-                var view = GetBaseUI<LoadingUI>(loading);
-                view.BtnBack.onClick.Invoke();
-                Assert.That(view.BtnBack.interactable, Is.False);
-                Assert.That(loading.IsShow(), Is.True);
-                // 地图已开始释放后模拟安全节点文件损坏，不能用无句柄快速路径掩盖释放事件的顺序。
-                System.IO.File.WriteAllText(file, "broken save");
-                loader.Completion.TrySetResult(MapContentUnloadResult.Ok());
-                var startFrame = Time.frameCount;
-                var recoveryDeadline = EditorApplication.timeSinceStartup + 2.0;
-                while (!view.BtnBack.interactable && EditorApplication.timeSinceStartup < recoveryDeadline)
-                {
-                    EditorApplication.QueuePlayerLoopUpdate();
-                    yield return null;
-                }
-                Assert.That(view.BtnBack.interactable, Is.True,
-                    "首次返回事务必须已完成，才可恢复文件并重试；frame=" + startFrame + "→" + Time.frameCount);
-                Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.Null);
-                Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.Arena));
-                Assert.That(loading.IsShow(), Is.True);
-                Assert.That(view.ErrorRoot.activeSelf, Is.True);
-                Assert.That(view.BtnRetry.gameObject.activeInHierarchy, Is.True, "释放后恢复失败仍须保留可重试入口");
-                loading.Hide();
-                Assert.That(loading.IsShow(), Is.True, "恢复失败不能仅关闭遮罩");
-                System.IO.File.WriteAllBytes(file, bytes);
-                Assert.That(runs.InspectPending().IsValid, Is.True, "重试前必须已恢复真实有效的安全节点文件");
-                view.BtnRetry.onClick.Invoke();
-                // 正式返回是异步入口，等待事务结束再判定，保留原安全节点目标。
-                for (int frame = 0; frame < 10 && Game.Interface.GetModel<ArcadeRunModel>().Phase != ArcadeRunPhase.SafeCheckpoint; frame++)
-                {
-                    EditorApplication.QueuePlayerLoopUpdate();
-                    yield return null;
-                }
-                Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint),
-                    "恢复有效文件后应回到原安全节点：" + view.ErrorText.text + " / " +
-                    typeof(LoadingUICtrl).GetField("mapFailureReason", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(loading) +
-                    " / active=" + typeof(LoadingUICtrl).GetField("arcadePreparationActive", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(loading) +
-                    " / failed=" + typeof(LoadingUICtrl).GetField("arcadePreparationFailed", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(loading));
-                Assert.That(loading.IsShow(), Is.False);
-            }
-        }
-
-        private sealed class DeferredMapRelease : IMapContentLoader
-        {
-            public readonly UniTaskCompletionSource<MapContentUnloadResult> Completion = new();
-            public UniTask<MapContentLoadResult> LoadAsync(string mapId, string address, Action<float> onProgress,
-                CancellationToken cancellationToken = default) => throw new NotSupportedException();
-            public UniTask<MapContentUnloadResult> UnloadAsync(IMapContentHandle handle,
-                CancellationToken cancellationToken = default) => Completion.Task;
-        }
-
-        private sealed class PreparationMapHandle : IMapContentHandle, IDisposable
-        {
-            private readonly GameObject root = new("PreparationMap");
-            public PreparationMapHandle() => Context = root.AddComponent<MapContext>();
-            public string MapId => MapIds.Arcade;
-            public MapContext Context { get; }
-            public bool IsValid => root != null;
-            public void Dispose() { if (root != null) Object.DestroyImmediate(root); }
         }
 
         [Test]
@@ -201,89 +74,6 @@ namespace Game.Tests
             Assert.That(text.text, Is.EqualTo("Return to Main Menu"));
             Assert.That(typeof(PauseUI).GetField("BtnMainMenu"), Is.Null);
             Assert.That(GetBaseUI<PauseUI>(ctrl).GetComponentsInChildren<Transform>(true).Any(t => t.name == "BtnReturnCamp"), Is.False);
-        }
-
-        [Test]
-        public void ArcadeLeave_WithoutActiveHandleReturnsToMainMenuAndClosesPause()
-        {
-            InstallArcadeLeaveDependencies();
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null);
-            var ctrl = UIHelper.ShowUI<PauseUICtrl>();
-            GetBaseUI<PauseUI>(ctrl).BtnOnline.onClick.Invoke();
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.Null);
-            Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Paused));
-            Assert.That(UIHelper.GetUICtrl<StartUICtrl>()?.IsShow(), Is.True);
-            Assert.That(ctrl.IsShow(), Is.False, "成功返回主菜单后不能留下可再次点击的旧暂停界面");
-            Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>()?.IsShow(), Is.Not.True);
-        }
-
-        [Test]
-        public void ArcadeLeave_WhenSceneFlowBusyKeepsPauseAndAllowsRetry()
-        {
-            InstallArcadeLeaveDependencies();
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null);
-            var flow = Game.Interface.GetSystem<ArcadeSceneFlowSystem>();
-            // 仅在测试中模拟另一个场景请求占用事务；失败和重试仍走正式按钮及领域入口。
-            var busy = typeof(ArcadeSceneFlowSystem).GetField("busy", BindingFlags.Instance | BindingFlags.NonPublic);
-            busy.SetValue(flow, true);
-            var ctrl = UIHelper.ShowUI<PauseUICtrl>();
-            var view = GetBaseUI<PauseUI>(ctrl);
-            view.BtnOnline.onClick.Invoke();
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.EqualTo(MapIds.Arcade));
-            Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Paused));
-            Assert.That(ctrl.IsShow(), Is.True);
-            Assert.That(view.BtnOnline.interactable, Is.True);
-            Assert.That(UIHelper.GetUICtrl<StartUICtrl>()?.IsShow(), Is.Not.True);
-            Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>()?.IsShow(), Is.Not.True);
-            busy.SetValue(flow, false);
-            view.BtnOnline.onClick.Invoke();
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.Null);
-            Assert.That(UIHelper.GetUICtrl<StartUICtrl>()?.IsShow(), Is.True);
-            Assert.That(ctrl.IsShow(), Is.False);
-        }
-
-        /// <summary>离开测试使用真实可回滚控制器和隔离存档，不能用null依赖掩盖事务或读取正式档。</summary>
-        private void InstallArcadeLeaveDependencies()
-        {
-            poolRoot = new GameObject(SceneRoot.PoolRootName);
-            leaveTestRoot = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "FirepowerLoopPauseTests", Guid.NewGuid().ToString("N"));
-            System.IO.Directory.CreateDirectory(leaveTestRoot);
-            Game.Interface.RegisterModel(new ArcadeRunModel());
-            var run = new ArcadeRunSystem();
-            run.ConfigureForTests(leaveTestRoot);
-            Game.Interface.RegisterSystem(run);
-            Game.Interface.RegisterSystem(new RedPointSystem());
-            Game.Interface.RegisterSystem(new MapSceneSystem(new ProjectileCtrl(Game.Interface),
-                new PlayerCtrl(Game.Interface), new EnemyCtrl(Game.Interface), new LootCtrl(Game.Interface)));
-            Game.Interface.RegisterSystem(new ArcadeSceneFlowSystem());
-        }
-
-        [Test]
-        public void IslandRoundLeaveWarnsAboutWholeRoundRollbackAndCancelKeepsRun()
-        {
-            var localization = Game.Interface.GetUtility<LocalizationUtility>();
-            localization.InitializeConfiguredTables();
-            localization.LoadFromJson("zh-CN",
-                System.IO.File.ReadAllText("Assets/Game/Config/Localization/zh-CN.json"));
-            var run = new ArcadeRunModel(); Game.Interface.RegisterModel(run);
-            run.CommitSafeNode(new ArcadeRunSaveData { RunId = Guid.NewGuid().ToString("N"), IsCasualRoute = true,
-                ArenaConfigNumber = 1, IslandRoundCheckpoint = new ArcadeIslandRoundCheckpoint {
-                    RoundNumber = 3, MapId = "island.round.3", PlayerHealth = 73, PlayerMaxHealth = 100 } });
-            run.EnterArena();
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
-            var pause = UIHelper.ShowUI<PauseUICtrl>();
-            GetBaseUI<PauseUI>(pause).BtnOnline.onClick.Invoke();
-            var message = UIHelper.GetUICtrl<MessageUICtrl>();
-            Assert.That(message.IsShow(), Is.True);
-            string content = GetBaseUI<MessageUI>(message).ContentText.text;
-            Assert.That(content, Does.Contain("第3轮").And.Contain("沉船浅滩").And.Contain("整体回滚"));
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.EqualTo(MapIds.Arcade));
-            var config = (MessageConfig)typeof(MessageUICtrl).GetField("currentConfig", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(message);
-            typeof(MessageUICtrl).GetMethod("OnMessageButtonClick", BindingFlags.Instance | BindingFlags.NonPublic)
-                .Invoke(message, new object[] { new object[] { config.Buttons.Single(button => button.Role == MessageButtonRole.Cancel) } });
-            Assert.That(message.IsShow(), Is.False); Assert.That(pause.IsShow(), Is.True);
-            Assert.That(run.Phase, Is.EqualTo(ArcadeRunPhase.Arena));
-            Assert.That(run.Current.IslandRoundCheckpoint.RoundNumber, Is.EqualTo(3));
         }
 
         [Test]
@@ -642,6 +432,7 @@ namespace Game.Tests
             architecture.RegisterModel(new AppStateModel());
             architecture.RegisterModel(new RuntimeLogModel());
             architecture.RegisterModel(new MapSceneModel());
+            architecture.RegisterModel(new SurvivorModel());
             architecture.RegisterModel(new ResourceUpdateModel());
 
             architecture.RegisterUtility(new LocalizationUtility(loadConfiguredTables: false));

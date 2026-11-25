@@ -32,10 +32,9 @@ namespace ET.Server
                 using G2C_GetServerTestCmdCatalog response = await session.Call(C2G_GetServerTestCmdCatalog.Create()) as G2C_GetServerTestCmdCatalog;
                 Ensure(response.Error == ErrorCode.ERR_Success, $"catalog error={response.Error}");
                 Ensure(response.Categories.Any(x => x.Id == "server.general"), "server.general missing");
-                Ensure(response.Categories.Any(x => x.Id == "server.arcade"), "server.arcade missing");
+                Ensure(response.Categories.All(x => x.Id != "server.arcade"), "retired server.arcade category is still registered");
                 Ensure(response.Entries.Any(x => x.CommandTemplate == "$ping"), "$ping missing");
-                Ensure(response.Entries.Any(x => x.Id == "server.arcade" &&
-                                                 x.CommandTemplate == "$arcade <子指令>"), "$arcade missing");
+                Ensure(response.Entries.All(x => x.Id != "server.arcade"), "retired arcade command is still registered");
                 Ensure(response.Entries.All(x => x.CommandTemplate != "$help"), "$help must not exist");
             });
 
@@ -49,13 +48,13 @@ namespace ET.Server
                 Ensure(response.ServerTime >= before - 5000 && response.ServerTime <= after + 5000, $"invalid ServerTime={response.ServerTime}");
             });
 
-            failed += await self.Case("SERVER-TCMD-ANON-ARCADE-DENIED", async () =>
+            failed += await self.Case("SERVER-TCMD-ANON-ARCADE-REMOVED", async () =>
             {
                 using C2G_ExecuteServerTestCmd request = C2G_ExecuteServerTestCmd.Create();
                 request.CommandText = "arcade status";
                 using G2C_ExecuteServerTestCmd response = await session.Call(request) as G2C_ExecuteServerTestCmd;
-                Ensure(response.Error == 0 && response.Recognized && !response.Success && response.ResultCode == 4,
-                    "anonymous arcade command must be denied");
+                Ensure(response.Error == 0 && !response.Recognized && !response.Success && response.ResultCode == 3,
+                    "retired arcade command must be unknown");
             });
 
             failed += await self.Case("SERVER-TCMD-BOUNDARIES", async () =>

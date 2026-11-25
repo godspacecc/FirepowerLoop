@@ -12,6 +12,16 @@ namespace Game.Tests
     /// <summary>锁定独立街机可进入的地图与奖励边界，防止旧玩法重新进入正式目录。</summary>
     public sealed class FirepowerLoopBoundaryTests
     {
+        [Test]
+        public void RetiredCampaignAndCoopSystemsAreAbsentFromClient()
+        {
+            var assembly = typeof(SurvivorSystem).Assembly;
+            Assert.That(assembly.GetType("Game.ArcadeRunSystem"), Is.Null);
+            Assert.That(assembly.GetType("Game.ArcadeCombatSystem"), Is.Null);
+            Assert.That(assembly.GetType("Game.OnlineArcadeRunSystem"), Is.Null);
+            Assert.That(assembly.GetType("Game.SurvivorSceneFlowSystem"), Is.Not.Null);
+        }
+
         /// <summary>核对正式入口的序列化依赖，防止保留场景或界面重新引用已退出启动链的业务。</summary>
         [Test]
         public void StartupAssetsDoNotDependOnRetiredGameplay()
@@ -19,7 +29,7 @@ namespace Game.Tests
             var dependencies = AssetDatabase.GetDependencies(new[] {
                 "Assets/Game/Scenes/Boot.unity", "Assets/Game/Scenes/Main.unity",
                 "Assets/Game/Prefabs/UI/Home/Start.prefab",
-                "Assets/Game/Prefabs/UI/Arcade/ArcadeResume.prefab" }, true);
+                "Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab" }, true);
             Assert.That(dependencies, Is.Not.Empty);
             foreach (var path in dependencies)
                 foreach (var retired in new[] { "/Inventory/", "/Craft/", "/Shop/", "/Expedition/" })

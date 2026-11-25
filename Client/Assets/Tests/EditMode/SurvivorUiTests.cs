@@ -287,25 +287,11 @@ namespace Game.Tests
             }
             finally{Object.DestroyImmediate(instance);}
         }
-        [Test] public void MobileMoveJoystick_KeepsArcadeSourceLayout()
+        [Test] public void MobileMoveJoystickKeepsOneBoundScreenStick()
         {
-            var arcade=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab").GetComponent<ArcadeHudUI>();
             var hud=Bound<SurvivorHudUI>(Root+"SurvivorHud.prefab");
             var field=typeof(SurvivorHudUI).GetField("MoveJoystickRoot");Assert.That(field,Is.Not.Null);
             var target=(GameObject)field.GetValue(hud);Assert.That(target,Is.Not.Null);
-            Transform a=arcade.MoveJoystickRoot.transform,b=target.transform;
-            while(a!=null)
-            {
-                Assert.That(b,Is.Not.Null);
-                var left=(RectTransform)a;var right=(RectTransform)b;
-                Assert.That(right.anchorMin,Is.EqualTo(left.anchorMin),a.name);
-                Assert.That(right.anchorMax,Is.EqualTo(left.anchorMax),a.name);
-                Assert.That(right.pivot,Is.EqualTo(left.pivot),a.name);
-                Assert.That(right.anchoredPosition3D,Is.EqualTo(left.anchoredPosition3D),a.name);
-                Assert.That(right.sizeDelta,Is.EqualTo(left.sizeDelta),a.name);
-                Assert.That(right.localScale,Is.EqualTo(left.localScale),a.name);
-                a=a.parent;b=b.parent;
-            }
             Assert.That(hud.GetComponentsInChildren<UnityEngine.InputSystem.OnScreen.OnScreenStick>(true),Has.Length.EqualTo(1));
             Assert.That(typeof(SurvivorHudUI).GetField("MoveJoystick"),Is.Not.Null);
             Assert.That(typeof(SurvivorHudUI).GetField("MoveOpacity"),Is.Not.Null);

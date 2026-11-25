@@ -41,11 +41,8 @@ namespace Game
         ,TerrainDiagnosticsComplete
         ,PlayerAppearanceChanged
         ,WeatherChanged
-        ,CraterOpened
-        // 由指令窗关闭后交还主菜单，避免遮挡资源确认和登录界面。
-        ,SoloEntryRequested
-        ,OnlineEntryRequested
         ,SurvivorSpawnChanged
+        ,OnlineEntryRequested
     }
 
     public readonly struct TestCmdExecutionResult

@@ -276,7 +276,7 @@ namespace Game.Tests
 
             using (Log.CaptureForTests((_, _) => { }))
             {
-                UIHelper.ShowUI<OnlineRoomUICtrl>();
+                OnlineRoomUICtrl.ShowArcadeLobby();
             }
 
             OnlineRoomUI roomUi = UnityEngine.Object.FindObjectOfType<OnlineRoomUI>();
@@ -285,17 +285,21 @@ namespace Game.Tests
 
             roomUi.CreateButton.onClick.Invoke();
             PendingCall create = harness.Network.TakeNext<C2G_CreateRoom>();
+            var request = (C2G_CreateRoom)create.Request;
+            Assert.That(request.Visibility, Is.EqualTo((int)OnlineRoomVisibility.Private));
+            Assert.That(request.ArcadeConfigFingerprint, Is.EqualTo("room-lobby-v1"));
             Assert.That(harness.Network.CountPending<C2G_CreateRoom>(), Is.EqualTo(0));
             create.TrySetResult(new G2C_CreateRoom
             {
                 Error = 0,
                 HasRoom = true,
-                Room = ProtocolRoom(950, "ABC234", 10, 1, Member(10, "owner", true, 1, 1))
+                Room = ProtocolRoom(950, "ABC234", 10, 1, Member(10, "owner", true, 1, 1), Member(20, "guest", false, 1, 1))
             });
             yield return WaitUntil(() => harness.System.Snapshot.RoomId == 950);
 
             Assert.That(harness.System.Snapshot.OperationState, Is.EqualTo(OnlineRoomOperationState.Idle));
             Assert.That(harness.System.Snapshot.HasRoom, Is.True);
+            Assert.That(roomUi.WorldButton.interactable, Is.False);
         }
 
         [UnityTest]
@@ -771,36 +775,30 @@ namespace Game.Tests
             var accountModel = new OnlineAccountModel();
             var roomModel = new OnlineRoomModel();
             var roomChatModel = new OnlineRoomChatModel();
-            var arcadeRunModel = new OnlineArcadeRunModel();
             var localizationModel = new LocalizationModel();
             var network = new FakeRoomNetwork();
             var preferences = new FakePreferenceStore();
             var accountSystem = new OnlineAccountSystem();
             var roomSystem = new OnlineRoomSystem();
             var roomChatSystem = new OnlineRoomChatSystem();
-            var arcadeRunSystem = new OnlineArcadeRunSystem();
 
             game.RegisterModel(localizationModel);
             game.RegisterModel(accountModel);
             game.RegisterModel(roomModel);
             game.RegisterModel(roomChatModel);
-            game.RegisterModel(arcadeRunModel);
             game.RegisterUtility<INetworkRuntime>(network);
             game.RegisterUtility<IOnlineAccountPreferenceStore>(preferences);
             game.RegisterUtility(new LocalizationUtility(loadConfiguredTables: false));
             game.RegisterSystem(accountSystem);
             game.RegisterSystem(roomSystem);
             game.RegisterSystem(roomChatSystem);
-            game.RegisterSystem(arcadeRunSystem);
             Init(localizationModel);
             Init(accountModel);
             Init(roomModel);
             Init(roomChatModel);
-            Init(arcadeRunModel);
             Init(accountSystem);
             Init(roomSystem);
             Init(roomChatSystem);
-            Init(arcadeRunSystem);
 
             var field = typeof(Architecture<global::Game.Game>).GetField("mArchitecture", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
             field?.SetValue(null, game);

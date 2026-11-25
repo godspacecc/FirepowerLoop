@@ -210,8 +210,6 @@ namespace Game
         void SetSlayerMartSupport(long ownerPlayerId,string instanceId,int bodyIndex,ArcadePowerupDefinition definition,
             Vector2 bodyPosition,Vector2 shotDirection) { }
         /// <summary>只投影无人机权威阶段与强度；不参与选敌、计时或伤害。</summary>
-        void SetRoundReward(FirepowerLoop.Arcade.ArcadeRoundRewardState state,FirepowerLoop.Arcade.ArcadeRoundRewardTuning tuning) { }
-        void SetStagePortal(bool visible,Vector2 position,float seconds,float appearSeconds) { }
         /// <summary>任务箱表现及其真实异步就绪状态。</summary>
         void SetMissionSupply(int id,bool visible,Vector2 position) { }
         bool IsMissionSupplyReady(int id)=>false;
@@ -519,7 +517,7 @@ namespace Game
                     : islandRound > 0 && Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var exitCatalog, out _)
                     ? ArcadeIslandLayout.GetExitPosition(islandRound, index, count, exitCatalog.Rule.ArenaHalfWidth,
                         exitCatalog.Rule.ArenaHalfHeight, exitCatalog.Rule.PlayerRadius)
-                    : ArcadeCombatSystem.ArcadeExitPosition(index, count, halfHeight);
+                    : new Vector2((index - (count - 1) * .5f) * 5f, halfHeight - 3f);
                 GameObject marker;
                 if (!victory)
                 {
@@ -955,17 +953,6 @@ namespace Game
         }
 
         public void RemoveDrop(int id) => lootPresentation?.RemoveDrop(id);
-        /// <summary>初次进局仍由正式加载页遮挡，局内切关使用独立黑幕。</summary>
-        public void BeginRoundTransition()
-        {
-            if(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow()==true)return;
-            var transition=UIHelper.GetUICtrl<ArcadeRoundTransitionUICtrl>()??UIHelper.ShowUI<ArcadeRoundTransitionUICtrl>();
-            transition.Begin();
-        }
-        public bool IsRoundTransitionCovered=>UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow()==true||
-            (UIHelper.GetUICtrl<ArcadeRoundTransitionUICtrl>()?.Covered??true);
-        /// <summary>候选地图、角色和相机全部就绪后才揭开黑幕。</summary>
-        public void EndRoundTransition()=>UIHelper.GetUICtrl<ArcadeRoundTransitionUICtrl>()?.Finish();
         public void SetDropDelivery(int id,bool airdrop,float remaining,float duration)=>lootPresentation?.SetDropDelivery(id,airdrop,remaining,duration);
         public void SetDropOpacity(int id, float opacity) => lootPresentation?.SetDropOpacity(id, opacity);
 
@@ -1327,7 +1314,6 @@ namespace Game
                 if (entry.HasShotDirection) entry.Instance.transform.localRotation = entry.LocalRotation;
                 if(entry.IsDrone){ApplyDroneAppearance(entry);BindDroneNozzle(entry);}
                   ApplyWeaponEvolution(entry);
-                ApplyRewardPortalAppearance(entry);
                 ApplyMissionSupplyAppearance(entry);
                 ApplyMissionExitAppearance(entry);
                 if (entry.ShieldFlashRemaining > 0f) ApplyShieldFlash(entry);
@@ -1415,15 +1401,12 @@ namespace Game
             /// <summary>挡伤脉冲剩余秒数；大于零时允许已耗尽护盾的视觉延迟回收。</summary>
             public float ShieldFlashRemaining;
             /// <summary>异步资源到达前也缓存无人机的最新强度。</summary>
-            public FirepowerLoop.Arcade.ArcadeRoundRewardState RoundReward;
-            public FirepowerLoop.Arcade.ArcadeRoundRewardTuning RewardTuning;
             /// <summary>任务箱仅使用已确认的无碰撞子树，迟到加载同样应用。</summary>
             public bool IsMissionSupply;
             /// <summary>任务出口预载时隐藏，清场后显现，迟到回调沿用最新状态。</summary>
             public bool IsMissionExit, MissionExitVisible;
             /// <summary>发电机加载失败同样终止任务入场事务。</summary>
             public bool IsMissionFacility;
-            public bool IsStagePortal;
             public float PortalSeconds,PortalAppearSeconds;
             public bool IsDrone;
             public int DronePowerTier=1;

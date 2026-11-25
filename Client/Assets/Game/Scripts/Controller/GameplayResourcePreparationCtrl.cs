@@ -46,8 +46,7 @@ namespace Game
                     return false;
                 }
 
-                string name = mapId == OptionalGameplayResourceSystem.CraterScope ? Loc.T("ui.mode.challenge")
-                    : mapId == OptionalGameplayResourceSystem.SurvivorScope ? Loc.T("ui.mode.survivor") : Loc.T("ui.optional.content.arcade");
+                string name = mapId == OptionalGameplayResourceSystem.SurvivorScope ? Loc.T("ui.mode.survivor") : Loc.T("ui.optional.content.arcade");
                 var confirmation = new UniTaskCompletionSource<bool>();
                 confirmationButtons = new List<MessageButtonConfig>
                     {

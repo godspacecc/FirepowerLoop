@@ -63,7 +63,7 @@ namespace Game
                 // 同时覆盖菜单入口和结算后的再来一局；接管入口令牌，防止旧回调提前隐藏。
                 loading=UIHelper.ShowUI<LoadingUICtrl>();
                 loadingRequest=loading.BeginSurvivorEntryPreparation();
-                var result = await this.GetSystem<ArcadeSceneFlowSystem>().EnterSurvivorMapAsync(linked.Token);
+                var result = await LoadBattlefieldAsync(linked.Token);
                 if (!result.Success) return result;
                 entered = true;
                 linked.Token.ThrowIfCancellationRequested();
@@ -114,10 +114,38 @@ namespace Game
             {
                 system.Stop();
                 if (entered && !lifetime.IsCancellationRequested)
-                    await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync(showFailureDialog: false);
+                    await UnloadBattlefieldAsync(default);
                 return ArcadeSceneFlowResult.Fail(exception is OperationCanceledException ? "幸存者开局已取消" : exception.Message);
             }
             finally { loading?.EndEntryPreparation(loadingRequest, ready);busy = false; }
+        }
+
+        /// <summary>加载幸存者地图前确保加载界面已订阅，失败由原入口处理。</summary>
+        private async UniTask<ArcadeSceneFlowResult> LoadBattlefieldAsync(CancellationToken cancellationToken)
+        {
+            var map = this.GetModel<MapSceneModel>();
+            if (map.CurrentMapId == MapIds.Arcade && map.CurrentMode == MapPreparationMode.Survivor &&
+                map.CurrentHandle != null && map.CurrentHandle.IsValid)
+                return ArcadeSceneFlowResult.Ok();
+
+            var result = await this.GetSystem<MapSceneSystem>().LoadSurvivorMapAsync(cancellationToken);
+            if (!result.Success) return ArcadeSceneFlowResult.Fail(result.Error);
+            UIHelper.HideUI<StartUICtrl>();
+            return ArcadeSceneFlowResult.Ok();
+        }
+
+        /// <summary>先释放地图，再切回主菜单。等待一帧让场景对象先完成销毁。</summary>
+        private async UniTask<ArcadeSceneFlowResult> UnloadBattlefieldAsync(CancellationToken cancellationToken)
+        {
+            bool hadMap = this.GetModel<MapSceneModel>().CurrentHandle != null;
+            var result = await this.GetSystem<MapSceneSystem>().UnloadCurrentMapAsync(cancellationToken);
+            if (!result.Success) return ArcadeSceneFlowResult.Fail(result.Error);
+
+            this.GetSystem<AppStateSystem>().TryTransition(AppState.Paused);
+            UIHelper.HideUI<PauseUICtrl>();
+            if (hadMap) await UniTask.NextFrame();
+            UIHelper.ShowUI<StartUICtrl>();
+            return ArcadeSceneFlowResult.Ok();
         }
 
         /// <summary>保存结果成功后才释放现场；失败保留已结束结果供再次退出重试。</summary>
@@ -130,7 +158,7 @@ namespace Game
             busy = true;
             try
             {
-                var result = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync(cancellationToken, showFailureDialog: false);
+                var result = await UnloadBattlefieldAsync(cancellationToken);
                 if (result.Success)
                 {
                     system.Stop();
@@ -194,7 +222,7 @@ namespace Game
             busy = true;
             try
             {
-                var result = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync(showFailureDialog: false);
+                var result = await UnloadBattlefieldAsync(default);
                 if (!result.Success) { shownBattleError = null; ShowBattleFailure(result.Error); return; }
                 this.GetSystem<SurvivorSystem>().Stop();
                 UIHelper.HideUI<SurvivorUpgradeUICtrl>();

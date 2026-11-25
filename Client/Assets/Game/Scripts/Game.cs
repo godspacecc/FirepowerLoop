@@ -39,10 +39,7 @@ namespace Game
             RegisterModel(new WeaponPoseSettingsModel());
             RegisterModel(new AppStateModel());
             RegisterModel(new RuntimeLogModel());
-            RegisterModel(new ArcadeRunModel());
-            RegisterModel(new ArcadeCombatModel());
             RegisterModel(new SurvivorModel());
-            RegisterModel(new ChallengeModel());
             RegisterModel(new MapSceneModel());
             RegisterModel(new UnitModel());
             RegisterModel(new PlayerModel());
@@ -52,7 +49,6 @@ namespace Game
             RegisterModel(new OnlineAccountModel());
             RegisterModel(new OnlineRoomModel());
             RegisterModel(new OnlineRoomChatModel());
-            RegisterModel(new OnlineArcadeRunModel());
         }
 
         private void RegisterUtilities()
@@ -107,8 +103,6 @@ namespace Game
         {
             RegisterSystem(new SettingsSystem());
             RegisterSystem(new WeaponPoseSettingsSystem());
-            RegisterSystem(new ArcadeRunSystem());
-            RegisterSystem(new ArcadeCombatSystem());
             RegisterSystem(new AppStateSystem());
             RegisterSystem(new UnitSystem());
             RegisterSystem(new MobileInputSystem());
@@ -118,10 +112,7 @@ namespace Game
             RegisterSystem(new CombatSoundSystem());
             RegisterSystem(new HotKeySystem());
             RegisterSystem(new MapSceneSystem(projectileCtrl, playerCtrl, enemyCtrl, lootCtrl));
-            RegisterSystem(new ArcadeSceneFlowSystem());
             RegisterSystem(new SurvivorSystem());
-            RegisterSystem(new ChallengeSystem());
-            RegisterSystem(new ChallengeSceneFlowSystem());
             RegisterSystem(new SurvivorSceneFlowSystem());
             RegisterSystem(new ServerTestCmdSystem());
             RegisterSystem(new TestCmdSystem());
@@ -133,8 +124,6 @@ namespace Game
             RegisterSystem(onlineAccountSystem);
             RegisterSystem(new OnlineRoomSystem());
             RegisterSystem(new OnlineRoomChatSystem());
-            RegisterSystem(new OnlineArcadeRunSystem());
-            RegisterSystem(new OnlineArcadePresentationSystem());
         }
 
         private void InitializeNetworkLifecycle()

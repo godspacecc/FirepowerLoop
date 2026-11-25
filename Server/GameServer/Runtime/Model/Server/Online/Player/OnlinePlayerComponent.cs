@@ -40,8 +40,6 @@ namespace ET.Server
         public long TimerGeneration;
         public bool SaveRetryPending;
         public long CurrentRoomId;
-        /// <summary>当前联机街机运行局身份；0 表示尚未恢复或没有未结束对局。</summary>
-        public long CurrentArcadeRunId;
         public bool PendingRoomSync;
         public int PendingRoomConnectionState;
         public long PendingRoomSyncEpoch;

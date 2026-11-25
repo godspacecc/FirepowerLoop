@@ -411,7 +411,7 @@ namespace ET.Server
             failed += await self.Case("ROOM-19 ArcadeQuickMatchPairsCompatiblePlayers", async () =>
             {
                 string version = $"room-match-{Guid.NewGuid():N}";
-                string fingerprint = ServerConfig.Instance.ArcadeRule.ConfigFingerprint;
+                string fingerprint = "lobby-match-fixture-v1";
                 using Session first = self.CreateSession();
                 using G2C_Login firstLogin = await self.RegisterAndLogin(first, UniqueUser("rmm"));
                 using G2C_MatchArcadeRoom firstMatch = await first.Call(

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -1233,10 +1233,6 @@ namespace Game.Tests
                     Assert.That(OnlineRoomText.Result(OnlineRoomResultCode.VersionMismatch),
                         Is.EqualTo("客户端版本或玩法配置不一致"));
 
-                    Assert.That(ArcadeUiFormatter.OnlineResult(OnlineArcadeResultCode.SaveFailed),
-                        Is.EqualTo("街机进度保存失败，请重试"));
-                    Assert.That(ArcadeUiFormatter.OnlineResult(OnlineArcadeResultCode.OperationConflict),
-                        Is.EqualTo("街机状态已变化，请重试"));
 
                     Game.Interface.SendCommand(new SetLanguageCommand { LanguageCode = "en-US" });
                     string enCreated = OnlineAccountText.Result(OnlineAccountResultCode.AccountCreated);
@@ -1248,10 +1244,6 @@ namespace Game.Tests
                     Assert.That(OnlineRoomText.Result(OnlineRoomResultCode.VersionMismatch),
                         Is.EqualTo("Client version or gameplay configuration does not match"));
 
-                    Assert.That(ArcadeUiFormatter.OnlineResult(OnlineArcadeResultCode.SaveFailed),
-                        Is.EqualTo("Failed to save arcade progress. Please retry"));
-                    Assert.That(ArcadeUiFormatter.OnlineResult(OnlineArcadeResultCode.OperationConflict),
-                        Is.EqualTo("Arcade state changed. Please retry"));
                 }
                 finally
                 {

@@ -53,9 +53,6 @@ namespace ET
         [Option("DiagnosticTrustedProxyIp", Required = false, Default = "")]
         public string DiagnosticTrustedProxyIp { get; set; }
 
-        [Option("OnlineArcadeStore", Required = false, Default = "../Store/Online/arcade-runs.json")]
-        public string OnlineArcadeStore { get; set; }
-        
         [Option("OnlineTestAddress", Required = false, Default = "127.0.0.1:31001")]
         public string OnlineTestAddress { get; set; }
         
@@ -91,9 +88,6 @@ namespace ET
 
         [Option("OnlineChatFailCloseCount", Required = false, Default = 0)]
         public int OnlineChatFailCloseCount { get; set; }
-
-        [Option("OnlineArcadeFailSaveCount", Required = false, Default = 0)]
-        public int OnlineArcadeFailSaveCount { get; set; }
 
     }
 }

@@ -9,7 +9,6 @@ namespace Game
     public sealed partial class LubanRuntimeConfigProvider : IRuntimeConfigProvider
     {
         /// <summary>正式Luban源必须提供商店门禁；损坏配置不能伪装成旧规则开局。</summary>
-        public bool HasSlayerMartConfiguration => true;
 
         private readonly Func<global::Tables> tablesFactory;
         private global::Tables cachedTables;
@@ -22,8 +21,6 @@ namespace Game
         private IReadOnlyDictionary<int, PlayerWeaponAppearanceDefinition> playerWeaponAppearanceByItemId;
         private ArcadeConfigCatalogDefinition arcadeCatalog;
         /// <summary>正式商店配置独立于旧街机目录，开放门禁由配置明确控制。</summary>
-        private FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration slayerMart;
-        private FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration slayerChallenge;
 
         public LubanRuntimeConfigProvider()
             : this(() => DataLoader.Tables)
@@ -291,22 +288,6 @@ namespace Game
             return true;
         }
 
-        /// <summary>挑战目录独立映射，不要求旧模式目录验证通过。</summary>
-        public bool TryGetChallengeCombat(out ChallengeCombatConfiguration value,out string error)
-        {
-            value=null;
-            try {value=new ChallengeCombatConfiguration(cachedTables??tablesFactory());error=null;return true;}
-            catch(Exception exception){error="挑战战斗配置无效: "+exception.Message;return false;}
-        }
-
-        /// <summary>读取独立挑战武器目录。</summary>
-        public bool TryGetChallenge(out ChallengeConfiguration value,out string error)
-        {
-            value=null;
-            try {value=new ChallengeConfiguration(cachedTables??tablesFactory());error=null;return true;}
-            catch(Exception exception) {error="挑战配置无效: "+exception.Message;return false;}
-        }
-
         public bool TryGetArcadeCatalog(out ArcadeConfigCatalogDefinition value, out string error)
         {
             value = null;
@@ -349,15 +330,6 @@ namespace Game
             value=null;
             try{value=SurvivorEnemyRoster.FromTables(cachedTables??tablesFactory());error=null;return true;}
             catch(Exception exception){error="幸存者敌池无效: "+exception.Message;return false;}
-        }
-
-        public bool TryGetSlayerChallenge(out FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration value,out string error)
-        {value=null;if(!EnsureValid(out error))return false;value=slayerChallenge;return value!=null;}
-
-        public bool TryGetSlayerMart(out FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration value,out string error)
-        {
-            value=null;if(!EnsureValid(out error))return false;
-            value=slayerMart;error=null;return value!=null;
         }
 
         public bool TryGetLootByItemId(int itemId, out LootConfigDefinition value, out string error)
@@ -417,8 +389,6 @@ namespace Game
                     BuildProjectileSnapshot(cachedTables, out projectiles);
                     BuildPlayerWeaponAppearanceSnapshot(cachedTables, out playerWeaponAppearanceByItemId);
                     BuildArcadeSnapshot(cachedTables, out arcadeCatalog);
-                    slayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(cachedTables);
-                    slayerChallenge=FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration.FromTables(cachedTables);
                 }
                 else
                 {
@@ -428,7 +398,6 @@ namespace Game
                     projectiles = Array.Empty<ProjectileConfigDefinition>();
                     playerWeaponAppearanceByItemId = new Dictionary<int, PlayerWeaponAppearanceDefinition>();
                     arcadeCatalog = null;
-                    slayerMart=null;
                 }
             }
             catch (Exception e)
@@ -440,7 +409,6 @@ namespace Game
                 projectiles = Array.Empty<ProjectileConfigDefinition>();
                 playerWeaponAppearanceByItemId = new Dictionary<int, PlayerWeaponAppearanceDefinition>();
                 arcadeCatalog = null;
-                slayerMart=null;
                 validationError = $"Tables.Constructor 配置读取异常：{e.Message}";
             }
 
@@ -1535,8 +1503,7 @@ namespace Game
                 tables.TbArcadeTreasureRoom.DataList.Select(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig),
                 tables.TbArcadeRoundLayout.DataList.OrderBy(row => row.ArenaConfigNumber).ThenBy(row => row.RoundNumber)
                     .Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig),
-                tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig),
-                FirepowerLoop.Arcade.ArcadeScoreShopConfiguration.FromTables(tables));
+                tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig));
         }
 
         private static bool IsNonNegativeFinite(float value) => IsFinite(value) && value >= 0f;

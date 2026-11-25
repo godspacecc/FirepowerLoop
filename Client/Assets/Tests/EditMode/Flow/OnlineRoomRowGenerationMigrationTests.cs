@@ -523,7 +523,6 @@ namespace Game.Tests
             game.RegisterSystem(roomSystem);
             game.RegisterSystem(roomChatSystem);
             // 大厅已复用街机入口；普通房间测试也必须提供其空快照依赖。
-            game.RegisterSystem(new OnlineArcadeRunSystem());
             Init(localizationModel);
             Init(accountModel);
             Init(roomModel);

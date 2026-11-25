@@ -45,25 +45,6 @@ namespace FirepowerLoop.Arcade
         public IReadOnlyList<ArcadeScoreShopItem> Items { get; }
         private ArcadeScoreShopConfiguration(int refresh,IEnumerable<ArcadeScoreShopItem> items)
         { RefreshCost=refresh;Items=Array.AsReadOnly(items.ToArray()); }
-        public static ArcadeScoreShopConfiguration FromTables(ShopTables tables)
-        {
-            var rows=tables.TbArcadeScoreShop.DataList;
-            var refresh=rows.Single(r=>r.Id=="refresh");
-            if(refresh.DropId!="-"||refresh.ScoreCost<=0)throw new ArgumentException("积分商店刷新配置无效");
-            var items=new List<ArcadeScoreShopItem>();
-            foreach(var row in rows.Where(r=>r.Id!="refresh"))
-            {
-                var drop=tables.TbArcadeDrop.GetOrDefault(row.DropId);
-                if(row.ScoreCost<=0||drop==null||drop.Weight<=0||drop.Amount<=0||drop.DurationSeconds<=0||
-                    (drop.Kind!=ShopDropKind.TemporaryWeapon&&!(drop.Kind==ShopDropKind.Support&&
-                        tables.TbArcadePowerup.GetOrDefault(drop.ProductId)?.Behavior==ShopPowerupBehavior.Drone)))
-                    throw new ArgumentException("积分商品必须引用现有有效空投："+row.Id);
-                items.Add(new ArcadeScoreShopItem(drop.Id,row.ScoreCost,drop.MinArena,drop.MaxArena));
-            }
-            if(items.Select(i=>i.DropId).Distinct().Count()!=items.Count||items.Count(i=>i.Eligible(2))<3)
-                throw new ArgumentException("积分商店商品重复或首访不足三项");
-            return new ArcadeScoreShopConfiguration(refresh.ScoreCost,items);
-        }
     }
     /// <summary>个人整关商店账本；候选与随机状态一起持久化，重新打开不会免费刷新。</summary>
     [Serializable]

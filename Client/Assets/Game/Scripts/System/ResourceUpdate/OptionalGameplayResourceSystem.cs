@@ -71,14 +71,11 @@ namespace Game
     public class OptionalGameplayResourceSystem : AbstractSystem
     {
         private const string PackageName = "DefaultPackage";
-        // 非地图入口使用独立范围，避免巨人城或幸存者请求闯关专用敌人。
+        // 幸存者按独立范围准备共享资源、角色和专用资源。
         public const string SurvivorScope = "survivor";
-        public const string CraterScope = "crater";
         internal static string[] DownloadTags(string scope)
         {
-            if (scope == MapIds.Arcade) return new[] { "arcade", "game-player", "campaign" };
             if (scope == SurvivorScope) return new[] { "arcade", "game-player", "survivor" };
-            if (scope == CraterScope) return new[] { "crater", "game-player" };
             return Array.Empty<string>();
         }
 
@@ -127,20 +124,12 @@ namespace Game
                 }
                 if (!addresses.Contains("Prefabs/Characters/GrayboxPlayer"))
                     return Unavailable("玩法资源缺少共用角色");
-                if (mapId == CraterScope)
-                {
-                    if (!addresses.Contains(ChallengeWorldCtrl.MapAddress) || !addresses.Contains("Prefabs/UI/Challenge/ChallengeHud"))
-                        return Unavailable("挑战地图或界面未收集");
-                }
-                else
-                {
-                    var configs = this.GetUtility<IRuntimeConfigProvider>();
-                    if (configs == null || !configs.TryGetMap(MapIds.Arcade, out var definition, out _) ||
-                        definition.SceneAddresses == null || definition.SceneAddresses.Count == 0)
-                        return Unavailable("地图配置不可用");
-                    foreach (var address in definition.SceneAddresses)
-                        if (!addresses.Contains(address)) return Unavailable("地图不在下载范围：" + address);
-                }
+                var configs = this.GetUtility<IRuntimeConfigProvider>();
+                if (configs == null || !configs.TryGetMap(MapIds.Arcade, out var definition, out _) ||
+                    definition.SceneAddresses == null || definition.SceneAddresses.Count == 0)
+                    return Unavailable("地图配置不可用");
+                foreach (var address in definition.SceneAddresses)
+                    if (!addresses.Contains(address)) return Unavailable("地图不在下载范围：" + address);
 
                 var downloader = package.CreateResourceDownloader(DownloadTags(mapId), 10, 3);
                 if (downloader == null)

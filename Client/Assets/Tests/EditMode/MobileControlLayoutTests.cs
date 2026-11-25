@@ -50,46 +50,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ArcadeHud_ConsumesSavedButtonPositionInSameSafeAreaAsSticks()
-        {
-            var architecture = CreateEditorArchitecture();
-            var layout = JsonConvert.DeserializeObject<MobileControlLayoutData>("{\"bomb\":{\"x\":0.68,\"y\":0.42}}");
-            architecture.GetModel<MobileControlLayoutModel>().Apply(layout);
-            var canvas = new GameObject("ArcadeLayoutTest", typeof(RectTransform), typeof(Canvas));
-            canvas.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
-            ((RectTransform)canvas.transform).sizeDelta = new Vector2(1920, 1080);
-            try
-            {
-                var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"), canvas.transform, false);
-                var ui = root.GetComponent<ArcadeHudUI>();
-                var ctrl = new ArcadeHudUICtrl();
-                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                typeof(BaseUICtrl).GetField("BaseUI", flags).SetValue(ctrl, ui);
-                Canvas.ForceUpdateCanvases();
-                var originalAnchor = ((RectTransform)ui.BtnBomb.transform).anchorMin;
-                var originalPosition = ((RectTransform)ui.BtnBomb.transform).anchoredPosition;
-                typeof(ArcadeHudUICtrl).GetMethod("ApplyJoystickLayout", flags).Invoke(ctrl, null);
-                var bounds = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.BtnBomb.transform);
-                Assert.That(bounds.center.x / ui.JoystickLayoutArea.rect.width, Is.EqualTo(.68f).Within(.001f));
-                Assert.That(bounds.center.y / ui.JoystickLayoutArea.rect.height, Is.EqualTo(.42f).Within(.001f));
-                // 刘海换边可能只改变安全区原点而不改变尺寸；更新后仍必须保留保存的比例位置。
-                ui.JoystickLayoutArea.anchoredPosition += new Vector2(40, 0);
-                typeof(ArcadeHudUICtrl).GetMethod("RefreshJoystickArea", flags).Invoke(ctrl, null);
-                bounds = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.BtnBomb.transform);
-                Assert.That(bounds.center.x / ui.JoystickLayoutArea.rect.width, Is.EqualTo(.68f).Within(.001f));
-                var upgrade = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.BtnFieldUpgrade.transform);
-                var upgradeLayout = layout.FieldUpgrade;
-                Assert.That(upgrade.center.x / ui.JoystickLayoutArea.rect.width, Is.EqualTo(upgradeLayout.X).Within(.001f));
-                Assert.That(upgrade.center.y / ui.JoystickLayoutArea.rect.height, Is.EqualTo(upgradeLayout.Y).Within(.001f));
-                architecture.GetSystem<MobileInputSystem>().TrySetEditorSimulation(false);
-                typeof(ArcadeHudUICtrl).GetMethod("RefreshJoystickVisibility", flags).Invoke(ctrl, null);
-                Assert.That(((RectTransform)ui.BtnBomb.transform).anchorMin, Is.EqualTo(originalAnchor));
-                Assert.That(((RectTransform)ui.BtnBomb.transform).anchoredPosition, Is.EqualTo(originalPosition));
-            }
-            finally { Object.DestroyImmediate(canvas); }
-        }
-
-        [Test]
         public void Editor_FillsActualSafeAreaAtCombatScale()
         {
             CreateEditorArchitecture();
@@ -107,54 +67,6 @@ namespace Game.Tests
                 var bounds = MobileControlLayoutGeometry.Bounds(ui.ControlSafeArea, ui.LayoutArea);
                 Assert.That(bounds.min, Is.EqualTo(Vector2.zero));
                 Assert.That(bounds.size, Is.EqualTo(new Vector2(1536, 1080)));
-            }
-            finally { Object.DestroyImmediate(root); }
-        }
-
-        [TestCase(1920, 1080)]
-        [TestCase(2340, 1080)]
-        [TestCase(1440, 1080)]
-        public void EditorAndHud_ProjectSameControlsForInsetSafeArea(int width, int height)
-        {
-            var architecture = CreateEditorArchitecture();
-            var data = new MobileControlLayoutData(); data.Move.Scale = 1.4f;
-            data.Bomb.X = .68f; data.Bomb.Y = .42f;
-            architecture.GetModel<MobileControlLayoutModel>().Apply(data);
-            var root = CreateEditor(out var ctrl, out var preview);
-            ((RectTransform)root.transform).sizeDelta = new Vector2(width, height);
-            try
-            {
-                var hudRoot = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"), root.transform, false);
-                var hud = hudRoot.GetComponent<ArcadeHudUI>(); var hudCtrl = new ArcadeHudUICtrl();
-                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                typeof(BaseUICtrl).GetField("BaseUI", flags).SetValue(hudCtrl, hud);
-                foreach (var go in new[] { preview.gameObject, hudRoot })
-                    go.AddComponent<SafeAreaFitter>().ApplyAnchors(new Vector2(.05f, 0), new Vector2(.95f, 1));
-                Canvas.ForceUpdateCanvases(); ctrl.Show();
-                var previews = new[] { preview.PausePreview.transform, preview.BombPreview.transform, preview.DashPreview.transform,
-                    preview.FieldUpgradePreview.transform, preview.DonateLifePreview.transform };
-                var actual = new[] { hud.BtnPause.transform, hud.BtnBomb.transform, hud.BtnDash.transform,
-                    hud.BtnFieldUpgrade.transform, hud.BtnDonateLife.transform };
-                {
-                    typeof(ArcadeHudUICtrl).GetField("combat", flags).SetValue(hudCtrl,
-                        new ArcadeCombatHudSnapshot { PlayerHealth = 100 });
-                    typeof(ArcadeHudUICtrl).GetField("hasCombatSnapshot", flags).SetValue(hudCtrl, true);
-                    typeof(ArcadeHudUICtrl).GetMethod("ApplyJoystickLayout", flags).Invoke(hudCtrl, null);
-                    Assert.That(preview.LayoutArea.rect.size, Is.EqualTo(hud.JoystickLayoutArea.rect.size));
-                    for (var i = 0; i < 5; i++)
-                    {
-                        // 必须比较最终屏幕几何；只比各自局部坐标会漏掉整块预览被缩小的回归。
-                        var expected = MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)previews[i]);
-                        var result = MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)actual[i]);
-                        Assert.That(Vector2.Distance(expected.center, result.center), Is.LessThan(.1f), actual[i].name);
-                        Assert.That(Vector2.Distance(expected.size, result.size), Is.LessThan(.1f), actual[i].name);
-                    }
-                    var move = MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)preview.MovePreview.transform);
-                    var actualMove = MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)hud.MoveJoystickRoot.transform);
-                    Assert.That(Vector2.Distance(move.center, actualMove.center), Is.LessThan(.1f));
-                    Assert.That(Vector2.Distance(move.size, actualMove.size), Is.LessThan(.1f));
-                }
-                ctrl.Hide();
             }
             finally { Object.DestroyImmediate(root); }
         }
@@ -246,24 +158,6 @@ namespace Game.Tests
             var legacy = JsonConvert.DeserializeObject<SettingsData>("{\"version\":1}").Sanitize();
             Assert.That(legacy.MobileControlLayout.Bomb, Is.Not.Null);
         }
-        [Test]
-        public void ArcadeSticks_HaveMatchingFixedRingsAndNonBlockingLabels()
-        {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab");
-            var ui = prefab.GetComponent<ArcadeHudUI>();
-            foreach (var wrapper in new[] { ui.MoveJoystickRoot, ui.AimJoystickRoot })
-            {
-                foreach (var label in wrapper.GetComponentsInChildren<TMPro.TMP_Text>(true))
-                    Assert.That(label.raycastTarget, Is.False, "摇杆现有提示文字不能阻挡触控");
-                Assert.That(wrapper.transform.Find("Ring"), Is.Not.Null, "底盘必须独立固定，不能跟随移动输入面一起移动");
-            }
-            var moveKnob = ui.MoveJoystick.transform.Find("Handle").GetComponent<Image>();
-            var aimKnob = ui.AimJoystick.transform.Find("Handle").GetComponent<Image>();
-            Assert.That(moveKnob.sprite, Is.EqualTo(aimKnob.sprite));
-            Assert.That(moveKnob.rectTransform.sizeDelta, Is.EqualTo(aimKnob.rectTransform.sizeDelta));
-            Assert.That(moveKnob.raycastTarget, Is.False);
-        }
-
         [Test]
         public void Editor_ButtonDragsSaveCancelAndResetWithoutExecutingGameplayActions()
         {
@@ -359,18 +253,18 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ArcadeJoystick_UsesIndependentGeneratedLayoutWrapper()
+        public void SurvivorJoystick_UsesIndependentGeneratedLayoutWrapper()
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab");
-            var ui = prefab.GetComponent<ArcadeHudUI>();
-            var field = typeof(ArcadeHudUI).GetField("MoveJoystickRoot");
-            Assert.That(field, Is.Not.Null, "街机必须接入共享布局容器");
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab");
+            var ui = prefab.GetComponent<SurvivorHudUI>();
+            var field = typeof(SurvivorHudUI).GetField("MoveJoystickRoot");
+            Assert.That(field, Is.Not.Null, "幸存者必须接入共享布局容器");
             var wrapper = (GameObject)field.GetValue(ui);
             Assert.That(wrapper, Is.Not.Null);
             Assert.That(ui.MoveJoystick.transform.parent, Is.EqualTo(wrapper.transform));
             Assert.That(((RectTransform)ui.MoveJoystick.transform).anchoredPosition, Is.EqualTo(Vector2.zero));
             Assert.That(((RectTransform)ui.MoveJoystick.transform).anchorMin, Is.EqualTo(Vector2.one * 0.5f));
-            Assert.That(typeof(ArcadeHudUI).GetField("MoveOpacity").GetValue(ui), Is.EqualTo(wrapper.GetComponent<CanvasGroup>()));
+            Assert.That(typeof(SurvivorHudUI).GetField("MoveOpacity").GetValue(ui), Is.EqualTo(wrapper.GetComponent<CanvasGroup>()));
         }
         [Test]
         public void SettingsJson_PreservesMobileLayoutThroughClone()

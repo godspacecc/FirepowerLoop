@@ -19,18 +19,29 @@ namespace Game.Tests
             Assert.That(field.GetValue(null), Is.EqualTo(new[] { "startup", "arcade", "game-player", "survivor" }));
         }
 
-        /// <summary>在真实收集结果中验证玩法专用资源和共用角色不随基础资源启动。</summary>
+        /// <summary>从正式收集器验证幸存者下载标签及归档玩法内容不再寻址。</summary>
         [Test]
         public void ModeSpecificDownloadsExcludeOtherModes()
         {
             var assets = CollectAssets().Cast<object>().ToDictionary(x => (string)Read(x, "Address"));
             foreach (var (address, tag) in new[] {
                 ("Prefabs/UI/Home/Start", "startup"), ("Prefabs/Characters/GrayboxPlayer", "game-player"),
-                ("Prefabs/Characters/ArcadeEnemyArcher", "campaign"), ("Prefabs/Characters/ArcadeEnemyBrute", "campaign"),
-                ("Prefabs/Characters/ArcadeEnemyBossArcher", "campaign"), ("Prefabs/SceneObjects/SurvivorFarmVisual", "survivor"),
-                ("Art/Challenge/Crater/CraterMap", "crater"), ("Prefabs/UI/Challenge/ChallengeHud", "crater")
+                ("Prefabs/SceneObjects/SurvivorFarmVisual", "survivor"),
+                ("Prefabs/Characters/ArcadeZombieShambler", "arcade")
             })
                 Assert.That(Tags(assets[address]), Is.EquivalentTo(new[] { tag }), address);
+            Assert.That(assets.Keys.Where(address => address.StartsWith("Prefabs/UI/Arcade/", StringComparison.Ordinal)), Is.Empty);
+            foreach (var address in new[] { "Prefabs/UI/Online/OnlineLogin", "Prefabs/UI/Online/OnlineRoom" })
+                Assert.That(Tags(assets[address]), Is.EquivalentTo(new[] { "startup", "arcade" }), address);
+            foreach (var address in new[] {
+                "Art/Challenge/Crater/CraterMap", "Prefabs/UI/Challenge/ChallengeHud",
+                "Prefabs/Characters/ArcadeEnemyArcher", "Prefabs/Characters/ArcadeEnemyBrute",
+                "Prefabs/Characters/ArcadeEnemyBossArcher", "Prefabs/SceneObjects/ArcadeStagePortalVisual",
+                "Prefabs/SceneObjects/ArcadeRoundRewardVisual", "Prefabs/SceneObjects/ArcadeFarmVisual"
+            })
+                Assert.That(assets.ContainsKey(address), Is.False, address);
+            var tags = assets.Values.SelectMany(asset => Tags(asset).Cast<string>());
+            Assert.That(tags, Does.Not.Contain("campaign").And.Not.Contain("arcade-online"));
         }
 
         /// <summary>街机场景必须随街机资源下载，不再沿用已退役地图的分包标签。</summary>
@@ -91,26 +102,22 @@ namespace Game.Tests
             Assert.That(Read(enemy, "BundleName"), Is.Not.EqualTo(Read(player, "BundleName")));
         }
 
-        /// <summary>激活后的强化、前三关环境与代码寻址特效也必须进入真实收集清单，不能只检查地面掉落。</summary>
+        /// <summary>检查幸存者实际使用的环境和支援资产，不读取旧关卡视觉配置。</summary>
         [Test]
-        public void ActiveAndStageVisualsAreCollectedForArcadeEntry()
+        public void SurvivorActivationAssetsAreCollected()
         {
             var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>
                 new ByteBuf(File.ReadAllBytes("Assets/Game/Config/" + name + ".bytes"))));
             Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
-            var addresses = catalog.Powerups.Select(p => p.ActiveVisualPrefabAddress)
-                .Concat(catalog.SupportVisuals.Select(p => p.ActiveVisualPrefabAddress))
-                .Concat(catalog.EarlyStages.Select(p => p.EnvironmentAddress))
-                .Concat(catalog.EarlyStages.Where(p => p.HerdCount > 0).Select(p => p.HerdAddress))
-                .Concat(new[] { "Prefabs/SceneObjects/ArcadeDroneExplosion", "Prefabs/SceneObjects/ArcadeRoundRewardVisual", "Prefabs/SceneObjects/ArcadeStagePortalVisual" })
-                .Where(address => !string.IsNullOrWhiteSpace(address)).Distinct().ToArray();
-            var assets = CollectAssets().Cast<object>().ToDictionary(asset => (string)Read(asset, "Address"), StringComparer.Ordinal);
-            Assert.That(addresses.Where(address => !assets.ContainsKey(address)).ToArray(), Is.Empty,
-                "激活效果与关卡资源缺少正式动态地址，AssetDatabase替身无法发现此遗漏");
-            foreach(var address in addresses)
+            Assert.That(provider.TryGetSurvivor(out var survivor, out error), Is.True, error);
+            var drone = catalog.SupportVisuals.Single(p => p.ProductId == "arcade.support.drone");
+            foreach (var (address, tag) in new[] {
+                (survivor.EnvironmentPrefabAddress, "survivor"), (drone.ActiveVisualPrefabAddress, "arcade"),
+                ("Prefabs/SceneObjects/ArcadeDroneExplosion", "arcade")
+            })
             {
-                var asset = assets[address];
-                Assert.That(Tags(asset), Does.Contain("arcade"), address);
+                var asset = Find(address);
+                Assert.That(Tags(asset), Does.Contain(tag), address);
                 var path = (string)Read(asset, "AssetInfo").GetType().GetField("AssetPath").GetValue(Read(asset, "AssetInfo"));
                 Assert.That(path, Is.EqualTo("Assets/Game/" + address + ".prefab"));
                 var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path);

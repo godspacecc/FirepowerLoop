@@ -470,66 +470,6 @@
         <var name="MovementOnlyObstacleIndices" type="(array#sep=;),int"/>
     </bean>
     <!-- 新商店使用独立商品合同，旧逐场商店和局外钱包不恢复。 -->
-    <bean name="ArcadeSlayerMartItemConfig">
-        <var name="Id" type="string"/>
-        <var name="Effect" type="int"/>
-        <var name="Price" type="long"/>
-        <var name="OncePerRun" type="bool"/>
-        <var name="Amount" type="int"/>
-        <var name="Duration" type="float"/>
-        <var name="NameKey" type="string"/>
-        <var name="DescKey" type="string"/>
-    </bean>
-    <bean name="ArcadeSlayerMartRegionConfig">
-        <var name="Id" type="int"/>
-        <var name="AfterRound" type="int"/>
-        <var name="Duration" type="float"/>
-        <var name="CashPerMember" type="long"/>
-        <var name="CashBoxes" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
-        <var name="HalfWidth" type="float"/>
-        <var name="HalfHeight" type="float"/>
-        <var name="SpawnX" type="float"/>
-        <var name="SpawnY" type="float"/>
-        <var name="ExitX" type="float"/>
-        <var name="ExitY" type="float"/>
-        <var name="PickupRadius" type="float"/>
-    </bean>
-    <bean name="ArcadeSlayerMartAbilityConfig">
-        <var name="Id" type="string"/>
-        <var name="Value" type="float"/>
-    </bean>
-    <bean name="ArcadeSlayerChallengeConfig" group="e">
-        <var name="Id" type="string"/>
-        <var name="Enabled" type="bool"/>
-        <var name="AfterArena" type="int"/>
-        <var name="ArenaConfigNumber" type="int"/>
-        <var name="LayoutRound" type="int"/>
-        <var name="ChallengeId" type="string#ref=TbArcadeChallenge"/>
-        <var name="PreparationSeconds" type="float"/>
-        <var name="CollectionSeconds" type="float"/>
-        <var name="DownLimit" type="int"/>
-        <var name="RespawnSeconds" type="float"/>
-        <var name="CollectionWaveTotal" type="int"/>
-        <var name="CoinDropId" type="string#ref=TbArcadeDrop"/>
-        <var name="MaxCollectionCash" type="long"/>
-        <var name="BossBonusCash" type="long"/>
-        <var name="ShopSeconds" type="float"/>
-        <var name="BossEnemyId" type="string#ref=TbEnemy"/>
-        <var name="BossHealthPerPlayer" type="int"/>
-        <var name="BossMoveSpeed" type="float"/>
-        <var name="AttackPeriod" type="float"/>
-        <var name="AttackWarning" type="float"/>
-        <var name="HammerRadius" type="float"/>
-        <var name="FireballSpeed" type="float"/>
-        <var name="FireballDamage" type="int"/>
-        <var name="FireballRadius" type="float"/>
-        <var name="BurnSeconds" type="float"/>
-        <var name="BurnInterval" type="float"/>
-        <var name="BurnDamage" type="int"/>
-        <var name="FlameLength" type="float"/>
-        <var name="FlameRadius" type="float"/>
-        <var name="BossContactDamage" type="int"/>
-    </bean>
     <!-- 首关限时无人机；双端共用，不读旧局支援装备。 -->
     <bean name="ArcadeDroneConfig">
         <var name="Id" type="string"/>
@@ -621,11 +561,6 @@
         <var name="HerdEnemyDamage" type="float"/>
     </bean>
     <!-- 积分商店只关联现有空投；refresh行保存固定刷新费用，绝不复制掉落效果。 -->
-    <bean name="ArcadeScoreShopConfig" group="e">
-        <var name="Id" type="string"/>
-        <var name="DropId" type="string"/>
-        <var name="ScoreCost" type="int"/>
-    </bean>
     <!-- 独立幸存者规则，数值仅以本表为权威。 -->
     <bean name="SurvivorRuleConfig" group="e">
         <var name="Id" type="string"/>
@@ -796,26 +731,5 @@
         <var name="Breakthrough1Roster" type="string"/>
         <var name="Breakthrough2Roster" type="string"/>
         <var name="Breakthrough3Roster" type="string"/>
-    </bean>
-    <bean name="ChallengeWeaponConfig">
-        <var name="Id" type="string"/>
-        <var name="MagazineCapacity" type="int"/>
-        <var name="ReserveCapacity" type="int"/>
-        <var name="ReloadSeconds" type="float"/>
-        <var name="FireInterval" type="float"/>
-    </bean>
-    <bean name="ChallengeCombatConfig">
-        <var name="Id" type="string"/>
-        <var name="EnemyPrefabAddress" type="string"/>
-        <var name="EnemyHealth" type="int"/>
-        <var name="EnemySpeed" type="float"/>
-        <var name="ContactDamage" type="int"/>
-        <var name="ContactInterval" type="float"/>
-        <var name="PlayerHealth" type="int"/>
-        <var name="RifleDamage" type="int"/>
-        <var name="PistolDamage" type="int"/>
-        <var name="Range" type="float"/>
-        <var name="SpawnInterval" type="float"/>
-        <var name="EnemyCount" type="int"/>
     </bean>
 </beans>

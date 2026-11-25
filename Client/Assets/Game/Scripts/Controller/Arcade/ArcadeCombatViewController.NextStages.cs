@@ -42,34 +42,6 @@ namespace Game
         /// <summary>普通行走动画共享表现帧，不能据此推进起身、现身或换位阶段。</summary>
         private float nextStageAnimationTime;
 
-        /// <summary>所有依赖先发起；仅在同一轮代次仍有效且正式动画/节点完整时提交模板。</summary>
-        private async UniTask LoadNextStageTemplates(EarlyStageLoad state,int arena)
-        {
-            if(arena<23||arena>25)return;
-            var body=new UniTaskCompletionSource<GameObject>();var crow=new UniTaskCompletionSource<GameObject>();var travel=new UniTaskCompletionSource<GameObject>();
-            state.StageBodyHandle=ResourceLoader.LoadAssetAsync<GameObject>(arena==23?"Prefabs/Characters/ArcadeZombieShambler":"Prefabs/Characters/ArcadeShadowZombie",p=>body.TrySetResult(p));
-            if(arena!=23)
-            {
-                state.StageCrowHandle=ResourceLoader.LoadAssetAsync<GameObject>("Prefabs/SceneObjects/ArcadeShadowCrowVisual",p=>crow.TrySetResult(p));
-                state.StageTravelHandle=ResourceLoader.LoadAssetAsync<GameObject>("Prefabs/SceneObjects/ArcadeShadowTravelVisual",p=>travel.TrySetResult(p));
-            }
-            var actor=await body.Task;var bird=arena==23?null:await crow.Task;var shadow=arena==23?null:await travel.Task;
-            if(!EarlyStageLoadIsCurrent(state))return;
-            var animator=actor!=null?actor.GetComponentInChildren<Animator>(true):null;
-            var clips=animator?.runtimeAnimatorController?.animationClips;
-            var idle=clips?.FirstOrDefault(c=>c!=null&&c.name.IndexOf("Idle",StringComparison.OrdinalIgnoreCase)>=0);
-            // 当前正式普通丧尸使用通用骨架Walk；旧Humanoid仍以Run命名，均只采样该Prefab自己的片段。
-            var run=clips?.FirstOrDefault(c=>c!=null&&(c.name.IndexOf("Run",StringComparison.OrdinalIgnoreCase)>=0||c.name.IndexOf("Walk",StringComparison.OrdinalIgnoreCase)>=0));
-            var attack=clips?.FirstOrDefault(c=>c!=null&&c.name.IndexOf("Attack",StringComparison.OrdinalIgnoreCase)>=0);
-            if(actor==null||actor.GetComponent<EnemyView>()==null||actor.GetComponentsInChildren<SkinnedMeshRenderer>(true).Length==0||animator==null||idle==null||run==null||attack==null||actor.GetComponentInChildren<EnemyFlameFeedback>(true)==null)
-                throw new InvalidOperationException("三关正式丧尸、待机/移动/攻击动画或既有火焰缺失");
-            if(arena!=23&&(bird==null||bird.transform.Find("WingLeft")==null||bird.transform.Find("WingRight")==null||shadow==null||shadow.transform.Find("Core")==null||Enumerable.Range(0,6).Any(i=>shadow.transform.Find("Mote"+i)==null)))
-                throw new InvalidOperationException("暗影乌鸦或蓝影模板节点缺失");
-            foreach(var prefab in new[]{actor,bird,shadow}.Where(p=>p!=null))
-                if(prefab.GetComponentsInChildren<Renderer>(true).Any(r=>r.sharedMaterials.Any(m=>m==null||m.shader==null)))throw new InvalidOperationException("三关演员材质缺失");
-            state.StageBody=actor;state.StageCrow=bird;state.StageTravel=shadow;state.StageIdle=idle;state.StageRun=run;state.StageAttack=attack;
-        }
-
         /// <summary>专用身份先抑制旧替身和普通EnemyCtrl，等阶段/模板齐备再显示。</summary>
         private void SetNextStageIdentity(int id,int kind)
         {

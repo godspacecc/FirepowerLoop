@@ -63,47 +63,5 @@ namespace FirepowerLoop.Arcade
         private IReadOnlyDictionary<string,float> parameters;
         /// <summary>缺值直接拒绝，不用硬编码默认值继续运行。</summary>
         public float Parameter(string id) => parameters.TryGetValue(id,out float value)?value:throw new ArgumentException("缺少商店参数："+id);
-        public static ArcadeSlayerMartConfiguration FromTables(SlayerTables tables)
-        {
-            if(tables==null)throw new ArgumentNullException(nameof(tables));
-            var c=new ArcadeSlayerMartConfiguration();
-            c.parameters=new ReadOnlyDictionary<string,float>(tables.TbArcadeSlayerMartAbility.DataMap.ToDictionary(p=>p.Key,p=>p.Value.Value,StringComparer.Ordinal));
-            foreach(string key in new[]{"release.enabled","inventory.cards","inventory.maxLives","inventory.maxBombs","inventory.maxDashes","inventory.maxChickens",
-                "storm.kills","storm.duration","storm.radius","storm.interval","storm.damage","storm.eliteSpeedScale","mastery.magnet","mastery.decoy","mastery.gloves",
-                "mastery.chicken","mastery.barrel","mastery.sawDistance","mastery.deadOperator","mastery.sentry","mastery.respawn","support.orbitSpeed","support.orbitRadius",
-                "support.contactRadius","support.barrelCharges","support.barrelInterval","support.orbKnockback","gem.minimum","gem.maximum"})
-            {
-                float value=c.Parameter(key);
-                if(float.IsNaN(value)||float.IsInfinity(value)||value<0||(key!="release.enabled"&&value==0))throw new ArgumentException("商店参数无效："+key);
-            }
-            if(c.Parameter("release.enabled")!=0&&c.Parameter("release.enabled")!=1)throw new ArgumentException("商店开放门禁必须为0或1");
-            foreach(string key in new[]{"inventory.cards","inventory.maxLives","inventory.maxBombs","inventory.maxDashes","inventory.maxChickens","storm.kills","storm.damage","support.barrelCharges","gem.minimum","gem.maximum"})
-                if((double)c.Parameter(key)>int.MaxValue||Math.Floor(c.Parameter(key))!=c.Parameter(key))throw new ArgumentException("商店整数参数无效："+key);
-            if(c.Parameter("storm.eliteSpeedScale")>1||c.Parameter("gem.minimum")>c.Parameter("gem.maximum"))throw new ArgumentException("商店比例或随机范围无效");
-            c.Enabled=c.Parameter("release.enabled")==1;
-            var items=tables.TbArcadeSlayerMartItem.DataList.OrderBy(p=>p.Effect).Select(p=>
-            {
-                if(!Enum.IsDefined(typeof(SlayerMartEffect),p.Effect)||p.Id!="slayermart.item."+p.Effect.ToString("00",System.Globalization.CultureInfo.InvariantCulture)||
-                    string.IsNullOrWhiteSpace(p.NameKey)||string.IsNullOrWhiteSpace(p.DescKey))throw new ArgumentException("商店商品身份或本地化键无效："+p.Id);
-                return new ArcadeSlayerMartItem(p.Id,(SlayerMartEffect)p.Effect,p.Price,p.OncePerRun,p.Amount,p.Duration);
-            }).ToArray();
-            var regions=tables.TbArcadeSlayerMartRegion.DataList.OrderBy(p=>p.Id).ToArray();
-            c.Regions=Array.AsReadOnly(regions.Select(p=>new ArcadeSlayerMartRegionLayout(p.Id,p.HalfWidth,p.HalfHeight,p.SpawnX,p.SpawnY,p.ExitX,p.ExitY,p.PickupRadius,
-                p.CashBoxes.Select(b=>new ArcadeSlayerMartPoint(b.X,b.Y)))).ToArray());
-            c.Catalog=new ArcadeSlayerMartCatalog(items,regions.Select(p=>new ArcadeSlayerMartRegion(p.Id,p.AfterRound,p.CashBoxes.Length,p.CashPerMember,p.Duration)),
-                (int)c.Parameter("inventory.cards"),(int)c.Parameter("inventory.maxLives"),(int)c.Parameter("inventory.maxBombs"),(int)c.Parameter("inventory.maxDashes"),(int)c.Parameter("inventory.maxChickens"),
-                (int)c.Parameter("gem.minimum"),(int)c.Parameter("gem.maximum"));
-            c.Supports=new ArcadeSlayerMartSupportCatalog(Enum.GetValues(typeof(SlayerMartSupportKind)).Cast<SlayerMartSupportKind>().Select(kind=>
-            {
-                var behavior=kind==SlayerMartSupportKind.Orb?SlayerPowerupBehavior.ElectricOrb:kind==SlayerMartSupportKind.Chicken?SlayerPowerupBehavior.Chicken:
-                    kind==SlayerMartSupportKind.Saw?SlayerPowerupBehavior.Saw:SlayerPowerupBehavior.Barrel;
-                var source=tables.TbArcadePowerup.DataList.Single(p=>p.Behavior==behavior);
-                var drop=tables.TbArcadeDrop.DataList.Single(p=>p.Kind==SlayerDropKind.Powerup&&p.ProductId==source.Id);
-                return new ArcadeSlayerMartSupportDefinition(kind,source.Id,drop.DurationSeconds,source.Damage,
-                    kind==SlayerMartSupportKind.Barrel?c.Parameter("support.barrelInterval"):source.IntervalSeconds,source.Radius,source.ProjectileSpeed,
-                    kind==SlayerMartSupportKind.Barrel?(int)c.Parameter("support.barrelCharges"):source.Charges);
-            }));
-            return c;
-        }
     }
 }

@@ -66,7 +66,7 @@ namespace Game
             return CreateRoomAsync(OnlineRoomPurpose.General, OnlineRoomVisibility.Public, string.Empty, string.Empty);
         }
 
-        /// <summary>创建私有双人街机房；版本身份只用于房间兼容性，战斗状态仍由后续街机 Actor 提供。</summary>
+        /// <summary>创建私有双人房，沿用兼容的房间协议类型与版本身份。</summary>
         public Task<OnlineRoomOperationResult> CreateArcadeRoomAsync(string clientVersion, string arcadeConfigFingerprint)
         {
             if (!IsValidArcadeIdentity(clientVersion, arcadeConfigFingerprint))

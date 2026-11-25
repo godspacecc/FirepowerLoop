@@ -30,11 +30,12 @@ namespace Game.Editor
             "Prefabs/UI/Common/Loading",
             "Prefabs/UI/Diagnostics/RuntimeLog",
             "Prefabs/UI/Diagnostics/TestCmd",
-            "Prefabs/UI/Arcade/ArcadeHud",
-            "Prefabs/UI/Arcade/ArcadeShop",
-            "Prefabs/UI/Arcade/ArcadeResume",
             "Prefabs/UI/Online/OnlineLogin",
             "Prefabs/UI/Online/OnlineRoom",
+            "Prefabs/UI/Survivor/SurvivorEntry",
+            "Prefabs/UI/Survivor/SurvivorHud",
+            "Prefabs/UI/Survivor/SurvivorResult",
+            "Prefabs/UI/Survivor/SurvivorUpgrade",
             "Prefabs/UI/Home/Setting",
             "Prefabs/UI/Home/Start",
             "Prefabs/UI/Notify/Float",
@@ -463,7 +464,7 @@ namespace Game.Editor
             }
             catch (Exception exception)
             {
-                error = $"failed to enumerate arcade runtime prefabs: {exception.Message}";
+                error = $"failed to enumerate required runtime prefabs: {exception.Message}";
                 return false;
             }
         }

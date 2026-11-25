@@ -12,6 +12,8 @@ namespace Game
     /// <summary>展示房间与聊天快照、管理大厅交互及视图生命周期；不裁定成员、聊天或进入世界的业务权威。</summary>
     public sealed class OnlineRoomUICtrl : BaseUICtrl
     {
+        /// <summary>匹配只校验大厅协议版本，不读取关卡或战斗配置。</summary>
+        private const string LobbyFingerprint = "room-lobby-v1";
         private const float ChatBottomFollowTolerance = 0.02f;
 
         private OnlineRoomUI UI => BaseUI as OnlineRoomUI;
@@ -26,13 +28,10 @@ namespace Game
         private bool chatListFilled;
         private bool publicRoomListFilled;
         private bool isVisible;
-        private bool transitPreparing;
-        private long transitAttemptedRunId;
-        private int transitAttemptedArena;
+        private static bool requestPrivateLobby;
+        private bool privateLobby;
         private OnlineRoomOperationState lastNoticeOperationState;
         private OnlineRoomResultCode lastNoticeResultCode;
-        private static bool requestArcadeMode;
-        private bool arcadeMode;
         /// <summary>仅属于当前界面的聊天展开状态；隐藏、离房或换房时重置。</summary>
         private bool chatExpanded;
         /// <summary>当前房间已观察的最大消息序号，用于过滤重复快照；0 表示尚未建立历史基线。</summary>
@@ -43,8 +42,13 @@ namespace Game
 
         public static void ShowArcadeLobby()
         {
-            requestArcadeMode = true;
-            UIHelper.ShowUI<OnlineRoomUICtrl>();
+            requestPrivateLobby = true;
+            var controller = UIHelper.ShowUI<OnlineRoomUICtrl>();
+            requestPrivateLobby = false;
+            if (controller == null || controller.privateLobby) return;
+            controller.privateLobby = true;
+            controller.ApplyModeVisibility();
+            controller.SetButtons();
         }
 
         public override UILayer Layer()
@@ -61,10 +65,9 @@ namespace Game
         {
             UI.CreateButton.onClick.AddListener(() => SubmitCreate().Forget());
             UI.JoinButton.onClick.AddListener(() => SubmitJoin().Forget());
-            UI.RefreshRoomListButton.onClick.AddListener(() => SubmitRefreshOrMatch().Forget());
+            UI.RefreshRoomListButton.onClick.AddListener(() => SubmitMatch().Forget());
             UI.LoadMoreButton.onClick.AddListener(() => LoadMorePublicRooms().Forget());
             UI.LeaveButton.onClick.AddListener(() => SubmitLeave().Forget());
-            UI.WorldButton.onClick.AddListener(SubmitArcadeIntent);
             UI.CloseButton.onClick.AddListener(Hide);
             UI.MemberList.AddItemRefreshListener(RenderMember);
             UI.PublicRoomList.AddItemRefreshListener(RenderPublicRoom);
@@ -88,8 +91,6 @@ namespace Game
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineRoomChatChangedEvent>(evt => RenderChat(evt.Snapshot))
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<OnlineArcadeRunChangedEvent>(evt => OnArcadeRunChanged(evt.Snapshot))
-                .UnRegisterWhenGameObjectDestroyed(BaseUI);
             UI.ChatInput.lineType = TMPro.TMP_InputField.LineType.SingleLine;
         }
 
@@ -98,21 +99,14 @@ namespace Game
             isVisible = true;
             SetChatExpanded(false);
             OnlineRoomSnapshot snapshot = this.GetSystem<OnlineRoomSystem>().Snapshot;
-            arcadeMode = true;
-            requestArcadeMode = false;
+            privateLobby = requestPrivateLobby;
             latestPublicRooms = this.GetSystem<OnlineRoomSystem>().PublicRooms;
             lastNoticeOperationState = snapshot.OperationState;
             lastNoticeResultCode = snapshot.LastResultCode;
             Render(snapshot);
             RenderChat(this.GetSystem<OnlineRoomChatSystem>().Snapshot);
-            transitPreparing = false; transitAttemptedRunId = 0; transitAttemptedArena = 0;
-            var arcadeRun = this.GetSystem<OnlineArcadeRunSystem>().Snapshot;
-            if (arcadeRun.HasRun) OpenArcadeSnapshot(arcadeRun);
             ApplyModeVisibility();
-            if (!snapshot.HasRoom && !arcadeMode)
-            {
-                RefreshPublicRooms().Forget();
-            }
+            if (!snapshot.HasRoom && !privateLobby) RefreshPublicRooms().Forget();
         }
 
         protected override void OnHide()
@@ -146,67 +140,19 @@ namespace Game
             chatSubmitInFlight = false;
         }
 
-        /// <summary>检查启动资源时绑定视图与账号会话，过期操作不能替新账号创建或加入房间。</summary>
-        private async UniTask<bool> PrepareArcadeResources(int generation)
-        {
-            if (!arcadeMode) return true;
-            var owner = BaseUI;
-            var account = this.GetSystem<OnlineAccountSystem>();
-            var identity = account?.Snapshot ?? OnlineAccountSnapshot.Empty();
-            bool IsCurrent() => generation == operationGeneration && ReferenceEquals(owner, BaseUI) && IsShow() &&
-                arcadeMode && account != null && account.Snapshot.IsAuthenticated &&
-                account.Snapshot.AccountId == identity.AccountId && account.Snapshot.SessionEpoch == identity.SessionEpoch;
-            if (!IsCurrent()) return false;
-            var preparation = this.GetUtility<IGameplayResourcePreparation>();
-            return (preparation == null || await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) && IsCurrent();
-        }
-
         private async UniTask SubmitCreate()
         {
             int generation = ++operationGeneration;
             try
             {
-                if (!await PrepareArcadeResources(generation)) return;
-                if (arcadeMode && TryGetArcadeIdentity(out string version, out string fingerprint))
-                    await this.GetSystem<OnlineRoomSystem>().CreateArcadeRoomAsync(version, fingerprint);
-                else if (!arcadeMode) await this.GetSystem<OnlineRoomSystem>().CreateRoomAsync();
-                else Notify.ShowFloatTips(Loc.T("ui.arcade.error.open"));
+                if (privateLobby)
+                    await this.GetSystem<OnlineRoomSystem>().CreateArcadeRoomAsync(Application.version, LobbyFingerprint);
+                else
+                    await this.GetSystem<OnlineRoomSystem>().CreateRoomAsync();
             }
             catch (System.Exception exception)
             {
                 Log.Error($"[OnlineRoomUICtrl] 创建提交失败：generation={generation}，异常={exception}");
-                if (generation == operationGeneration && UI != null)
-                {
-                    Notify.ShowFloatTips(OnlineRoomText.Result(OnlineRoomResultCode.UnknownFailure));
-                }
-            }
-        }
-
-        /// <summary>街机模式提交快速匹配；普通模式仍复用同一按钮刷新公开房间列表。</summary>
-        private async UniTask SubmitRefreshOrMatch()
-        {
-            if (!arcadeMode)
-            {
-                await RefreshPublicRooms();
-                return;
-            }
-
-            int generation = ++operationGeneration;
-            try
-            {
-                if (!await PrepareArcadeResources(generation)) return;
-                if (TryGetArcadeIdentity(out string version, out string fingerprint))
-                {
-                    await this.GetSystem<OnlineRoomSystem>().MatchArcadeRoomAsync(version, fingerprint);
-                }
-                else
-                {
-                    Notify.ShowFloatTips(Loc.T("ui.arcade.error.open"));
-                }
-            }
-            catch (System.Exception exception)
-            {
-                Log.Error($"[OnlineRoomUICtrl] 快速匹配提交失败：generation={generation}，异常={exception}");
                 if (generation == operationGeneration && UI != null)
                 {
                     Notify.ShowFloatTips(OnlineRoomText.Result(OnlineRoomResultCode.UnknownFailure));
@@ -219,16 +165,37 @@ namespace Game
             await SubmitJoin(UI.RoomCodeInput.text);
         }
 
+        /// <summary>只匹配房间与玩家，入房后继续停留在大厅。</summary>
+        private async UniTask SubmitMatch()
+        {
+            if (!privateLobby)
+            {
+                await RefreshPublicRooms();
+                return;
+            }
+
+            int generation = ++operationGeneration;
+            try
+            {
+                await this.GetSystem<OnlineRoomSystem>().MatchArcadeRoomAsync(Application.version, LobbyFingerprint);
+            }
+            catch (System.Exception exception)
+            {
+                Log.Error($"[OnlineRoomUICtrl] 匹配提交失败：generation={generation}，异常={exception}");
+                if (generation == operationGeneration && UI != null)
+                    Notify.ShowFloatTips(OnlineRoomText.Result(OnlineRoomResultCode.UnknownFailure));
+            }
+        }
+
         private async UniTask SubmitJoin(string roomCode)
         {
             int generation = ++operationGeneration;
             try
             {
-                if (!await PrepareArcadeResources(generation)) return;
-                if (arcadeMode && TryGetArcadeIdentity(out string version, out string fingerprint))
-                    await this.GetSystem<OnlineRoomSystem>().JoinArcadeRoomAsync(roomCode, version, fingerprint);
-                else if (!arcadeMode) await this.GetSystem<OnlineRoomSystem>().JoinRoomAsync(roomCode);
-                else Notify.ShowFloatTips(Loc.T("ui.arcade.error.open"));
+                if (privateLobby)
+                    await this.GetSystem<OnlineRoomSystem>().JoinArcadeRoomAsync(roomCode, Application.version, LobbyFingerprint);
+                else
+                    await this.GetSystem<OnlineRoomSystem>().JoinRoomAsync(roomCode);
                 if (generation == operationGeneration && UI != null)
                 {
                     UI.RoomCodeInput.text = OnlineRoomSystem.NormalizeRoomCode(roomCode);
@@ -261,100 +228,16 @@ namespace Game
             }
         }
 
-        /// <summary>房间按钮只提交双人街机开局或继续意图。</summary>
-        private void SubmitArcadeIntent() => SubmitArcade().Forget();
-
-        private async UniTaskVoid SubmitArcade()
-        {
-            if (!CanUseArcadeButton()) { RefreshArcadeButton(); return; }
-            OnlineArcadeRunSystem system = this.GetSystem<OnlineArcadeRunSystem>();
-            if (!system.Snapshot.HasRun)
-            {
-                OnlineRoomUI owner = UI;
-                OnlineArcadeOperationResult result = await system.StartAsync();
-                // 只允许发起操作的同一界面实例显示晚返回，避免销毁重载后污染新界面。
-                if (!result.Success && UI == owner && IsShow())
-                {
-                    Notify.ShowFloatTips(ArcadeUiFormatter.OnlineResult(result.Code));
-                }
-            }
-            else if (system.Snapshot.Phase == OnlineArcadeRunPhase.SafeCheckpoint &&
-                string.IsNullOrEmpty(system.Snapshot.ChallengeId))
-            {
-                transitAttemptedRunId = 0;
-                PrepareTransitAsync(system.Snapshot).Forget();
-            }
-            else OpenArcadeSnapshot(system.Snapshot);
-        }
-
-        private void OnArcadeRunChanged(OnlineArcadeRunClientSnapshot snapshot)
-        {
-            if (!arcadeMode || !IsShow()) return;
-            RefreshArcadeButton();
-            if (snapshot.HasRun) OpenArcadeSnapshot(snapshot);
-        }
-
-        private void OpenArcadeSnapshot(OnlineArcadeRunClientSnapshot snapshot)
-        {
-            // 普通安全节点复用房间准备与重试入口，不弹出商品界面；服务器通常已直接开始下一场。
-            if (snapshot.Phase == OnlineArcadeRunPhase.SafeCheckpoint && string.IsNullOrEmpty(snapshot.ChallengeId))
-            { PrepareTransitAsync(snapshot).Forget(); return; }
-            Hide();
-            if (snapshot.Phase is OnlineArcadeRunPhase.Arena or OnlineArcadeRunPhase.Challenge)
-                UIHelper.ShowUI<ArcadeHudUICtrl>();
-            else if (snapshot.Phase is OnlineArcadeRunPhase.SafeCheckpoint or OnlineArcadeRunPhase.Victory) UIHelper.ShowUI<ArcadeResumeUICtrl>();
-        }
-
-        /// <summary>普通节点自动准备资源和地图后提交现有 ready；失败留在房间，可用原按钮重试，不提前开战。</summary>
-        private async UniTaskVoid PrepareTransitAsync(OnlineArcadeRunClientSnapshot snapshot)
-        {
-            if (!IsShow() || transitPreparing || snapshot.OperationState != OnlineArcadeOperationState.Idle ||
-                transitAttemptedRunId == snapshot.RunId && transitAttemptedArena == snapshot.NextArena) return;
-            long selfId = this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;
-            var player = snapshot.Players.FirstOrDefault(p => p.PlayerId == selfId);
-            if (player.PlayerId == 0 || player.Ready) return;
-            transitAttemptedRunId = snapshot.RunId; transitAttemptedArena = snapshot.NextArena;
-            transitPreparing = true; var owner = BaseUI; int generation = ++operationGeneration;
-            bool Current() => generation == operationGeneration && ReferenceEquals(owner,BaseUI) && IsShow() &&
-                this.GetSystem<OnlineArcadeRunSystem>().Snapshot.RunId == snapshot.RunId &&
-                this.GetSystem<OnlineArcadeRunSystem>().Snapshot.NextArena == snapshot.NextArena &&
-                this.GetSystem<OnlineArcadeRunSystem>().Snapshot.Phase == OnlineArcadeRunPhase.SafeCheckpoint;
-            RefreshArcadeButton();
-            try
-            {
-                if (!await PrepareArcadeResources(generation) || !Current()) return;
-                var map = await this.GetSystem<ArcadeSceneFlowSystem>().EnterArenaMapAsync();
-                if (!Current()) return;
-                if (!map.Success) { Notify.ShowFloatTips(map.Error); return; }
-                if (player.Lives <= 0) return; // 现有零命观战成员不发 ready，也不在这里增加生命。
-                var result = await this.GetSystem<OnlineArcadeRunSystem>().SetReadyAsync(true);
-                if (!result.Success && Current()) Notify.ShowFloatTips(ArcadeUiFormatter.OnlineResult(result.Code));
-            }
-            catch (System.Exception e) { if (Current()) Notify.ShowFloatTips(e.Message); }
-            finally { if (generation == operationGeneration && ReferenceEquals(owner,BaseUI)) {transitPreparing=false;RefreshArcadeButton();} }
-        }
-
-        private bool TryGetArcadeIdentity(out string version, out string fingerprint)
-        {
-            version = Application.version;
-            fingerprint = string.Empty;
-            return this.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var catalog, out _) &&
-                   !string.IsNullOrWhiteSpace(version) &&
-                   !string.IsNullOrWhiteSpace(fingerprint = FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.NetworkFingerprint(catalog.Rule.ConfigFingerprint));
-        }
-
         private void ApplyModeVisibility()
         {
             if (UI == null) return;
-            UI.PublicRoomList.gameObject.SetActive(!arcadeMode);
-            UI.PublicRoomListStateText.gameObject.SetActive(!arcadeMode);
+            UI.PublicRoomList.gameObject.SetActive(!privateLobby);
+            UI.PublicRoomListStateText.gameObject.SetActive(!privateLobby);
             UI.RefreshRoomListButton.gameObject.SetActive(true);
-            UI.LoadMoreButton.gameObject.SetActive(!arcadeMode);
-            SetButtonText(UI.RefreshRoomListButton,
-                arcadeMode ? Loc.T("ui.arcade.online.match") : Loc.T("ui.online.room.list.refresh"));
-            SetButtonText(UI.CreateButton, arcadeMode ? Loc.T("ui.arcade.online.create") : Loc.T("ui.online.room.create"));
-            SetButtonText(UI.JoinButton, arcadeMode ? Loc.T("ui.arcade.online.join") : Loc.T("ui.online.room.join"));
-            SetButtonText(UI.WorldButton, arcadeMode ? Loc.T("ui.arcade.online.open") : Loc.T("ui.online.world.enter"));
+            SetButtonText(UI.RefreshRoomListButton, privateLobby ? Loc.T("ui.arcade.online.match") : Loc.T("ui.online.room.list.refresh"));
+            SetButtonText(UI.CreateButton, privateLobby ? Loc.T("ui.arcade.online.create") : Loc.T("ui.online.room.create"));
+            SetButtonText(UI.JoinButton, privateLobby ? Loc.T("ui.arcade.online.join") : Loc.T("ui.online.room.join"));
+            SetButtonText(UI.WorldButton, privateLobby ? Loc.T("ui.arcade.online.open") : Loc.T("ui.online.world.enter"));
         }
 
         private void Render(OnlineRoomSnapshot snapshot)
@@ -391,13 +274,10 @@ namespace Game
             UI.ChatInput.interactable = snapshot.HasRoom && !snapshot.ConnectionLost;
             UI.ChatSendButton.interactable = snapshot.HasRoom && !snapshot.ConnectionLost && !chatSubmitInFlight;
             RefreshChatPresentation();
-            if (!snapshot.HasRoom)
+            if (!snapshot.HasRoom && !privateLobby)
             {
-                if (!arcadeMode) RenderPublicRooms(this.GetSystem<OnlineRoomSystem>().PublicRooms);
-                if (isVisible && wasInRoom && !arcadeMode)
-                {
-                    RefreshPublicRooms().Forget();
-                }
+                RenderPublicRooms(this.GetSystem<OnlineRoomSystem>().PublicRooms);
+                if (wasInRoom) RefreshPublicRooms().Forget();
             }
         }
 
@@ -823,7 +703,8 @@ namespace Game
 
             UI.LeaveButton.interactable = latest.OperationState == OnlineRoomOperationState.Idle;
             RefreshInteractionState();
-            RefreshArcadeButton();
+            // 大厅保留入房与聊天，联机开局暂未开放。
+            UI.WorldButton.interactable = false;
             UI.CloseButton.interactable = true;
         }
 
@@ -838,17 +719,14 @@ namespace Game
             bool disconnectedList = latestPublicRooms.LastResultCode == OnlineRoomResultCode.Disconnected;
             UI.CreateButton.interactable = roomIdle;
             UI.RoomCodeInput.interactable = roomIdle;
-            UI.JoinButton.interactable = roomIdle && (arcadeMode || !disconnectedList);
+            UI.JoinButton.interactable = roomIdle && (privateLobby || !disconnectedList);
 
             bool refreshing = latestPublicRooms.State == OnlinePublicRoomListState.Refreshing;
-            UI.RefreshRoomListButton.interactable = arcadeMode
-                ? roomIdle
-                : disconnectedList || !refreshing;
-            bool canLoadMore = !arcadeMode && !disconnectedList && latestPublicRooms.HasMore &&
+            UI.RefreshRoomListButton.interactable = privateLobby ? roomIdle : disconnectedList || !refreshing;
+            bool canLoadMore = !privateLobby && !disconnectedList && latestPublicRooms.HasMore &&
                                latestPublicRooms.NextCursorRoomId != 0;
             UI.LoadMoreButton.gameObject.SetActive(canLoadMore);
-            UI.LoadMoreButton.interactable = canLoadMore &&
-                                             latestPublicRooms.State == OnlinePublicRoomListState.Idle;
+            UI.LoadMoreButton.interactable = canLoadMore && latestPublicRooms.State == OnlinePublicRoomListState.Idle;
             UI.PublicRoomList.RefreshCells();
         }
 
@@ -857,23 +735,6 @@ namespace Game
             return latest.OperationState == OnlineRoomOperationState.Idle &&
                    latestPublicRooms.LastResultCode != OnlineRoomResultCode.Disconnected &&
                    room.MemberCount < room.Capacity;
-        }
-
-        /// <summary>从街机权威快照更新正式房间按钮。</summary>
-        private void RefreshArcadeButton()
-        {
-            if (UI?.WorldButton != null) UI.WorldButton.interactable = CanUseArcadeButton();
-        }
-
-        private bool CanUseArcadeButton()
-        {
-            if (transitPreparing) return false;
-            if (!latest.HasRoom || latest.Purpose != OnlineRoomPurpose.Arcade || latest.ConnectionLost) return false;
-            OnlineArcadeRunClientSnapshot run = this.GetSystem<OnlineArcadeRunSystem>().Snapshot;
-            if (run.HasRun) return run.OperationState == OnlineArcadeOperationState.Idle;
-            long selfId = this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;
-            return latest.OwnerPlayerId == selfId && latest.Members.Count == 2 &&
-                   latest.Members.All(x => x.ConnectionState == OnlineRoomMemberConnectionState.Online);
         }
 
         private static void SetButtonText(UnityEngine.UI.Button button, string value)

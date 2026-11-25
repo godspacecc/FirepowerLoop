@@ -24,8 +24,6 @@ namespace Game
         private const string ServerLoginRequiredText = "请先登录后使用服务器指令。";
         private const string UsageCameraText = "用法：camera topdown / camera shoulder / camera firstperson";
         private const string UsageMobileInputText = "用法：mobileinput on / mobileinput off";
-        private const string UsageArcadeText =
-            "用法：arcade solo | online | status | heal | damage <正整数> | gold <正整数> | bombs <0-9999> | dashes <0-9999> | drop <DropId> | clear <wave|arena>";
 
         protected override void OnInit()
         {
@@ -86,33 +84,7 @@ namespace Game
             }
             else
             {
-                var parts = body.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 2 && string.Equals(parts[0], "arcade", StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(parts[1], "goto", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (parts.Length != 4 || !TryParseStrictInt(parts[2], out int ordinal) || ordinal < 1 ||
-                        !TryParseStrictInt(parts[3], out int round) || round < 1)
-                        result = Finish(body, Warning(TestCmdResultCode.UsageError, "用法：#arcade goto <关卡序号> <轮次>"), true);
-                    else
-                    {
-                        var jump = await this.GetSystem<ArcadeRunSystem>().GotoForTestsAsync(ordinal, round, cancellationToken);
-                        result = Finish(body, jump.Success ? Result(true, true, TestCmdResultCode.ArcadeCommandComplete, jump.Message) : Warning(TestCmdResultCode.StateRejected, jump.Message), true);
-                    }
-                }
-                else if (parts.Length >= 2 && string.Equals(parts[0], "arcade", StringComparison.OrdinalIgnoreCase) &&
-                         string.Equals(parts[1], "crater", StringComparison.OrdinalIgnoreCase))
-                {
-                    var menu = UIHelper.GetUICtrl<StartUICtrl>();
-                    if (parts.Length != 2)
-                        result = Finish(body, Warning(TestCmdResultCode.UsageError, "用法：#arcade crater"), true);
-                    else
-                    {
-                        var error = menu == null ? "请先返回主菜单" : await menu.StartChallengeForTestsAsync(cancellationToken);
-                        result = Finish(body, error == null ? Result(true, true, TestCmdResultCode.CraterOpened, "已进入巨人城废墟")
-                            : Warning(TestCmdResultCode.StateRejected, error), true);
-                    }
-                }
-                else result = ExecuteClientBody(body);
+                result = ExecuteClientBody(body);
             }
 
             this.GetModel<TestCmdModel>().SetLastResult(result);
@@ -145,11 +117,6 @@ namespace Game
                 return ExecuteMobileInputMode(trimmed, parts);
             }
 
-            if (string.Equals(parts[0], "arcade", StringComparison.OrdinalIgnoreCase))
-            {
-                return ExecuteArcade(trimmed, parts);
-            }
-
             if (string.Equals(parts[0], "survivor", StringComparison.OrdinalIgnoreCase))
             {
                 return ExecuteSurvivorSpawn(trimmed, parts);
@@ -163,10 +130,19 @@ namespace Game
             if (string.Equals(parts[0], "terrain", StringComparison.OrdinalIgnoreCase))
                 return ExecuteTerrainDiagnostics(trimmed, parts);
 
-            if (IsNetworkDiagnosticsCommand(parts))
+            if (parts.Length >= 2 && string.Equals(parts[0], "arcade", StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(parts[1], "online", StringComparison.OrdinalIgnoreCase))
             {
-                return ExecuteNetworkDiagnostics(trimmed, parts);
+                if (parts.Length != 2)
+                    return Finish(trimmed, Warning(TestCmdResultCode.UsageError, "用法：#arcade online"), true);
+                var menu = UIHelper.GetUICtrl<StartUICtrl>();
+                if (menu == null || !menu.CanOpenTestMode)
+                    return Finish(trimmed, Warning(TestCmdResultCode.StateRejected, "请先返回主菜单，并等待当前开局准备结束"), true);
+                return Finish(trimmed, Result(true, true, TestCmdResultCode.OnlineEntryRequested, "正在打开联机大厅"), true);
             }
+
+            if (IsNetworkDiagnosticsCommand(parts))
+                return ExecuteNetworkDiagnostics(trimmed, parts);
 
             return Finish(trimmed, Result(false, false, TestCmdResultCode.UnknownCommand, UnknownCommandText), false);
         }
@@ -354,75 +330,6 @@ namespace Game
                 true);
         }
 
-        /// <summary>
-        /// 解析本地单人街机测试意图；实际状态变化全部交给 ArcadeCombatSystem，避免指令层成为第二权威写入口。
-        /// </summary>
-        private TestCmdExecutionResult ExecuteArcade(string original, string[] parts)
-        {
-            if (parts.Length < 2)
-                return Finish(original, Warning(TestCmdResultCode.UsageError, UsageArcadeText), true);
-
-            // 隐藏玩法沿用日志窗口的请求结果协议，指令窗先关闭再打开目标界面。
-            if (string.Equals(parts[1], "solo", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(parts[1], "online", StringComparison.OrdinalIgnoreCase))
-            {
-                if (parts.Length != 2)
-                    return Finish(original, Warning(TestCmdResultCode.UsageError, "用法：#arcade solo / #arcade online"), true);
-                var menu = UIHelper.GetUICtrl<StartUICtrl>();
-                if (menu == null || !menu.CanOpenTestMode)
-                    return Finish(original, Warning(TestCmdResultCode.StateRejected, "请先返回主菜单，并等待当前开局准备结束"), true);
-                bool solo = string.Equals(parts[1], "solo", StringComparison.OrdinalIgnoreCase);
-                return Finish(original, Result(true, true, solo ? TestCmdResultCode.SoloEntryRequested : TestCmdResultCode.OnlineEntryRequested,
-                    solo ? "正在打开单人闯关" : "正在打开双人联机"), true);
-            }
-            var combat = this.GetSystem<ArcadeCombatSystem>();
-            bool success;
-            string message;
-            string error;
-            if (parts.Length == 2 && string.Equals(parts[1], "status", StringComparison.OrdinalIgnoreCase))
-                success = combat.TryGetTestStatus(out message, out error);
-            else if (parts.Length == 2 && string.Equals(parts[1], "drops", StringComparison.OrdinalIgnoreCase))
-                success = combat.TryListDropsForTests(out message, out error);
-            else if (parts.Length == 4 && string.Equals(parts[1], "spawn", StringComparison.OrdinalIgnoreCase) &&
-                     TryParseStrictInt(parts[3], out var spawnCount) && spawnCount >= 1 && spawnCount <= 20)
-                success = combat.TrySpawnEnemiesForTests(parts[2], spawnCount, out message, out error);
-            else if (parts.Length == 3 && string.Equals(parts[1], "god", StringComparison.OrdinalIgnoreCase) &&
-                     (string.Equals(parts[2], "on", StringComparison.OrdinalIgnoreCase) || string.Equals(parts[2], "off", StringComparison.OrdinalIgnoreCase)))
-                success = combat.TrySetInvincibleForTests(string.Equals(parts[2], "on", StringComparison.OrdinalIgnoreCase), out message, out error);
-            else if (parts.Length == 2 && string.Equals(parts[1], "heal", StringComparison.OrdinalIgnoreCase))
-                success = combat.TryHealPlayerForTests(out message, out error);
-            else if (parts.Length == 3 && string.Equals(parts[1], "damage", StringComparison.OrdinalIgnoreCase) &&
-                     TryParseStrictInt(parts[2], out var damage) && damage > 0)
-                success = combat.TryDamagePlayerForTests(damage, out message, out error);
-            else if (parts.Length == 3 && string.Equals(parts[1], "gold", StringComparison.OrdinalIgnoreCase) &&
-                     TryParseStrictInt(parts[2], out var gold) && gold > 0)
-                success = combat.TryAddGoldForTests(gold, out message, out error);
-            else if (parts.Length == 3 && string.Equals(parts[1], "bombs", StringComparison.OrdinalIgnoreCase) &&
-                     TryParseStrictInt(parts[2], out var bombs) && bombs >= 0 && bombs <= 9999)
-                success = combat.TrySetResourceForTests(true, bombs, out message, out error);
-            else if (parts.Length == 3 && string.Equals(parts[1], "dashes", StringComparison.OrdinalIgnoreCase) &&
-                     TryParseStrictInt(parts[2], out var dashes) && dashes >= 0 && dashes <= 9999)
-                success = combat.TrySetResourceForTests(false, dashes, out message, out error);
-            else if (parts.Length == 3 && string.Equals(parts[1], "drop", StringComparison.OrdinalIgnoreCase) &&
-                     !string.IsNullOrWhiteSpace(parts[2]))
-                success = combat.TryApplyDropForTests(parts[2], out message, out error);
-            else if (parts.Length == 3 && string.Equals(parts[1], "clear", StringComparison.OrdinalIgnoreCase) &&
-                     string.Equals(parts[2], "wave", StringComparison.OrdinalIgnoreCase))
-                success = combat.TryClearWaveForTests(out message, out error);
-            else if (parts.Length == 3 && string.Equals(parts[1], "clear", StringComparison.OrdinalIgnoreCase) &&
-                     string.Equals(parts[2], "arena", StringComparison.OrdinalIgnoreCase))
-                success = combat.TryClearArenaForTests(out message, out error);
-            else
-                return Finish(original, Warning(TestCmdResultCode.UsageError, UsageArcadeText), true);
-
-            return Finish(
-                original,
-                success
-                    ? Result(true, true, TestCmdResultCode.ArcadeCommandComplete, message)
-                    : Warning(TestCmdResultCode.StateRejected, StateRejectedText(error)),
-                true);
-        }
-
         /// <summary>校验刷怪开关参数后交由幸存者系统处理当前战斗。</summary>
         private TestCmdExecutionResult ExecuteSurvivorSpawn(string original, string[] parts)
         {
@@ -518,14 +425,11 @@ namespace Game
                 case TestCmdResultCode.AdvanceTimeComplete:
                 case TestCmdResultCode.AttributeSetComplete:
                 case TestCmdResultCode.NetworkDiagnosticsChanged:
+                case TestCmdResultCode.OnlineEntryRequested:
                 case TestCmdResultCode.UnitHealthBarsChanged:
                 case TestCmdResultCode.CameraModeChanged:
                 case TestCmdResultCode.MobileInputModeChanged:
-                case TestCmdResultCode.ArcadeCommandComplete:
                 case TestCmdResultCode.SurvivorSpawnChanged:
-                case TestCmdResultCode.CraterOpened:
-                case TestCmdResultCode.SoloEntryRequested:
-                case TestCmdResultCode.OnlineEntryRequested:
                 case TestCmdResultCode.AppearanceGalleryOpened:
                 case TestCmdResultCode.RuntimeLogOpenRequested:
                 case TestCmdResultCode.TerrainDiagnosticsComplete:

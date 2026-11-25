@@ -1,6 +1,6 @@
 # FirepowerLoop Codex Notes
 
-本项目只开发街机，英文名 FirepowerLoop，中文名未定。工作目录 E:\GitHub\FirepowerLoop，Unity 工程根为 Client。单人、现有双人联机及本局强化规则保留；首轮只保存分数和本局结果，不开发基地、远征、局外奖励或成长钱包。不读取、迁移或导入 AnotherDay 的玩家数据。
+本项目只开发街机，英文名 FirepowerLoop，中文名未定。工作目录 E:\GitHub\FirepowerLoop，Unity 工程根为 Client。主分支维护幸存者及其本局强化，也保留联机通信、设置、账号、匹配、房间和聊天供未来玩法复用。旧单人闯关、经典挑战及进房后的双人战斗保留在 `origin/codex/deferred-game-modes`。幸存者沿用现有本地数据；不新增基地、远征、局外奖励或成长钱包。不读取、迁移或导入 AnotherDay 的玩家数据。
 
 Unity 已打开时先用 Unity MCP 查询场景与 Console，确认连接的项目路径后操作。不得默认创建 worktree。不得触发 Unity 打包或 Player Build。测试必须使用真实、非空的短 testClass 或完整 testMethod，声明范围与最大数量，includePassingTests=true；严禁完整套件或无效过滤回退。
 

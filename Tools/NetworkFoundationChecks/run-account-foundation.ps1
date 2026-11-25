@@ -1,4 +1,4 @@
-﻿param([switch]$SkipBuild)
+param([switch]$SkipBuild)
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 if ([string]::IsNullOrWhiteSpace($env:FIREPOWERLOOP_TEST_MONGODB_URI)) { throw '需要独立测试Mongo的 FIREPOWERLOOP_TEST_MONGODB_URI，不使用生产配置。' }
@@ -13,7 +13,7 @@ $oldUri = $env:FIREPOWERLOOP_MONGODB_URI
 $oldDatabase = $env:FIREPOWERLOOP_MONGODB_DATABASE
 # 专用服务进程只接收测试数据库；凭据不写入证据文件。
 function Start-Fixture([string]$label) {
-    $script:fixtureProcess = Start-Process dotnet -ArgumentList @('App.dll','--AppType=Server','--StartConfig=OnlineLocal','--Console=0','--OnlineLoopbackOnly=true','--OnlineStore=../missing-legacy.json','--OnlineArcadeStore=../arcade-fixture.json','--DiagnosticStoreRoot=../diagnostics') -WorkingDirectory (Join-Path $runtime 'Bin') -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $batch "$label.stdout.log") -RedirectStandardError (Join-Path $batch "$label.stderr.log")
+    $script:fixtureProcess = Start-Process dotnet -ArgumentList @('App.dll','--AppType=Server','--StartConfig=OnlineLocal','--Console=0','--OnlineLoopbackOnly=true','--OnlineStore=../missing-legacy.json','--DiagnosticStoreRoot=../diagnostics') -WorkingDirectory (Join-Path $runtime 'Bin') -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $batch "$label.stdout.log") -RedirectStandardError (Join-Path $batch "$label.stderr.log")
     $deadline = [DateTime]::UtcNow.AddSeconds(30)
     do {
         if ($script:fixtureProcess.HasExited) { throw '测试服务启动失败，请查看本批日志。' }

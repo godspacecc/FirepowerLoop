@@ -36,7 +36,7 @@ namespace Game.Tests
             Assert.That(Enum.GetNames(typeof(MapPreparationMode)), Does.Contain("Survivor"));
             Assert.That(typeof(MapPreparationContext).GetMethod("CreateSurvivor"), Is.Not.Null);
             Assert.That(typeof(MapSceneSystem).GetMethod("LoadSurvivorMapAsync"), Is.Not.Null);
-            Assert.That(typeof(ArcadeSceneFlowSystem).GetMethod("EnterSurvivorMapAsync"), Is.Not.Null);
+            Assert.That(typeof(SurvivorSceneFlowSystem).GetMethod("LoadBattlefieldAsync", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic), Is.Not.Null);
         }
     }
 }

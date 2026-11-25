@@ -6,7 +6,7 @@
 
 - 主菜单提供开始游戏、商店、设置和退出；选角界面提供免费默认主角及可解锁外观。
 - 幸存者模式包含经验升级、强化选择和支援武器。本局强化与角色购买是不同机制：金币余额、已购买角色和上次选择会保存在本项目的本地存档中。
-- 闯关、经典挑战与双人联机仍保留相关实现，通过内部测试入口检查；它们不是当前主菜单向玩家开放的模式，也不代表已经完成发布验收。
+- 主分支维护幸存者玩法和可复用的联机基础，包括登录、匹配、房间及聊天。旧单人闯关、经典挑战及进房后的旧双人战斗保留于 [`codex/deferred-game-modes`](https://github.com/godspacecc/FirepowerLoop/tree/codex/deferred-game-modes) 分支。
 - 不提供基地、远征、撤离、搜刮背包、仓库或制造玩法，不读取或迁移 AnotherDay 玩家数据。
 
 以上入口已于 2026-11-07 从本工程 Boot 实际运行核对，覆盖主菜单、选角、幸存者自动射击、强化及死亡结算。实拍与图标候选预览保存在本地 [Backup/Artifacts/AppIcon-20261107](Backup/Artifacts/AppIcon-20261107/)；这些资料不一定随 Git 分发。
@@ -19,7 +19,7 @@
 - 协议源：`Config/Proto`；生成入口：`Tools/gen-protocol.ps1`。
 - 游戏服务：`Server/GameServer`，本地 GameGate 默认 `31011`，诊断服务 `31012`。
 - 资源发布：本项目 `Server/ResourceServer/ResourceFiles`；默认资源服务 `8001`。
-- 资源准备：进入玩法时按对应范围检查和准备资源，幸存者、闯关与经典挑战使用不同资源标签；资源不足或准备失败时不能直接进入战斗。不能把 EditorSimulateMode 中可运行等同于发布包资源已经齐备。
+- 资源准备：幸存者入场会检查 `arcade`、`game-player` 和 `survivor` 标签。资源准备失败时返回可操作的菜单。EditorSimulateMode 的加载结果对应当前编辑器环境。
 - 发布模式：`FIREPOWERLOOP_OFFLINE_SINGLE_PLAYER` 控制纯离线单人发布策略，隐藏联机及更新入口；未启用此标记的编辑器／内部候选版本保留更新相关功能。
 - Android 增量更新：首包保存 Boot 内容指纹；Boot 代码、资源或启动场景变化后，“Host代码+资源更新”会在切换平台与编译发布前停止，必须重新执行“首包完整打包”并安装新 APK。旧首包记录没有指纹时同样需要重新打首包。
 - 应用标识：`com.firepowerloop.game`；产品名：`FirepowerLoop`，存档使用本应用的 persistentDataPath，不扫描旧项目。

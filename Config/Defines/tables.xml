@@ -32,14 +32,9 @@
     <table name="TbStartZone" value="StartZoneConfig" input="server_start_zone.csv" group="s"/>
     <table name="TbStartScene" value="StartSceneConfig" input="server_start_scene.csv" group="s"/>
     <table name="TbArcadeRoundLayout" value="ArcadeRoundLayoutConfig" input="arcade_round_layout.csv" group="e"/>
-    <table name="TbArcadeSlayerMartItem" value="ArcadeSlayerMartItemConfig" input="arcade_slayermart_item.csv" group="e"/>
-    <table name="TbArcadeSlayerMartRegion" value="ArcadeSlayerMartRegionConfig" input="arcade_slayermart_region.csv" group="e"/>
-    <table name="TbArcadeSlayerMartAbility" value="ArcadeSlayerMartAbilityConfig" input="arcade_slayermart_ability.csv" group="e"/>
-    <table name="TbArcadeSlayerChallenge" value="ArcadeSlayerChallengeConfig" input="arcade_slayer_challenge.csv" group="e"/>
     <table name="TbArcadeRoundReward" value="ArcadeRoundRewardConfig" input="arcade_round_reward.csv" group="e"/>
     <table name="TbArcadeWeaponUpgrade" value="ArcadeWeaponUpgradeConfig" input="arcade_weapon_upgrade.csv" group="e"/>
     <table name="TbArcadeEarlyStage" value="ArcadeEarlyStageConfig" input="arcade_early_stage.csv" group="e"/>
-    <table name="TbArcadeScoreShop" value="ArcadeScoreShopConfig" input="arcade_score_shop.csv" group="e"/>
     <table name="TbSurvivorRule" value="SurvivorRuleConfig" input="survivor_rule.csv" group="e"/>
     <table name="TbSurvivorMapLayout" value="ArcadeRoundLayoutConfig" input="survivor_map_layout.csv" group="e"/>
     <table name="TbSurvivorUpgrade" value="SurvivorUpgradeConfig" input="survivor_upgrade.csv" group="e"/>
@@ -48,6 +43,4 @@
     <table name="TbSurvivorEnemy" value="SurvivorEnemyConfig" input="survivor_enemy.csv" group="e"/>
     <table name="TbSurvivorCharacter" value="SurvivorCharacterConfig" input="survivor_character.csv" group="e"/>
     <table name="TbMissionRule" value="MissionRuleConfig" input="mission_rule.csv" group="e"/>
-    <table name="TbChallengeWeapon" value="ChallengeWeaponConfig" input="challenge_weapon.csv" group="e"/>
-    <table name="TbChallengeCombat" value="ChallengeCombatConfig" input="challenge_combat.csv" group="e"/>
 </tables>

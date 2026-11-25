@@ -13,8 +13,6 @@ namespace ET.Server
             root.AddComponent<MessageSender>();
             root.AddComponent<LocationProxyComponent>();
             root.AddComponent<OnlineRoomManagerComponent>();
-            OnlineArcadeRunManagerComponent arcade = root.AddComponent<OnlineArcadeRunManagerComponent>();
-            arcade.LoadStore(Options.Instance.OnlineArcadeStore);
             await ETTask.CompletedTask;
         }
     }

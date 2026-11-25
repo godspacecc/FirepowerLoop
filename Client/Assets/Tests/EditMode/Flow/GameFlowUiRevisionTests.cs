@@ -40,15 +40,6 @@ namespace Game.Tests
             Assert.That(start, Does.Not.Contain("Notify.ShowMessage(Texts.StartUpdateRestartFailed, Texts.StartUpdateRestartFailed)"));
         }
 
-        [Test]
-        public void StartRoutesNewAndContinueToIndependentArcadeEntry()
-        {
-            var source = ReadGameFile("Scripts/Controller/UICtrl/Home/StartUICtrl.cs");
-            Assert.That(source, Does.Contain("ArcadeResumeUICtrl.TryOpenEntry"));
-            Assert.That(source, Does.Not.Contain("EnterBaseAsync"));
-            Assert.That(source, Does.Not.Contain("ResumePendingExpeditionAsync"));
-        }
-
         private static string ReadGameFile(string path)
         {
             return File.ReadAllText(Path.Combine(ProjectRoot, "Assets/Game", path.Replace('/', Path.DirectorySeparatorChar)));
