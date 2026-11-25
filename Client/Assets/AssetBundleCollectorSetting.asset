@@ -62,14 +62,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
-      - CollectPath: Assets/Game/Scenes/Maps/AppearanceGallery.unity
-        CollectorGUID: 711ab3500970bc24eb4202b99c1416c2
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: development
-        UserData:
     - GroupName: UIIcons
       GroupDesc: UI icons
       AssetTags: 

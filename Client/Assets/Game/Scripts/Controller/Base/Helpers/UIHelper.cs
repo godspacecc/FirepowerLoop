@@ -167,7 +167,7 @@ namespace Game
             return _prefabLoader(path);
         }
 
-        private static T GetOrCreateUI<T>() where T : BaseUICtrl, new()
+        internal static T GetOrCreateUI<T>() where T : BaseUICtrl, new()
         {
             if (!UICtrlDict.TryGetValue(typeof(T).Name, out var ctrl))
             {

@@ -263,7 +263,7 @@ namespace Game
                 return;
             }
 
-            var prefab = UIHelper.LoadPrefab(address);
+            var prefab = LoadPrefab(address);
             if (prefab == null)
             {
                 Log.Error($"[BaseUICtrl] UI Prefab 未找到：{address}");
@@ -301,6 +301,9 @@ namespace Game
             EnsureBackgroundFor(loadedUI, layerObj);
             loadedUI.OnTriggerDestroyEvent.Register(() => OnBaseUIDestroyed(loadedUI));
         }
+
+        /// <summary>默认沿用 UI 加载器，按需窗口可使用其事务已持有的预制件。</summary>
+        protected virtual GameObject LoadPrefab(string address) => UIHelper.LoadPrefab(address);
 
         private void OnBaseUIDestroyed(BaseUI destroyedUI)
         {

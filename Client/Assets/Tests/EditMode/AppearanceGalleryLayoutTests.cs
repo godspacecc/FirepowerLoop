@@ -9,6 +9,75 @@ using UnityEngine.SceneManagement;
 
 namespace Game.Tests
 {
+    internal static class AppearanceGalleryPrefabFixture
+    {
+        internal const string Path = "Assets/Game/Prefabs/UI/Diagnostics/Gallery/AppearanceGallery.prefab";
+
+        internal static Scene Open()
+        {
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(Path);
+            Assert.That(prefab, Is.Not.Null);
+            var scene = EditorSceneManager.NewPreviewScene();
+            try
+            {
+                var instance = Object.Instantiate(prefab);
+                SceneManager.MoveGameObjectToScene(instance, scene);
+                return scene;
+            }
+            catch
+            {
+                Close(scene);
+                throw;
+            }
+        }
+
+        internal static void Close(Scene scene) => EditorSceneManager.ClosePreviewScene(scene);
+    }
+
+    public sealed class AppearanceGalleryPrefabContractTests
+    {
+        [Test]
+        public void GalleryUsesAnEmbeddedPreviewPrefab()
+        {
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(AppearanceGalleryPrefabFixture.Path);
+            Assert.That(prefab, Is.Not.Null);
+            Assert.That(prefab.GetComponent<AppearanceGalleryUI>().Preview, Is.SameAs(prefab.GetComponent<AppearanceGallerySceneView>()));
+            var layout = (RectTransform)prefab.transform.Find("GalleryCanvas");
+            Assert.That(layout.localScale, Is.EqualTo(Vector3.one));
+            Assert.That(layout.anchorMin, Is.EqualTo(Vector2.zero));
+            Assert.That(layout.anchorMax, Is.EqualTo(Vector2.one));
+            Assert.That(layout.GetComponent<Canvas>(), Is.Null);
+            Assert.That(prefab.GetComponentsInChildren<UnityEngine.UI.RawImage>(true).Any(x => x.name == "PreviewImage"), Is.True);
+            Assert.That(prefab.GetComponentsInChildren<Camera>(true).Select(x => x.name), Is.EquivalentTo(new[] { "PreviewCamera" }));
+        }
+
+        [Test]
+        public void ClosingEmbeddedPreviewDisposesItsWorldAndTexture()
+        {
+            var scene = AppearanceGalleryPrefabFixture.Open();
+            try
+            {
+                var root = scene.GetRootGameObjects().Single();
+                var view = root.GetComponent<AppearanceGallerySceneView>();
+                var camera = root.GetComponentInChildren<Camera>(true);
+                var image = root.GetComponentsInChildren<UnityEngine.UI.RawImage>(true).Single(x => x.name == "PreviewImage");
+                var world = camera.transform.parent.gameObject;
+                view.BeginEmbeddedPreview();
+                var texture = camera.targetTexture;
+                Assert.That(texture, Is.Not.Null);
+                Assert.That(texture.IsCreated(), Is.True);
+                Assert.That(image.texture, Is.SameAs(texture));
+                Assert.That(world.transform.parent, Is.Null);
+                // 编辑器测试中手动执行停用回调，销毁路径与运行时共用。
+                typeof(AppearanceGallerySceneView).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(view, null);
+                Assert.That(image.texture, Is.Null);
+                Assert.That(texture == null, Is.True);
+                Assert.That(world == null, Is.True);
+            }
+            finally { AppearanceGalleryPrefabFixture.Close(scene); }
+        }
+    }
+
     public sealed class AppearanceGalleryLayoutTests
     {
         private Scene scene;
@@ -18,7 +87,7 @@ namespace Game.Tests
         [SetUp]
         public void SetUp()
         {
-            scene = EditorSceneManager.OpenScene("Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            scene = AppearanceGalleryPrefabFixture.Open();
             view = scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<AppearanceGallerySceneView>(true)).Single();
             camera = scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<Camera>(true)).Single(x => x.name == "PreviewCamera");
         }
@@ -26,30 +95,29 @@ namespace Game.Tests
         [TearDown]
         public void TearDown()
         {
-            if (scene.IsValid()) EditorSceneManager.CloseScene(scene, true);
+            if (scene.IsValid()) AppearanceGalleryPrefabFixture.Close(scene);
         }
 
         [Test]
         public void Background_CoversUnsafeScreenEdgesWithoutRenderingBaseObjects()
         {
-            var background = scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<Camera>(true))
-                .SingleOrDefault(x => x.name == "GalleryBackgroundCamera");
-            Assert.That(background, Is.Not.Null, "安全区外也必须遮住基地背景");
-            Assert.That(background.rect, Is.EqualTo(new Rect(0, 0, 1, 1)));
-            Assert.That(background.clearFlags, Is.EqualTo(CameraClearFlags.SolidColor));
-            Assert.That(background.backgroundColor.a, Is.EqualTo(1f));
-            Assert.That(background.cullingMask, Is.Zero, "背景相机只清屏，不渲染基地或预览对象");
-            Assert.That(background.depth, Is.LessThan(camera.depth));
-            Assert.That(background.enabled, Is.True);
+            var canvas = view.transform.Find("GalleryCanvas");
+            var background = canvas.GetComponent<UnityEngine.UI.Image>();
+            Assert.That(background, Is.Not.Null, "安全区外也必须遮住游戏背景");
+            Assert.That(background.color.a, Is.EqualTo(1f));
+            Assert.That(background.rectTransform.anchorMin, Is.EqualTo(Vector2.zero));
+            Assert.That(background.rectTransform.anchorMax, Is.EqualTo(Vector2.one));
+            Assert.That(background.raycastTarget, Is.False, "底色不能吞掉左侧预览手势");
+            Assert.That(camera.enabled, Is.False, "绑定预览纹理前不能直接渲染到屏幕");
         }
 
         [Test]
         public void Controls_BackgroundIsOpaqueAndControlsKeepSafeAreaFitting()
         {
-            var controls = view.GetComponentInChildren<Canvas>(true).transform.Find("Controls");
+            var controls = view.transform.Find("GalleryCanvas").Find("Controls");
             Assert.That(controls.GetComponent<UnityEngine.UI.Image>().color.a, Is.EqualTo(1f));
             Assert.That(controls.GetComponent<SafeAreaFitter>(), Is.Not.Null);
-            Assert.That(view.GetComponentInChildren<Canvas>(true).transform.Find("PreviewControls")
+            Assert.That(view.transform.Find("GalleryCanvas").Find("PreviewControls")
                 .GetComponent<SafeAreaFitter>(), Is.Not.Null);
         }
 
@@ -78,8 +146,8 @@ namespace Game.Tests
         [Test]
         public void Scene_PutsControlsOnRightAndPreviewOnLeft()
         {
-            var canvas = view.GetComponentInChildren<Canvas>(true);
-            var controls = (RectTransform)canvas.transform.Find("Controls");
+            var canvas = view.transform.Find("GalleryCanvas");
+            var controls = (RectTransform)canvas.Find("Controls");
             Assert.That(controls.anchorMin.x, Is.GreaterThan(.5f));
             Assert.That(controls.anchorMax.x, Is.EqualTo(1f));
             Assert.That(camera.rect.xMin, Is.Zero);
@@ -117,7 +185,7 @@ namespace Game.Tests
         [Test]
         public void PreviewTools_LeaveMiddleClearAndKeepSeparatedTouchTargets()
         {
-            var root = view.GetComponentInChildren<Canvas>(true).transform.Find("PreviewControls");
+            var root = view.transform.Find("GalleryCanvas").Find("PreviewControls");
             var topNames = new[] { "CharacterDropdown", "EquipmentDropdown", "CameraModeButton", "ResetCameraButton", "ExitButton" };
             var bottomNames = new[] { "AnimationDropdown", "PlayPauseButton", "Timeline" };
             var rects = topNames.Concat(bottomNames).Select(name => (RectTransform)root.Find(name)).ToArray();
@@ -138,7 +206,7 @@ namespace Game.Tests
         [Test]
         public void Timeline_ThinTrackKeepsFullTouchAreaAndVisibleProgress()
         {
-            var timeline = view.GetComponentInChildren<Canvas>(true).transform.Find("PreviewControls/Timeline");
+            var timeline = view.transform.Find("GalleryCanvas").Find("PreviewControls/Timeline");
             var touchArea = timeline.GetComponent<UnityEngine.UI.Image>();
             Assert.That(touchArea, Is.Not.Null, "细轨道外也要能触摸拖动");
             Assert.That(touchArea.raycastTarget, Is.True);
@@ -169,9 +237,9 @@ namespace Game.Tests
             var panel = view.GetComponentInChildren<AppearanceGalleryPoseTuningPanel>(true);
             var fields = new UnityEditor.SerializedObject(panel);
             var values = (GameObject)fields.FindProperty("valuesPage").objectReferenceValue;
-            var canvas = view.GetComponentInChildren<Canvas>(true);
+            var canvas = view.transform.Find("GalleryCanvas");
             var hold = canvas.GetComponentsInChildren<UnityEngine.UI.Text>(true).Single(t => t.name == "HoldHint");
-            var gesture = canvas.transform.Find("PreviewControls/DragHint");
+            var gesture = canvas.Find("PreviewControls/DragHint");
             typeof(AppearanceGalleryPoseTuningPanel).GetMethod("ShowTuning", BindingFlags.Instance | BindingFlags.NonPublic)
                 .Invoke(panel, new object[] { tuning });
             Assert.That(gesture.gameObject.activeSelf, Is.EqualTo(!tuning));
@@ -221,7 +289,7 @@ namespace Game.Tests
         [Test]
         public void SelectionLabels_AreVisibleAndDoNotOverlapTheirDropdowns()
         {
-            var root = view.GetComponentInChildren<Canvas>(true).transform.Find("PreviewControls");
+            var root = view.transform.Find("GalleryCanvas").Find("PreviewControls");
             foreach (var item in new[] { new[] { "CharacterDropdownTitle", "CharacterDropdown", "角色" },
                 new[] { "EquipmentDropdownTitle", "EquipmentDropdown", "武器" }, new[] { "AnimationDropdownTitle", "AnimationDropdown", "动作" } })
             {
@@ -244,7 +312,7 @@ namespace Game.Tests
             Assert.That(method, Is.Not.Null);
             var safeArea = new Rect(x, y, width, height);
             var viewport = (Rect)method.Invoke(null, new object[] { camera.rect, safeArea, new Vector2(2400f, 1080f) });
-            var controls = (RectTransform)view.GetComponentInChildren<Canvas>(true).transform.Find("Controls");
+            var controls = (RectTransform)view.transform.Find("GalleryCanvas").Find("Controls");
             var fitter = controls.GetComponent<SafeAreaFitter>();
             Assert.That(fitter, Is.Not.Null);
             fitter.ApplyAnchors(new Vector2(x / 2400f, y / 1080f), new Vector2((x + width) / 2400f, (y + height) / 1080f));

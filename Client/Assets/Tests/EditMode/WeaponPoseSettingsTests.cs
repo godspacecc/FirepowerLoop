@@ -87,7 +87,7 @@ namespace Game.Tests
         [Test]
         public void LongPressRepeatsAndExitStopsWithoutApplyingReleaseClick()
         {
-            var scene = EditorSceneManager.OpenScene("Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             var events = new GameObject("HoldTestEvents", typeof(UnityEngine.EventSystems.EventSystem));
             try
             {
@@ -116,7 +116,7 @@ namespace Game.Tests
                 system.Resolve(weapon, idle, out p, out _, out _);
                 Assert.That(p, Is.EqualTo(Vector3.zero), "一整次长按只需撤销一步");
             }
-            finally { UnityEngine.Object.DestroyImmediate(events); EditorSceneManager.CloseScene(scene, true); }
+            finally { UnityEngine.Object.DestroyImmediate(events); AppearanceGalleryPrefabFixture.Close(scene); }
         }
         [Test]
         public void GalleryHasSerializedRuntimeTuningPanel()
@@ -129,7 +129,7 @@ namespace Game.Tests
         [Test]
         public void SwitchingAnimationStopsHeldAdjustmentAndCopyKeepsLocalGrip()
         {
-            var scene = EditorSceneManager.OpenScene("Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             var events = new GameObject("GripTestEvents", typeof(UnityEngine.EventSystems.EventSystem));
             try
             {
@@ -158,7 +158,7 @@ namespace Game.Tests
                 Assert.That(((GameObject)data.FindProperty("valuesPage").objectReferenceValue).GetComponentsInChildren<InputField>(true), Is.Empty,
                     "微调数值不应保留输入框或唤起手机键盘");
             }
-            finally { UnityEngine.Object.DestroyImmediate(events); EditorSceneManager.CloseScene(scene, true); }
+            finally { UnityEngine.Object.DestroyImmediate(events); AppearanceGalleryPrefabFixture.Close(scene); }
         }
 
         [Test]
@@ -212,7 +212,7 @@ namespace Game.Tests
         [Test]
         public void ScenePanelReferencesResolveAndButtonsEditOnlyChosenAnimation()
         {
-            var scene = EditorSceneManager.OpenScene("Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             try
             {
                 AppearanceGallerySceneView view = null;
@@ -243,7 +243,7 @@ namespace Game.Tests
                 system.Resolve(weapon, idle, out p, out _, out _);
                 Assert.That(p, Is.EqualTo(new Vector3(0,-0.001f,0)));
             }
-            finally { EditorSceneManager.CloseScene(scene, true); }
+            finally { AppearanceGalleryPrefabFixture.Close(scene); }
         }
 
         [Test]
@@ -306,7 +306,7 @@ namespace Game.Tests
         [Test]
         public void TuningSelectsAWeaponAndExcludesUnarmedWhileBrowsingKeepsIt()
         {
-            var scene = EditorSceneManager.OpenScene("Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             AppearanceGallerySceneView view = null;
             try
             {
@@ -340,7 +340,7 @@ namespace Game.Tests
             finally
             {
                 if (view != null) typeof(AppearanceGallerySceneView).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(view, null);
-                EditorSceneManager.CloseScene(scene, true);
+                AppearanceGalleryPrefabFixture.Close(scene);
             }
         }
     }

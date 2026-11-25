@@ -3,45 +3,46 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using QFramework;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using YooAsset;
 
 namespace Game
 {
-    /// <summary>负责开发版造型库的附加场景加载、退出和主菜单恢复。</summary>
+    /// <summary>负责开发版造型库入口、预制件句柄和主菜单恢复。</summary>
     public sealed class AppearanceGallerySceneFlowSystem : AbstractSystem
     {
-        private const string SceneAddress = "Scenes/Maps/AppearanceGallery";
-        // 串行化下载、加载与卸载。仅记录由本次打开操作隐藏的控件。
+        // 打开期间持有独立句柄，避免每次进入都通过全局加载器留下引用。
         private bool busy;
         private bool disposed;
-        private SceneHandle sceneHandle;
+        private AssetHandle galleryAsset;
+        private AppearanceGalleryUICtrl gallery;
         private StartUICtrl hiddenMenu;
         private TestCmdButtonUICtrl hiddenTestButton;
 
         protected override void OnInit() { }
 
-        /// <summary>只在可操作的主菜单打开，资源或场景失败时继续保留菜单。</summary>
+        /// <summary>仅从主菜单打开，下载或初始化失败时保留主菜单。</summary>
         internal async UniTask<(bool Success, string Message)> OpenAsync(CancellationToken cancellationToken)
         {
             if (!Application.isEditor && !Debug.isDebugBuild)
                 return (false, "造型库仅在 Unity 编辑器和开发版开放。");
-            if (busy || sceneHandle != null)
+            if (busy || gallery != null || UIHelper.GetUICtrl<AppearanceGalleryUICtrl>()?.HasInstance == true)
                 return (false, "造型库正在打开或已经打开。");
 
             var menu = UIHelper.GetUICtrl<StartUICtrl>();
             if (menu?.CanOpenTestMode != true)
                 return (false, "请先返回主菜单，并等待当前开局准备结束。");
 
+            if (!ResourceAddress.TryFromRelativePath(ResourceAddressKind.UiPrefab, AppearanceGalleryUICtrl.RelativePath,
+                    out var address, out var addressError)) return (false, addressError);
             var package = YooAssets.TryGetPackage("DefaultPackage");
-            if (package == null || !package.CheckLocationValid(SceneAddress))
-                return (false, "当前资源版本没有造型库场景，请先更新资源。");
+            if (package == null || !package.CheckLocationValid(address))
+                return (false, "当前资源版本没有造型库界面，请先更新资源。");
 
             busy = true;
-            SceneHandle candidate = null;
+            AssetHandle candidate = null;
             try
             {
-                var download = package.CreateBundleDownloader(SceneAddress, true, 10, 3);
+                var download = package.CreateBundleDownloader(address, true, 10, 3);
                 if (download.TotalDownloadCount > 0)
                 {
                     download.BeginDownload();
@@ -60,24 +61,16 @@ namespace Game
 
                 if (disposed || cancellationToken.IsCancellationRequested || !menu.CanOpenTestMode)
                     return (false, "打开造型库已取消。");
-                candidate = package.LoadSceneAsync(SceneAddress, LoadSceneMode.Additive);
-                // 场景加载完成后再做取消清理，避免遗留未接管的附加场景。
+                candidate = package.LoadAssetAsync<GameObject>(address);
                 while (!candidate.IsDone) await UniTask.Yield();
-                if (candidate.Status != EOperationStatus.Succeed)
-                    return (false, $"造型库场景加载失败：{candidate.LastError}");
+                if (candidate.Status != EOperationStatus.Succeed || candidate.AssetObject is not GameObject prefab)
+                    return (false, $"造型库界面加载失败：{candidate.LastError}");
                 if (disposed || cancellationToken.IsCancellationRequested || !menu.CanOpenTestMode)
                     return (false, "打开造型库已取消。");
 
-                AppearanceGallerySceneView view = null;
-                foreach (var root in candidate.SceneObject.GetRootGameObjects())
-                {
-                    view = root.GetComponentInChildren<AppearanceGallerySceneView>(true);
-                    if (view != null) break;
-                }
-                if (view == null) return (false, "造型库场景缺少预览控制器。");
-
-                view.Initialize(Game.Interface, this.GetUtility<IRuntimeConfigProvider>());
-                view.BindExit(() => CloseAsync().Forget());
+                gallery = UIHelper.GetOrCreateUI<AppearanceGalleryUICtrl>();
+                gallery.Open(prefab, Close);
+                if (!gallery.IsShow()) return (false, "造型库界面未能显示。");
                 hiddenMenu = menu;
                 hiddenMenu.Hide();
                 var button = UIHelper.GetUICtrl<TestCmdButtonUICtrl>();
@@ -86,7 +79,7 @@ namespace Game
                     hiddenTestButton = button;
                     hiddenTestButton.Hide();
                 }
-                sceneHandle = candidate;
+                galleryAsset = candidate;
                 candidate = null;
                 return (true, "已打开造型库。");
             }
@@ -98,50 +91,23 @@ namespace Game
             {
                 try
                 {
-                    if (candidate != null && candidate.IsValid)
+                    if (galleryAsset == null)
                     {
-                        var scene = candidate.SceneObject;
-                        if (!scene.IsValid() || !scene.isLoaded)
-                        {
-                            // 加载失败没有可卸载的场景，直接释放资源引用。
-                            candidate.Release();
-                        }
-                        else
-                        {
-                            var unload = candidate.UnloadAsync();
-                            while (!unload.IsDone) await UniTask.Yield();
-                            if (unload.Status != EOperationStatus.Succeed)
-                                Debug.LogError($"[AppearanceGallery] 清理候选场景失败：{unload.Error}");
-                        }
+                        Close();
+                        if (candidate != null && candidate.IsValid) candidate.Release();
                     }
-                    if (sceneHandle == null) RestoreMenu();
                 }
                 finally { busy = false; }
             }
         }
 
-        /// <summary>退出成功后还原先前可见的主菜单和测试按钮，卸载失败时允许重试。</summary>
-        private async UniTask CloseAsync()
+        /// <summary>先停止相机与 UI，再归还资源引用并恢复菜单。</summary>
+        private void Close()
         {
-            if (busy || sceneHandle == null) return;
-            busy = true;
-            try
-            {
-                var unload = sceneHandle.UnloadAsync();
-                while (!unload.IsDone) await UniTask.Yield();
-                if (unload.Status != EOperationStatus.Succeed)
-                {
-                    Notify.ShowFloatTips($"退出造型库失败：{unload.Error}");
-                    return;
-                }
-                sceneHandle = null;
-                RestoreMenu();
-            }
-            finally { busy = false; }
-        }
-
-        private void RestoreMenu()
-        {
+            gallery?.Close();
+            gallery = null;
+            if (galleryAsset != null && galleryAsset.IsValid) galleryAsset.Release();
+            galleryAsset = null;
             if (!disposed)
             {
                 hiddenMenu?.Show();
@@ -154,9 +120,7 @@ namespace Game
         protected override void OnDeinit()
         {
             disposed = true;
-            if (!busy && sceneHandle != null && sceneHandle.IsValid) sceneHandle.UnloadAsync();
-            sceneHandle = null;
-            RestoreMenu();
+            Close();
         }
     }
 }

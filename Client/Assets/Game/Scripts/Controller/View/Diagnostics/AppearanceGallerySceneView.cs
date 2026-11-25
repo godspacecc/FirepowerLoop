@@ -20,7 +20,6 @@ namespace Game
         private static readonly int PlayerRunState = Animator.StringToHash("Base Layer.Run");
         private static readonly int PlayerIdleState = Animator.StringToHash("Base Layer.Idle");
         private static readonly int PlayerRifleAimState = Animator.StringToHash("Ranged Upper Body.Rifle Aim");
-        private static readonly int PlayerShotgunFireState = Animator.StringToHash("Ranged Upper Body.Shotgun Fire");
         private static readonly int PlayerPistolAimState = Animator.StringToHash("Pistol Upper Body.Pistol Aim");
         private static readonly int PlayerPistolFireState = Animator.StringToHash("Pistol Upper Body.Pistol Fire");
         private static readonly int PlayerPistolGripState = Animator.StringToHash("Pistol Hand Grip.Pistol Grip");
@@ -40,6 +39,8 @@ namespace Game
         [SerializeField] private Transform previewRoot;
         [SerializeField] private Renderer previewStage;
         [SerializeField] private Camera previewCamera;
+        [SerializeField] private Transform previewWorld;
+        [SerializeField] private RawImage previewImage;
         [SerializeField] private Dropdown characterDropdown;
         [SerializeField] private Dropdown variantDropdown;
         [SerializeField] private Dropdown equipmentDropdown;
@@ -111,6 +112,10 @@ namespace Game
         private bool cameraViewportCaptured;
         private Rect lastSafeArea;
         private Vector2Int lastScreenSize;
+        // 相机画满纹理，界面上的左区视口单独负责输入与安全区。
+        private RenderTexture embeddedTexture;
+        private bool embeddedPreview;
+        private Rect previewScreenRect;
         // 正式指令入口提供卸载回调，独立预览仍可直接关闭自身。
         private Action exitRequested;
 
@@ -139,7 +144,22 @@ namespace Game
                 RefreshEquipmentOptionsWithState(previous);
         }
 
-        /// <summary>附加场景加载并验证后调用一次；选项来自场景引用和正式 Animator/武器外观。</summary>
+        /// <summary>界面显示后启动独立展台，复用原镜头与灯光。</summary>
+        public void BeginEmbeddedPreview()
+        {
+            if (embeddedPreview) return;
+            if (previewWorld == null || previewImage == null || previewCamera == null)
+                throw new InvalidOperationException("造型库缺少展台、相机或预览画面。");
+
+            embeddedPreview = true;
+            // 脱离 Canvas 缩放，并远离主场景的相机和物体。
+            previewWorld.SetParent(null, false);
+            previewWorld.position = new Vector3(0f, -10000f, 0f);
+            lastScreenSize = Vector2Int.zero;
+            RefreshPreviewViewport();
+        }
+
+        /// <summary>界面初始化后从正式 Animator 和共享武器目录读取预览选项。</summary>
         public void Initialize(IArchitecture owner, IRuntimeConfigProvider configProvider)
         {
             initialized = owner != null;
@@ -534,10 +554,7 @@ namespace Game
         {
             if (clip == null || !IsAnimationCompatibleWithCurrentEquipment(clip) || !seen.Add(clip)) return;
             animationClips.Add(clip);
-            names.Add(selectedPlayerWeaponResourceName == "ArcadeScifiShotgun" &&
-                      clip.name == "RifleIdleAiming" ? "霰弹枪瞄准待机" :
-                selectedPlayerWeaponResourceName == "ArcadeScifiShotgun" &&
-                clip.name == "RifleFire" ? "霰弹枪开火" : GetAnimationDisplayName(clip.name));
+            names.Add(GetAnimationDisplayName(clip.name));
         }
 
         /// <summary>
@@ -753,10 +770,7 @@ namespace Game
                 (selectedClip.name == "RifleIdleAiming" || selectedClip.name == "RifleFire"))
             {
                 animator.Play(PlayerIdleState, 0, runTime);
-                // 只有霰弹枪有独立开火状态；其他长枪保持正式瞄准层并叠加程序后坐。
-                animator.Play(selectedPlayerWeaponResourceName == "ArcadeScifiShotgun" &&
-                    selectedClip.name == "RifleFire" && animator.HasState(1, PlayerShotgunFireState)
-                    ? PlayerShotgunFireState : PlayerRifleAimState, 1, runTime);
+                animator.Play(PlayerRifleAimState, 1, runTime);
                 animator.Update(0.001f);
                 playerView.TickCombatFeedback(0f);
                 ApplyPreviewGrip(selectedClip.name);
@@ -886,11 +900,9 @@ namespace Game
             {
                 "ArcadePistol" => "手枪",
                 "ArcadeRifle" => "迷你机枪",
-                "ArcadeScifiShotgun" => "霰弹枪",
                 "ArcadePiercingGun" => "弩",
                 "ArcadePanzerschreck" => "火箭发射器",
                 "ArcadeGrenade" => "榴弹发射器",
-                "ArcadeScifiPlasmaRifle" => "镭射枪",
                 _ => "未命名武器"
             };
             return alias + (trial ? trialSuffix : string.Empty);
@@ -1067,9 +1079,10 @@ namespace Game
             }
         }
 
-        /// <summary>预览输入按相机真实像素视口判断，并排除下拉菜单等覆盖预览区的 UI。</summary>
+        /// <summary>以屏幕上的画面区域判断预览输入，并避开覆盖它的界面控件。</summary>
         private bool IsPreviewPointer(Vector2 position) =>
-            previewCamera != null && previewCamera.pixelRect.Contains(position) && !previewUiBlocker.IsBlocked(position);
+            previewCamera != null && (embeddedPreview ? previewScreenRect : previewCamera.pixelRect).Contains(position) &&
+            !previewUiBlocker.IsBlocked(position);
 
         /// <summary>仅屏幕尺寸或安全区改变时映射场景视口，与控制面板的 SafeAreaFitter 保持同一边界。</summary>
         private void RefreshPreviewViewport()
@@ -1083,10 +1096,60 @@ namespace Game
             var size = new Vector2Int(Screen.width, Screen.height);
             var safe = Screen.safeArea;
             if (size == lastScreenSize && safe == lastSafeArea) return;
-            previewCamera.rect = MapPreviewViewportToSafeArea(authoredCameraViewport, safe, size);
+            var viewport = MapPreviewViewportToSafeArea(authoredCameraViewport, safe, size);
+            if (embeddedPreview) UpdateEmbeddedViewport(viewport, size);
+            else previewCamera.rect = viewport;
             lastScreenSize = size;
             lastSafeArea = safe;
             lastPinchDistance = 0f;
+        }
+
+        /// <summary>方向或安全区改变时重建纹理，保持画面比例与输入区域一致。</summary>
+        private void UpdateEmbeddedViewport(Rect viewport, Vector2Int size)
+        {
+            previewScreenRect = Rect.MinMaxRect(viewport.xMin * size.x, viewport.yMin * size.y,
+                viewport.xMax * size.x, viewport.yMax * size.y);
+            var imageTransform = previewImage.rectTransform;
+            imageTransform.anchorMin = viewport.min;
+            imageTransform.anchorMax = viewport.max;
+            imageTransform.offsetMin = imageTransform.offsetMax = Vector2.zero;
+            var scale = Mathf.Min(1f, 1600f / Mathf.Max(1f, previewScreenRect.width, previewScreenRect.height));
+            var width = Mathf.Max(1, Mathf.RoundToInt(previewScreenRect.width * scale));
+            var height = Mathf.Max(1, Mathf.RoundToInt(previewScreenRect.height * scale));
+            if (embeddedTexture != null && embeddedTexture.width == width && embeddedTexture.height == height) return;
+
+            var next = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32)
+            {
+                name = "AppearanceGalleryPreview",
+                hideFlags = HideFlags.DontSave
+            };
+            if (!next.Create())
+            {
+                DestroyPreviewObject(next);
+                throw new InvalidOperationException("造型库预览纹理创建失败。");
+            }
+
+            ReleaseEmbeddedTexture();
+            embeddedTexture = next;
+            previewCamera.targetTexture = next;
+            previewCamera.rect = new Rect(0f, 0f, 1f, 1f);
+            previewCamera.aspect = previewScreenRect.width / Mathf.Max(1f, previewScreenRect.height);
+            previewImage.texture = next;
+            previewCamera.enabled = true;
+        }
+
+        private void ReleaseEmbeddedTexture()
+        {
+            if (embeddedTexture == null) return;
+            if (previewCamera != null)
+            {
+                previewCamera.enabled = false;
+                previewCamera.targetTexture = null;
+            }
+            if (previewImage != null) previewImage.texture = null;
+            embeddedTexture.Release();
+            DestroyPreviewObject(embeddedTexture);
+            embeddedTexture = null;
         }
 
         /// <summary>按设备安全区映射场景原始视口；分屏比例由场景维护，零屏幕尺寸保持原值。</summary>
@@ -1145,7 +1208,10 @@ namespace Game
             clipTimeSeconds = 0f;
         }
 
-        private void OnDisable()
+        private void OnDisable() => EndEmbeddedPreview();
+
+        /// <summary>关闭窗口时立即回收预览，停用或销毁时也可安全重入。</summary>
+        internal void EndEmbeddedPreview()
         {
             poseTuningPanel?.CancelHold();
             mouseOrbitStartedInPreview = firstTouchStartedInPreview = secondTouchStartedInPreview = false;
@@ -1156,6 +1222,17 @@ namespace Game
                 characterInstance.SetActive(false);
                 DestroyPreviewObject(characterInstance);
                 characterInstance = null;
+            }
+            if (embeddedPreview)
+            {
+                embeddedPreview = false;
+                initialized = false;
+                ReleaseEmbeddedTexture();
+                if (previewWorld != null)
+                {
+                    previewWorld.gameObject.SetActive(false);
+                    DestroyPreviewObject(previewWorld.gameObject);
+                }
             }
         }
 

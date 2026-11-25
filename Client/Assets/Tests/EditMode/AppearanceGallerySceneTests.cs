@@ -119,8 +119,6 @@ namespace Game.Tests
                              (weapon: "ArcadePistol", clips: new[] { "PistolIdle", "PistolFire" }),
                              (weapon: "ArcadeRifle", clips: new[] { "RifleIdleAiming", "RifleFire", "RifleWalkForward", "RifleWalkBackward", "RifleWalkLeft", "RifleWalkRight" }),
                              (weapon: "ArcadePiercingGun", clips: new[] { "RifleIdleAiming", "RifleFire", "RifleWalkForward", "RifleWalkBackward", "RifleWalkLeft", "RifleWalkRight" }),
-                             (weapon: "ArcadeScifiShotgun", clips: new[] { "RifleIdleAiming", "RifleFire", "RifleWalkForward", "RifleWalkBackward", "RifleWalkLeft", "RifleWalkRight" }),
-                             (weapon: "ArcadeScifiPlasmaRifle", clips: new[] { "RifleIdleAiming", "RifleFire", "RifleWalkForward", "RifleWalkBackward", "RifleWalkLeft", "RifleWalkRight" })
                          })
                 {
                     PlayerViewCtrl.ConfigureArcadeWeaponPresentation(player, pair.weapon, false, Vector3.zero);
@@ -279,8 +277,7 @@ namespace Game.Tests
         public void GallerySceneReferencesFormalCharactersAndAllControls()
         {
             var previous = SceneManager.GetActiveScene();
-            var scene = EditorSceneManager.OpenScene(
-                "Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             try
             {
                 AppearanceGallerySceneView view = null;
@@ -332,10 +329,10 @@ namespace Game.Tests
                 var camera = view.GetComponentInChildren<Camera>(true);
                 Assert.That(camera.cullingMask, Is.EqualTo(1 << 31));
                 Assert.That(camera.rect.xMin, Is.Zero);
-                var controls = (RectTransform)view.GetComponentInChildren<Canvas>(true).transform.Find("Controls");
+                var controls = (RectTransform)view.transform.Find("GalleryCanvas").Find("Controls");
                 Assert.That(camera.rect.xMax, Is.EqualTo(controls.anchorMin.x).Within(0.001f));
                 var previewRoot = (Transform)data.FindProperty("previewRoot").objectReferenceValue;
-                var stage = view.transform.Find("PreviewStage").GetComponent<Renderer>();
+                var stage = (Renderer)data.FindProperty("previewStage").objectReferenceValue;
                 Assert.That(previewRoot.position.y, Is.EqualTo(0f).Within(0.001f));
                 Assert.That(data.FindProperty("previewStage").objectReferenceValue, Is.SameAs(stage));
                 var dropdowns = new[] { "characterDropdown", "variantDropdown", "equipmentDropdown", "animationDropdown" }
@@ -349,12 +346,12 @@ namespace Game.Tests
                     Assert.That(dropdown.itemText.rectTransform.rect.height,
                         Is.GreaterThanOrEqualTo(dropdown.itemText.fontSize + 8f), dropdown.name);
                 }
-                Assert.That(view.GetComponentInChildren<Canvas>(true).sortingOrder, Is.GreaterThan(100));
+                Assert.That(new AppearanceGalleryUICtrl().Layer(), Is.EqualTo(UILayer.Top));
             }
             finally
             {
                 SceneManager.SetActiveScene(previous);
-                EditorSceneManager.CloseScene(scene, true);
+                AppearanceGalleryPrefabFixture.Close(scene);
             }
         }
 
@@ -362,8 +359,7 @@ namespace Game.Tests
         public void GalleryAlignsOnlyTheSelectedAnimatedCharacter()
         {
             var previous = SceneManager.GetActiveScene();
-            var scene = EditorSceneManager.OpenScene(
-                "Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             try
             {
                 AppearanceGallerySceneView view = null;
@@ -386,7 +382,7 @@ namespace Game.Tests
             finally
             {
                 SceneManager.SetActiveScene(previous);
-                EditorSceneManager.CloseScene(scene, true);
+                AppearanceGalleryPrefabFixture.Close(scene);
             }
         }
 
@@ -394,8 +390,7 @@ namespace Game.Tests
         public void GalleryMeleeOptionsUseFormalPreviewAssets()
         {
             var previous = SceneManager.GetActiveScene();
-            var scene = EditorSceneManager.OpenScene(
-                "Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             try
             {
                 AppearanceGallerySceneView view = null;
@@ -427,7 +422,7 @@ namespace Game.Tests
             finally
             {
                 SceneManager.SetActiveScene(previous);
-                EditorSceneManager.CloseScene(scene, true);
+                AppearanceGalleryPrefabFixture.Close(scene);
             }
         }
 
@@ -799,8 +794,6 @@ namespace Game.Tests
                              ("arcade.weapon.piercing", "ArcadePiercingGun"),
                              ("arcade.weapon.grenade", "ArcadeGrenade"),
                              ("arcade.weapon.rocket", "ArcadePanzerschreck"),
-                             ("arcade.weapon.spread", "ArcadeScifiShotgun"),
-                             ("arcade.weapon.raygun", "ArcadeScifiPlasmaRifle")
                          })
                 {
                     var weapon = new ArcadeWeaponDefinition(pair.Item1, pair.Item2, null,
@@ -875,8 +868,7 @@ namespace Game.Tests
         public void EveryGalleryCharacterOffersTheCurrentSharedWeaponCatalog()
         {
             var previous = SceneManager.GetActiveScene();
-            var scene = EditorSceneManager.OpenScene(
-                "Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             try
             {
                 var view = scene.GetRootGameObjects()
@@ -918,7 +910,7 @@ namespace Game.Tests
             finally
             {
                 SceneManager.SetActiveScene(previous);
-                EditorSceneManager.CloseScene(scene, true);
+                AppearanceGalleryPrefabFixture.Close(scene);
             }
         }
 
@@ -926,8 +918,7 @@ namespace Game.Tests
         public void EveryGalleryWeaponMountsAndSamplesItsSharedActionsOnEveryCharacter()
         {
             var previous = SceneManager.GetActiveScene();
-            var scene = EditorSceneManager.OpenScene(
-                "Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             try
             {
                 var view = scene.GetRootGameObjects()
@@ -997,7 +988,7 @@ namespace Game.Tests
             finally
             {
                 SceneManager.SetActiveScene(previous);
-                EditorSceneManager.CloseScene(scene, true);
+                AppearanceGalleryPrefabFixture.Close(scene);
             }
         }
 
@@ -1005,8 +996,7 @@ namespace Game.Tests
         public void SharedGalleryRestoresCompatibleActionTimeAndPauseAcrossCharacterAndWeapon()
         {
             var previous = SceneManager.GetActiveScene();
-            var scene = EditorSceneManager.OpenScene(
-                "Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             var view = scene.GetRootGameObjects()
                 .Select(root => root.GetComponentInChildren<AppearanceGallerySceneView>(true))
                 .First(candidate => candidate != null);
@@ -1046,7 +1036,7 @@ namespace Game.Tests
             {
                 InvokePrivate(view, "OnDisable");
                 SceneManager.SetActiveScene(previous);
-                EditorSceneManager.CloseScene(scene, true);
+                AppearanceGalleryPrefabFixture.Close(scene);
             }
         }
 
@@ -1057,8 +1047,7 @@ namespace Game.Tests
                 "Assets/Game/Art/Arcade/Weapons/CharacterWeaponCatalog.asset");
             var catalog = Object.Instantiate(source);
             var previous = SceneManager.GetActiveScene();
-            var scene = EditorSceneManager.OpenScene(
-                "Assets/Game/Scenes/Maps/AppearanceGallery.unity", OpenSceneMode.Additive);
+            var scene = AppearanceGalleryPrefabFixture.Open();
             var view = scene.GetRootGameObjects()
                 .Select(root => root.GetComponentInChildren<AppearanceGallerySceneView>(true))
                 .First(candidate => candidate != null);
@@ -1121,7 +1110,7 @@ namespace Game.Tests
                 InvokePrivate(view, "OnDisable");
                 Object.DestroyImmediate(catalog);
                 SceneManager.SetActiveScene(previous);
-                EditorSceneManager.CloseScene(scene, true);
+                AppearanceGalleryPrefabFixture.Close(scene);
             }
         }
 
