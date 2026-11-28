@@ -2,6 +2,7 @@ using System;
 using Boot;
 using UnityEngine;
 using UnityEngine.UI;
+using SharedBoot;
 
 namespace Boot.UI
 {
@@ -168,8 +169,9 @@ namespace Boot.UI
 
         public void SetProgress(float progress)
         {
-            _progressSlider.value = progress;
-            _progressText.text = $"{(int)(progress * 100)}%";
+            float fraction = BootDownloadProgress.Normalize(progress);
+            _progressSlider.value = fraction;
+            _progressText.text = $"{(int)(fraction * 100)}%";
         }
 
         public void SetSize(ulong downloadedBytes, ulong totalBytes)

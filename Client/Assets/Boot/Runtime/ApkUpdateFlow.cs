@@ -6,6 +6,7 @@ using Boot.UI;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
+using SharedBoot;
 
 namespace Boot
 {
@@ -170,63 +171,39 @@ namespace Boot
         /// <summary>true 表示已验证提交，false 表示失败，null 表示玩家取消；仅临时文件由本次下载清理。</summary>
         private async UniTask<bool?> DownloadAsync(string server, ApkUpdateManifest manifest, string path, CancellationToken owner)
         {
-            string temporary = path + ".part";
-            using (var cancellation = CancellationTokenSource.CreateLinkedTokenSource(owner))
+            string temporary = BootInstallerTransfer.TemporaryPath(path);
+            using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(owner);
+            view.RenderApkDownload(() => cancellation.Cancel());
+            view.SetProgress(0);
+            view.SetSize(0, (ulong)manifest.sizeBytes);
+            view.SetSpeed(0);
+            try
             {
-                view.RenderApkDownload(() => cancellation.Cancel());
-                view.SetProgress(0);
-                view.SetSize(0, (ulong)manifest.sizeBytes);
-                view.SetSpeed(0);
-                try
+                string url = server.TrimEnd('/') + "/app-updates/android/" + manifest.apkFileName;
+                await BootInstallerTransfer.DownloadAsync(url, temporary, manifest.sizeBytes, progress =>
                 {
-                    using (var request = new UnityWebRequest(server.TrimEnd('/') + "/app-updates/android/" +
-                        manifest.apkFileName, "GET"))
-                    {
-                        request.downloadHandler = new DownloadHandlerFile(temporary) { removeFileOnAbort = true };
-                        request.redirectLimit = 0;
-                        var operation = request.SendWebRequest();
-                        ulong previous = 0;
-                        float sampleTime = Time.realtimeSinceStartup;
-                        float lastProgress = sampleTime;
-                        while (!operation.isDone)
-                        {
-                            cancellation.Token.ThrowIfCancellationRequested();
-                            ulong bytes = request.downloadedBytes;
-                            float now = Time.realtimeSinceStartup;
-                            if (bytes > (ulong)manifest.sizeBytes || now - lastProgress > 30f)
-                            { request.Abort(); return false; }
-                            if (bytes != previous) lastProgress = now;
-                            view.SetProgress(Mathf.Clamp01(bytes / (float)manifest.sizeBytes));
-                            view.SetSize(bytes, (ulong)manifest.sizeBytes);
-                            if (now - sampleTime >= 0.5f)
-                            {
-                                ulong speed = (ulong)((bytes - previous) / (now - sampleTime));
-                                view.SetDownloadEstimate(speed, speed == 0 ? (double?)null : (manifest.sizeBytes - (double)bytes) / speed);
-                                previous = bytes;
-                                sampleTime = now;
-                            }
-                            await UniTask.Yield(PlayerLoopTiming.Update, cancellation.Token);
-                        }
-                        cancellation.Token.ThrowIfCancellationRequested();
-                        if (request.result != UnityWebRequest.Result.Success) return false;
-                    }
-                    view.RenderBusy("正在校验安装包……");
-                    if (!await VerifyAsync(manifest, temporary, owner)) return false;
-                    owner.ThrowIfCancellationRequested();
-                    if (File.Exists(path)) File.Delete(path);
-                    File.Move(temporary, path);
-                    UpdatePackageCache.RecordVerified(Path.GetDirectoryName(path), ".apk", manifest.sha256,
-                        manifest.packageName, manifest.versionName, manifest.versionCode);
-                    return true;
-                }
-                catch (OperationCanceledException) when (!owner.IsCancellationRequested) { return null; }
-                catch (OperationCanceledException) { throw; }
-                catch (Exception exception)
-                { Debug.LogWarning($"[ApkUpdate] 下载失败：{exception.GetType().Name}"); return false; }
-                finally
-                {
-                    if (File.Exists(temporary)) File.Delete(temporary);
-                }
+                    view.SetProgress(progress.Fraction);
+                    view.SetSize(progress.Bytes, progress.Total);
+                    view.SetDownloadEstimate(progress.Speed, progress.RemainingSeconds);
+                }, cancellation.Token);
+                view.RenderBusy("正在校验安装包……");
+                if (!await UniTask.RunOnThreadPool(() => BootInstallerTransfer.Publish(temporary, path,
+                        manifest.sizeBytes, manifest.sha256, owner), cancellationToken: owner))
+                    return false;
+                UpdatePackageCache.RecordVerified(Path.GetDirectoryName(path), ".apk", manifest.sha256,
+                    manifest.packageName, manifest.versionName, manifest.versionCode);
+                return true;
+            }
+            catch (OperationCanceledException) when (!owner.IsCancellationRequested) { return null; }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception exception)
+            {
+                Debug.LogWarning($"[ApkUpdate] 下载失败：{exception.GetType().Name}");
+                return false;
+            }
+            finally
+            {
+                BootInstallerTransfer.CleanTemporary(temporary);
             }
         }
 

@@ -1,9 +1,9 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using SharedBoot;
 
 namespace Boot
 {
@@ -67,20 +67,6 @@ namespace Boot
         }
 
         /// <summary>下载结束和复用缓存前校验磁盘实际内容；任何读取失败均拒绝安装。</summary>
-        public bool VerifyFile(string path)
-        {
-            try
-            {
-                using (var stream = File.OpenRead(path))
-                using (var hash = SHA256.Create())
-                {
-                    if (stream.Length != sizeBytes) return false;
-                    string actual = BitConverter.ToString(hash.ComputeHash(stream)).Replace("-", "");
-                    return string.Equals(actual, sha256, StringComparison.OrdinalIgnoreCase);
-                }
-            }
-            catch (IOException) { return false; }
-            catch (UnauthorizedAccessException) { return false; }
-        }
+        public bool VerifyFile(string path) => BootInstallerIntegrity.Matches(path, sizeBytes, sha256);
     }
 }

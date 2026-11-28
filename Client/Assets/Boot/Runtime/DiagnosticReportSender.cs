@@ -7,6 +7,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
+using SharedBoot;
 
 namespace Boot
 {
@@ -357,13 +358,9 @@ namespace Boot
                         break;
                     }
                     byte[] body = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(batch));
-                    using (var request = new UnityWebRequest(reportUrl, "POST"))
+                    using (var request = BootDiagnosticUpload.Create(reportUrl, body))
                     {
                         activeRequest = request;
-                        request.uploadHandler = new UploadHandlerRaw(body);
-                        request.downloadHandler = new DownloadHandlerBuffer();
-                        request.SetRequestHeader("Content-Type", "application/json; charset=utf-8");
-                        request.timeout = 5;
                         LastAttemptUtc = DateTime.UtcNow;
                         LastResponseCode = 0;
                         StatusRevision++;

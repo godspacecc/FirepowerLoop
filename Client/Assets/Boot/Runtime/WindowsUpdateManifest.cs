@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using SharedBoot;
 
 namespace Boot
 {
@@ -72,18 +72,6 @@ namespace Boot
             { return null; }
         }
 
-        public bool VerifyFile(string path)
-        {
-            try
-            {
-                using (var stream = File.OpenRead(path))
-                using (var hash = SHA256.Create())
-                    return stream.Length == sizeBytes && string.Equals(
-                        BitConverter.ToString(hash.ComputeHash(stream)).Replace("-", ""), sha256,
-                        StringComparison.OrdinalIgnoreCase);
-            }
-            catch (IOException) { return false; }
-            catch (UnauthorizedAccessException) { return false; }
-        }
+        public bool VerifyFile(string path) => BootInstallerIntegrity.Matches(path, sizeBytes, sha256);
     }
 }

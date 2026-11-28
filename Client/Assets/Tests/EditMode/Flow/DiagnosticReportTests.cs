@@ -237,10 +237,10 @@ namespace Game.Tests.Flow
             return (string)method.Invoke(null, new object[] { config, endpoint });
         }
 
-        [TestCase("192.168.2.104:31001", "http://192.168.2.104:31002/diagnostics/errors")]
-        [TestCase("10.0.0.8:32001", "http://10.0.0.8:31002/diagnostics/errors")]
-        [TestCase("172.16.0.8:31001", "http://172.16.0.8:31002/diagnostics/errors")]
-        [TestCase("127.0.0.1:31001", "http://127.0.0.1:31002/diagnostics/errors")]
+        [TestCase("192.168.2.104:31001", "http://192.168.2.104:31012/diagnostics/errors")]
+        [TestCase("10.0.0.8:32001", "http://10.0.0.8:31012/diagnostics/errors")]
+        [TestCase("172.16.0.8:31001", "http://172.16.0.8:31012/diagnostics/errors")]
+        [TestCase("127.0.0.1:31001", "http://127.0.0.1:31012/diagnostics/errors")]
         public void Endpoint_LocalModeUsesGameServerHostAndIndependentPort(string endpoint, string expected)
         {
             Assert.AreEqual(expected, ResolveUrl("{\"mode\":\"LocalGameServer\"}", endpoint));
@@ -295,13 +295,13 @@ namespace Game.Tests.Flow
             int generation = store.Generation;
             var provider = new StreamingAssetsNetworkConfigProvider(_ => Task.FromResult("{}"), root);
             Assert.IsTrue(provider.TrySaveEndpoint("192.168.2.104:31001", out _, out _));
-            Assert.AreEqual("http://192.168.2.104:31002/diagnostics/errors", typeof(DiagnosticReportSender).GetField("reportUrl", flags).GetValue(null));
+            Assert.AreEqual("http://192.168.2.104:31012/diagnostics/errors", typeof(DiagnosticReportSender).GetField("reportUrl", flags).GetValue(null));
             Assert.AreEqual(DateTime.MinValue, typeof(DiagnosticReportSender).GetField("nextAttemptUtc", flags).GetValue(null));
             Assert.AreEqual(generation, store.Generation);
             Assert.AreEqual(history.batchId, store.GetOrCreateBatch().batchId);
             Assert.AreEqual(1, store.PendingGroups);
             Assert.IsFalse(provider.TrySaveEndpoint("broken", out _, out _));
-            Assert.AreEqual("http://192.168.2.104:31002/diagnostics/errors", typeof(DiagnosticReportSender).GetField("reportUrl", flags).GetValue(null));
+            Assert.AreEqual("http://192.168.2.104:31012/diagnostics/errors", typeof(DiagnosticReportSender).GetField("reportUrl", flags).GetValue(null));
         }
 
         [SetUp]

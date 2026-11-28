@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using SharedBoot;
 
 namespace Boot
 {
@@ -304,7 +305,7 @@ namespace Boot
             }
 
             const int MaxFieldLength = 160;
-            return text.Length <= MaxFieldLength ? text : text.Substring(0, MaxFieldLength);
+            return BootDiagnosticArtifact.BoundedLine(text, MaxFieldLength);
         }
 
         private static string BuildUnexpectedCopyDetails(string summary, Exception exception)

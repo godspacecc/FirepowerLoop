@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using SharedBoot;
 
 namespace Boot
 {
@@ -44,27 +45,14 @@ namespace Boot
                 return false;
             }
 
-            string directory = Path.GetDirectoryName(logPath);
-            string tempPath = logPath + ".tmp";
             try
             {
-                Directory.CreateDirectory(directory);
-                File.WriteAllText(tempPath, BuildContent(failure), new UTF8Encoding(false));
-                if (File.Exists(logPath))
-                {
-                    File.Replace(tempPath, logPath, null, true);
-                }
-                else
-                {
-                    File.Move(tempPath, logPath);
-                }
-
+                BootDiagnosticArtifact.WriteLatest(logPath, BuildContent(failure));
                 return true;
             }
             catch (Exception exception)
             {
                 diagnostic = exception.GetType().Name;
-                TryDeleteTemporaryFile(tempPath);
                 return false;
             }
         }
@@ -86,21 +74,6 @@ namespace Boot
             builder.AppendLine();
             builder.Append(failure.CopyDetails);
             return builder.ToString();
-        }
-
-        private static void TryDeleteTemporaryFile(string path)
-        {
-            try
-            {
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-            }
-            catch
-            {
-                // 清理失败不再写日志，避免在原启动异常之外制造递归错误。
-            }
         }
     }
 }
