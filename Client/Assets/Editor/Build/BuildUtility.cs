@@ -914,13 +914,13 @@ namespace Game.Editor
         private static string GetBuildStateRoot()
         {
             string projectPath = Directory.GetParent(Application.dataPath).FullName;
-            return Path.Combine(projectPath, "Library", "FirepowerLoopBuild");
+            return ProjectBuildPaths.LibraryRoot(projectPath);
         }
 
         private static string GetPreparatoryPlayerBuildPath()
         {
             string projectPath = Directory.GetParent(Application.dataPath).FullName;
-            return Path.Combine(projectPath, "Temp", "FirepowerLoopBuild", "PrepPlayer_Temp");
+            return ProjectBuildPaths.TemporaryPath(projectPath, "PrepPlayer_Temp");
         }
 
         private static void RequireFile(string path)

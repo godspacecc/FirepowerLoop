@@ -921,7 +921,7 @@ namespace Game.Editor
             string workspaceRoot = Directory.GetParent(Application.dataPath).Parent.FullName;
             var identity = AndroidApkVersionUtility.Reserve(previousVersion, previousCode,
                 Path.Combine(workspaceRoot, "Release", "ResourceServer", "Android"),
-                Path.Combine(projectRoot, "Library", "FirepowerLoopBuild", "AndroidVersionReservation.json"));
+                ProjectBuildPaths.ExistingRecord(projectRoot, "AndroidVersionReservation.json", ".lock"));
             string nextVersion = identity.VersionName;
             context.SetFinalApkVersion(nextVersion);
             PlayerSettings.bundleVersion = nextVersion;
@@ -1279,7 +1279,7 @@ namespace Game.Editor
                 string projectPath = Directory.GetParent(Application.dataPath)?.FullName ??
                                      throw new InvalidOperationException("无法确定 Unity 项目根目录。");
                 BatchDirectory = Path.GetFullPath(Path.Combine(projectPath, "Build", "Android", timestamp.ToString("yyyyMMdd_HHmmss")));
-                PreparatoryDirectory = Path.GetFullPath(Path.Combine(projectPath, "Temp", "FirepowerLoopBuild", "Android", runId));
+                PreparatoryDirectory = Path.GetFullPath(ProjectBuildPaths.TemporaryPath(projectPath, "Android", runId));
                 PreparatoryApkPath = Path.Combine(PreparatoryDirectory, "FirepowerLoop-preparatory.apk");
             }
 

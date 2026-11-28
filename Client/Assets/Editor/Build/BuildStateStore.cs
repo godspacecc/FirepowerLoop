@@ -103,19 +103,20 @@ namespace Game.Editor
             {
                 if (CiBuildSession.Current != null) return CiBuildSession.Current.StatePath;
                 string projectPath = Directory.GetParent(Application.dataPath).FullName;
-                return Path.Combine(projectPath, "Library", "FirepowerLoopBuild", "BuildState.json");
+                return ProjectBuildPaths.ExistingRecord(projectPath, "BuildState.json");
             }
         }
 
         public static BuildState Load(out string warning)
         {
             warning = null;
-            if (!File.Exists(StatePath))
+            string statePath = StatePath;
+            if (!File.Exists(statePath))
                 return new BuildState();
 
             try
             {
-                var json = File.ReadAllText(StatePath, Utf8NoBom);
+                var json = File.ReadAllText(statePath, Utf8NoBom);
                 var state = JsonUtility.FromJson<BuildState>(json);
                 return state ?? new BuildState();
             }
@@ -128,16 +129,17 @@ namespace Game.Editor
 
         public static void Save(BuildState state)
         {
-            string dir = Path.GetDirectoryName(StatePath);
+            string statePath = StatePath;
+            string dir = Path.GetDirectoryName(statePath);
             Directory.CreateDirectory(dir);
             string temp = Path.Combine(dir, $"BuildState.{Guid.NewGuid():N}.tmp");
             string backup = Path.Combine(dir, "BuildState.json.bak");
 
             File.WriteAllText(temp, JsonUtility.ToJson(state, true), Utf8NoBom);
-            if (File.Exists(StatePath))
-                File.Replace(temp, StatePath, backup, true);
+            if (File.Exists(statePath))
+                File.Replace(temp, statePath, backup, true);
             else
-                File.Move(temp, StatePath);
+                File.Move(temp, statePath);
 
             if (File.Exists(temp))
                 File.Delete(temp);

@@ -163,6 +163,41 @@ namespace Game.Tests
         }
 
         [Test]
+        public void ProjectBuildPathsKeepExistingStateAndUseGenericDirectoriesForNewWork()
+        {
+            var type = Type.GetType("Game.Editor.ProjectBuildPaths, Assembly-CSharp-Editor");
+            Assert.That(type, Is.Not.Null);
+            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
+            var record = type.GetMethod("ExistingRecord", flags);
+            var temporary = type.GetMethod("TemporaryPath", flags);
+            string project = Path.Combine(Path.GetTempPath(), "ProjectBuildPaths-" + Guid.NewGuid().ToString("N"));
+            string legacyRoot = Path.Combine(project, "Library", "FirepowerLoopBuild");
+            string newRoot = Path.Combine(project, "Library", "ProjectBuild");
+
+            try
+            {
+                Assert.That(temporary.Invoke(null, new object[] { project, new[] { "Android", "run" } }),
+                    Is.EqualTo(Path.Combine(project, "Temp", "ProjectBuild", "Android", "run")));
+                foreach (string file in new[] { "BuildState.json", "LocalResourceServer.json" })
+                {
+                    var args = new object[] { project, file, null };
+                    Assert.That(record.Invoke(null, args), Is.EqualTo(Path.Combine(newRoot, file)));
+                    Directory.CreateDirectory(legacyRoot);
+                    string legacy = Path.Combine(legacyRoot, file);
+                    File.WriteAllText(legacy, "existing");
+                    Assert.That(record.Invoke(null, args), Is.EqualTo(legacy));
+                    Assert.That(File.ReadAllText(legacy), Is.EqualTo("existing"));
+                }
+                Assert.That(Directory.Exists(newRoot), Is.False);
+            }
+            finally
+            {
+                if (Directory.Exists(project))
+                    Directory.Delete(project, true);
+            }
+        }
+
+        [Test]
         public void BuildStateRoundTripKeepsAllRecordGroups()
         {
             object state = Activator.CreateInstance(BuildStateType);

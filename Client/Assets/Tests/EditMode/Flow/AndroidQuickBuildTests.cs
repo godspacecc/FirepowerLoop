@@ -31,6 +31,49 @@ namespace Game.Tests
             Directory.CreateDirectory(directory); File.WriteAllText(Path.Combine(directory, name), "old-apk");
         }
 
+        [Test]
+        public void RenamedBuildDirectoryKeepsOldQuickInputsAndVersionLedger()
+        {
+            const string version = "202611280001";
+            const string index = "AndroidQuickInputs.json";
+            const string ledger = "AndroidVersionReservation.json";
+            string legacyRoot = Path.Combine(root, "Library", "FirepowerLoopBuild");
+            string newRoot = Path.Combine(root, "Library", "ProjectBuild");
+            string oldAot = Path.Combine(legacyRoot, "AndroidQuickAot");
+            string newAot = Path.Combine(newRoot, "AndroidQuickAot");
+            string oldLedger = Path.Combine(legacyRoot, ledger);
+            string release = Path.Combine(root, "Release");
+
+            Assert.That(Call("ProjectBuildPaths", "ExistingRecord", root, ledger, ".lock"), Is.EqualTo(Path.Combine(newRoot, ledger)));
+            var first = Call("AndroidApkVersionUtility", "Reserve", "0.0.2", 3, release, oldLedger);
+            string selected = (string)Call("ProjectBuildPaths", "ExistingRecord", root, ledger, ".lock");
+            Assert.That(selected, Is.EqualTo(oldLedger));
+            var second = Call("AndroidApkVersionUtility", "Reserve", "0.0.2", 3, release, selected);
+            Assert.That(Field<int>(second, "VersionCode"), Is.EqualTo(Field<int>(first, "VersionCode") + 1));
+            Assert.That(Field<string>(second, "VersionName"), Is.EqualTo("0.0.4"));
+            Assert.That(File.Exists(Path.Combine(newRoot, ledger)), Is.False);
+
+            Directory.CreateDirectory(oldAot);
+            File.WriteAllText(Path.Combine(oldAot, version + ".json"), "existing");
+            File.WriteAllText(Path.Combine(legacyRoot, index), "existing");
+            Assert.That(Call("AndroidQuickBuildUtility", "GetReadRecordPath", root), Is.EqualTo(Path.Combine(legacyRoot, index)));
+            Assert.That(Call("AndroidQuickBuildUtility", "GetAotRoot", root, version), Is.EqualTo(oldAot));
+            Assert.That(Call("AndroidQuickBuildUtility", "GetAotRoot", root, "202611280002"), Is.EqualTo(newAot));
+
+            Directory.CreateDirectory(newRoot);
+            File.WriteAllText(Path.Combine(newRoot, index), "current");
+            Assert.That(Call("AndroidQuickBuildUtility", "GetReadRecordPath", root), Is.EqualTo(Path.Combine(newRoot, index)));
+            string packageRoot = Path.Combine(root, "Bundles", "Android", "DefaultPackage");
+            string package = Path.Combine(packageRoot, version);
+            foreach (string aotRoot in new[] { oldAot, newAot })
+                Assert.DoesNotThrow(() => Call("AndroidQuickBuildUtility", "ValidateProjectPreparedPaths",
+                    version, package, Path.Combine(aotRoot, version), packageRoot, root));
+            Assert.Throws<InvalidOperationException>(() => Call("AndroidQuickBuildUtility", "ValidateProjectPreparedPaths",
+                version, package, Path.Combine(legacyRoot, "ForeignAot", version), packageRoot, root));
+            Assert.Throws<InvalidOperationException>(() => Call("AndroidQuickBuildUtility", "ValidateProjectPreparedPaths",
+                version, package, Path.Combine(oldAot, "202611280002"), packageRoot, root));
+        }
+
         [Test] public void AllocationExceedsPublishedApkEvenWhenProjectVersionWasReset()
         {
             Published("FirepowerLoop-0.0.3-4.apk"); var next = Reserve();

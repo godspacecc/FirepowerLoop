@@ -48,7 +48,26 @@ namespace Game.Editor
     {
         private const string RebuildHint = "请执行 Tools/打包/Android/完整打包 或 启动包，重新生成匹配的 AOT 和资源。";
         private static string ProjectRoot => Directory.GetParent(Application.dataPath).FullName;
-        private static string RecordPath => Path.Combine(ProjectRoot, "Library", "FirepowerLoopBuild", "AndroidQuickInputs.json");
+        private const string RecordFile = "AndroidQuickInputs.json";
+        private const string AotDirectoryName = "AndroidQuickAot";
+        private static string RecordPath => Path.Combine(ProjectBuildPaths.LibraryRoot(ProjectRoot), RecordFile);
+
+        internal static string GetReadRecordPath(string projectRoot)
+        {
+            string current = Path.Combine(ProjectBuildPaths.LibraryRoot(projectRoot), RecordFile);
+            return File.Exists(current) ? current : Path.Combine(ProjectBuildPaths.LegacyLibraryRoot(projectRoot), RecordFile);
+        }
+
+        internal static string GetAotRoot(string projectRoot, string version)
+        {
+            if (string.IsNullOrEmpty(version) || version.Any(c => c < '0' || c > '9'))
+                throw new InvalidOperationException("AOT 基线资源版本无效。");
+
+            string legacyRoot = Path.Combine(ProjectBuildPaths.LegacyLibraryRoot(projectRoot), AotDirectoryName);
+            string legacyVersion = Path.Combine(legacyRoot, version);
+            return Directory.Exists(legacyVersion) || File.Exists(legacyVersion + ".json")
+                ? legacyRoot : Path.Combine(ProjectBuildPaths.LibraryRoot(projectRoot), AotDirectoryName);
+        }
 
         /// <summary>完整首包资源验证成功后立即保存，最终 APK 或发布失败也不会丢失这轮输入。</summary>
         public static AndroidQuickBuildInputs Capture(string version, string packageDirectory, IReadOnlyDictionary<string, string> compilationFingerprint, string generatedFingerprint, string kind = "SmallHostBase")
@@ -57,7 +76,7 @@ namespace Game.Editor
             if (generatedFingerprint != CaptureGeneratedFingerprint())
                 throw new InvalidOperationException("资源构建期间 DLL、AOT 清单或生成桥接发生变化，不能保存准备记录。");
             string aot = PreserveAotMetadata(version, HybridCLRBuildUtility.GetRuntimeListPath(), HybridCLRBuildUtility.GetGameDllDirectory(),
-                Path.Combine(ProjectRoot, "Library", "FirepowerLoopBuild", "AndroidQuickAot"));
+                GetAotRoot(ProjectRoot, version));
             AndroidQuickAotUtility.Preserve(aot);
             var record = ReadCurrent(version, packageDirectory, aot, kind);
             RequireSameInputs(compilationFingerprint, CaptureCompilationFingerprint());
@@ -83,9 +102,10 @@ namespace Game.Editor
         /// <summary>只接受完整准备阶段保存的可信内容快照，旧流程遗留产物须重新准备。</summary>
         public static AndroidQuickBuildInputs LoadAndValidate()
         {
-            if (File.Exists(RecordPath))
+            string recordPath = GetReadRecordPath(ProjectRoot);
+            if (File.Exists(recordPath))
             {
-                AndroidQuickBuildInputs saved = JsonUtility.FromJson<AndroidQuickBuildInputs>(File.ReadAllText(RecordPath));
+                AndroidQuickBuildInputs saved = JsonUtility.FromJson<AndroidQuickBuildInputs>(File.ReadAllText(recordPath));
                 if (saved == null) throw new InvalidOperationException("快速打包快照损坏。" + RebuildHint);
                 Validate(saved);
                 return saved;
@@ -110,12 +130,21 @@ namespace Game.Editor
                 !string.Equals(Path.GetFullPath(aot), Path.GetFullPath(Path.Combine(cacheRoot, version)), StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("准备记录路径与当前平台版本不一致。");
         }
+        internal static void ValidateProjectPreparedPaths(string version, string package, string aot, string packageRoot, string projectRoot)
+        {
+            string newRoot = Path.Combine(ProjectBuildPaths.LibraryRoot(projectRoot), AotDirectoryName);
+            string legacyRoot = Path.Combine(ProjectBuildPaths.LegacyLibraryRoot(projectRoot), AotDirectoryName);
+            string parent = string.IsNullOrEmpty(aot) ? null : Path.GetDirectoryName(Path.GetFullPath(aot));
+            string cacheRoot = string.Equals(parent, legacyRoot, StringComparison.OrdinalIgnoreCase) ? legacyRoot : newRoot;
+            ValidatePreparedPaths(version, package, aot, packageRoot, cacheRoot);
+        }
+
         /// <summary>索引记录必须与该版本不可变原始记录一致。</summary>
         private static void ValidateRecord(AndroidQuickBuildInputs saved)
         {
             ValidateIdentity(saved.Schema, saved.Platform, saved.Kind);
-            ValidatePreparedPaths(saved.Version, saved.PackageDirectory, saved.AotDirectory, YooAssetBuildUtility.GetPackageRoot(BuildTarget.Android),
-                Path.Combine(ProjectRoot, "Library", "FirepowerLoopBuild", "AndroidQuickAot"));
+            ValidateProjectPreparedPaths(saved.Version, saved.PackageDirectory, saved.AotDirectory,
+                YooAssetBuildUtility.GetPackageRoot(BuildTarget.Android), ProjectRoot);
             string immutableRecord = saved.AotDirectory + ".json";
             if (!File.Exists(immutableRecord) || File.ReadAllText(immutableRecord) != JsonUtility.ToJson(saved, true))
                 throw new InvalidOperationException("准备记录原件缺失或索引内容已改变。");
@@ -124,8 +153,9 @@ namespace Game.Editor
         /// <summary>复用 AOT 时只检查不可变底层，不要求玩法和资源保持原样。</summary>
         public static AndroidQuickBuildInputs LoadForAotReuse()
         {
-            if (!File.Exists(RecordPath)) throw new InvalidOperationException("没有可信准备记录。" + RebuildHint);
-            var saved = JsonUtility.FromJson<AndroidQuickBuildInputs>(File.ReadAllText(RecordPath));
+            string recordPath = GetReadRecordPath(ProjectRoot);
+            if (!File.Exists(recordPath)) throw new InvalidOperationException("没有可信准备记录。" + RebuildHint);
+            var saved = JsonUtility.FromJson<AndroidQuickBuildInputs>(File.ReadAllText(recordPath));
             if (saved == null) throw new InvalidOperationException("准备记录损坏。");
             ValidateRecord(saved);
             if (saved.UnityVersion != Application.unityVersion || saved.SettingsFingerprint != SettingsFingerprint() ||
