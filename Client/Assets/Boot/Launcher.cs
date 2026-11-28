@@ -106,6 +106,19 @@ namespace Boot
             return true;
         }
 
+        /// <summary>只在 Main 初始化期间接收进度，并限制界面和日志的文本长度。</summary>
+        public static bool TryReportMainProgress(string message)
+        {
+            var owner = current;
+            if (!owner || owner._terminalState != StartupTerminalState.Running || string.IsNullOrWhiteSpace(message))
+                return false;
+
+            string text = message.Length <= 160 ? message : message.Substring(0, 160);
+            owner._updateView.RenderNormal(text);
+            owner._startupLog?.RecordStage("Main:" + text);
+            return true;
+        }
+
         public static bool TryReportMainReady()
         {
             var owner = current;

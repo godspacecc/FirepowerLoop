@@ -345,19 +345,19 @@ namespace Game.Tests.Flow
         public void GameStartReportsStagesAndReadyOnlyAfterVisibleStartUi()
         {
             string source = File.ReadAllText(GameStartPath);
-            Assert.That(source.IndexOf("Launcher.TryReportMainStage(BootMainStartupStage.InitializingGame)", StringComparison.Ordinal),
+            Assert.That(source.IndexOf("BootHost.ReportProgress(\"正在初始化游戏……\")", StringComparison.Ordinal),
                 Is.LessThan(source.IndexOf("_ = Game.Interface", StringComparison.Ordinal)));
-            Assert.That(source.IndexOf("Launcher.TryReportMainStage(BootMainStartupStage.LoadingGameConfig)", StringComparison.Ordinal),
+            Assert.That(source.IndexOf("BootHost.ReportProgress(\"正在加载游戏配置……\")", StringComparison.Ordinal),
                 Is.LessThan(source.IndexOf("DataLoader.Init()", StringComparison.Ordinal)));
-            Assert.That(source.IndexOf("Launcher.TryReportMainStage(BootMainStartupStage.PreparingStartUI)", StringComparison.Ordinal),
+            Assert.That(source.IndexOf("BootHost.ReportProgress(\"正在准备开始界面……\")", StringComparison.Ordinal),
                 Is.LessThan(source.IndexOf("UIHelper.ShowUI<FloatUICtrl>()", StringComparison.Ordinal)));
             Assert.That(source, Does.Not.Contain("UIHelper.ShowUI<PlayerConditionHudUICtrl>()"));
             Assert.That(source, Does.Contain("StartUICtrl startCtrl = UIHelper.ShowUI<StartUICtrl>();"));
             Assert.That(source.IndexOf("Notify.ShowMessage", StringComparison.Ordinal),
-                Is.LessThan(source.IndexOf("Launcher.TryReportMainReady()", StringComparison.Ordinal)),
+                Is.LessThan(source.IndexOf("BootHost.ReportReady()", StringComparison.Ordinal)),
                 "活动副本确认框可见时可完成启动交接。");
             Assert.That(source.IndexOf("startCtrl != null && startCtrl.IsShow()", StringComparison.Ordinal),
-                Is.LessThan(source.LastIndexOf("Launcher.TryReportMainReady()", StringComparison.Ordinal)));
+                Is.LessThan(source.LastIndexOf("BootHost.ReportReady()", StringComparison.Ordinal)));
             Assert.That(Launcher.TryReportMainStage(BootMainStartupStage.InitializingGame), Is.False);
             Assert.That(Launcher.TryReportMainReady(), Is.False);
             Assert.That(Launcher.TryReportMainFailure(), Is.False);
@@ -374,7 +374,7 @@ namespace Game.Tests.Flow
             Assert.That(source, Does.Contain("ReportMainStartupFailure(\"Awake 架构初始化异常\", exception)"));
             Assert.That(source, Does.Contain("ReportMainStartupFailure(\"Start 初始化异常\", exception)"));
             Assert.That(source, Does.Contain("private void ReportMainStartupFailure(string message, System.Exception exception = null)"));
-            Assert.That(source, Does.Contain("Launcher.TryReportMainFailure(BuildMainFailureDiagnostics(exception))"));
+            Assert.That(source, Does.Contain("BootHost.ReportFailure(BuildMainFailureDiagnostics(exception))"));
             Assert.That(source, Does.Contain("private static IReadOnlyDictionary<string, string> BuildMainFailureDiagnostics(System.Exception exception)"));
             Assert.That(source, Does.Not.Contain("mainPhase"));
             Assert.That(source, Does.Contain("fields[\"exceptionType\"] = exception.GetType().FullName"));

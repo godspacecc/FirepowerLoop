@@ -16,7 +16,7 @@ namespace Game
 
         private void Awake()
         {
-            Launcher.TryReportMainStage(BootMainStartupStage.InitializingGame);
+            BootHost.ReportProgress("正在初始化游戏……");
             try
             {
                 _ = Game.Interface;
@@ -48,7 +48,7 @@ namespace Game
                 ResourceLoader.Use(new YooAssetResourceLoader(package));
                 LocalizationLanguages.ResetCache();
                 Game.Interface.GetUtility<LocalizationUtility>().InitializeConfiguredTables();
-                if (!BootResourceStartupState.TryGet(out var startupInfo))
+                if (!BootHost.TryGetResourceInfo(out var startupInfo))
                 {
                     ReportMainStartupFailure("缺少 Boot 资源启动信息。");
                     return;
@@ -57,7 +57,7 @@ namespace Game
                 Game.Interface.GetSystem<ResourceUpdateSystem>()
                     .InitializeStartupInfo(startupInfo);
                 MissingCharCollector.Init();
-                Launcher.TryReportMainStage(BootMainStartupStage.LoadingGameConfig);
+                BootHost.ReportProgress("正在加载游戏配置……");
                 if (!DataLoader.Init())
                 {
                     ReportMainStartupFailure("DataLoader.Init 返回 false。");
@@ -66,13 +66,13 @@ namespace Game
 
                 Game.Interface.GetSystem<SettingsSystem>().LoadAndApply();
                 MobileRenderScaleRuntime.ApplyForCurrentPlatform();
-                Launcher.TryReportMainStage(BootMainStartupStage.PreparingStartUI);
+                BootHost.ReportProgress("正在准备开始界面……");
                 UIHelper.ShowUI<TestCmdButtonUICtrl>();
                 UIHelper.ShowUI<FloatUICtrl>();
                 StartUICtrl startCtrl = UIHelper.ShowUI<StartUICtrl>();
                 if (startCtrl != null && startCtrl.IsShow())
                 {
-                    Launcher.TryReportMainReady();
+                    BootHost.ReportReady();
                     return;
                 }
 
@@ -134,7 +134,7 @@ namespace Game
                 Log.Error($"[GameStart] 启动失败：{message}\n{exception}");
             }
 
-            Launcher.TryReportMainFailure(BuildMainFailureDiagnostics(exception));
+            BootHost.ReportFailure(BuildMainFailureDiagnostics(exception));
         }
 
         private static IReadOnlyDictionary<string, string> BuildMainFailureDiagnostics(System.Exception exception)

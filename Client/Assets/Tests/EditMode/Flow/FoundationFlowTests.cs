@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -98,14 +99,15 @@ namespace Game.Tests
         public void QuickPackagingMenusExposeTwoReuseLevelsAndPcInstaller(string platform)
         {
             string prefix = "Tools/打包/" + platform + "/快速打包/";
-            var menus = TypeCache.GetMethodsWithAttribute<MenuItem>()
+            var enabledMenus = TypeCache.GetMethodsWithAttribute<MenuItem>()
                 .SelectMany(method => method.GetCustomAttributes(typeof(MenuItem), false).Cast<MenuItem>())
-                .Where(menu => !menu.validate && menu.menuItem.StartsWith(prefix))
-                .Select(menu => menu.menuItem.Substring(prefix.Length)).ToArray();
-            var expected = platform == "PC"
-                ? new[] { "复用 AOT 打包", "复用全部打包", "生成安装器" }
-                : new[] { "复用 AOT 打包", "复用全部打包" };
-            CollectionAssert.AreEquivalent(expected, menus);
+                .Where(menu => !menu.validate)
+                .Select(menu => menu.menuItem).ToArray();
+            var reuseMenus = enabledMenus.Where(menu => menu.StartsWith(prefix, StringComparison.Ordinal))
+                .Select(menu => menu.Substring(prefix.Length)).ToArray();
+            CollectionAssert.AreEquivalent(new[] { "复用 AOT 打包", "复用全部打包" }, reuseMenus);
+            if (platform == "PC")
+                Assert.That(enabledMenus, Does.Contain("Tools/打包/PC/生成安装器"));
         }
 
         [Test]
