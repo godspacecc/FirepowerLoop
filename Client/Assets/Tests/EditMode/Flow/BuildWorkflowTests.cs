@@ -163,6 +163,61 @@ namespace Game.Tests
         }
 
         [Test]
+        public void BuildSessionKeysResumeLegacyWorkWithoutMixingReloadFlags()
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            Type type = Type.GetType("Game.Editor.BuildWorkflowSession, Assembly-CSharp-Editor");
+            Assert.That(type, Is.Not.Null);
+            string prefix = "BuildWorkflowTests." + Guid.NewGuid().ToString("N");
+            string legacy = prefix + ".Legacy";
+            string pending = prefix + ".PendingWorkflow";
+            string reload = prefix + ".ReloadCompleted";
+            string legacyPending = legacy + ".PendingWorkflow";
+            string legacyReload = legacy + ".ReloadCompleted";
+            object session = Activator.CreateInstance(type, flags, null, new object[] { prefix, legacy }, null);
+            var getPending = type.GetProperty("PendingWorkflow", flags);
+            var getReload = type.GetProperty("ReloadCompleted", flags);
+            var mark = type.GetMethod("MarkReloadCompleted", flags);
+            var schedule = type.GetMethod("Schedule", flags);
+            var clear = type.GetMethod("Clear", flags);
+
+            try
+            {
+                UnityEditor.SessionState.SetString(legacyPending, "legacy-workflow");
+                Assert.That(getPending.GetValue(session), Is.EqualTo("legacy-workflow"));
+                Assert.That(getReload.GetValue(session), Is.False);
+                mark.Invoke(session, null);
+                Assert.That(UnityEditor.SessionState.GetBool(legacyReload, false), Is.True);
+                Assert.That(getReload.GetValue(session), Is.True);
+
+                UnityEditor.SessionState.SetString(pending, "current-workflow");
+                Assert.That(getPending.GetValue(session), Is.EqualTo("current-workflow"));
+                Assert.That(getReload.GetValue(session), Is.False);
+                mark.Invoke(session, null);
+                Assert.That(UnityEditor.SessionState.GetBool(reload, false), Is.True);
+
+                schedule.Invoke(session, new object[] { "new-workflow" });
+                Assert.That(UnityEditor.SessionState.GetString(pending, ""), Is.EqualTo("new-workflow"));
+                Assert.That(getReload.GetValue(session), Is.False);
+                Assert.That(UnityEditor.SessionState.GetString(legacyPending, ""), Is.Empty);
+                Assert.That(UnityEditor.SessionState.GetBool(legacyReload, false), Is.False);
+
+                UnityEditor.SessionState.SetString(legacyPending, "stale-workflow");
+                UnityEditor.SessionState.SetBool(legacyReload, true);
+                mark.Invoke(session, null);
+                clear.Invoke(session, null);
+                Assert.That(getPending.GetValue(session), Is.Empty);
+                Assert.That(getReload.GetValue(session), Is.False);
+                Assert.That(UnityEditor.SessionState.GetBool(reload, false), Is.False);
+                Assert.That(UnityEditor.SessionState.GetBool(legacyReload, false), Is.False);
+            }
+            finally
+            {
+                clear.Invoke(session, null);
+            }
+        }
+
+        [Test]
         public void ProjectBuildPathsKeepExistingStateAndUseGenericDirectoriesForNewWork()
         {
             var type = Type.GetType("Game.Editor.ProjectBuildPaths, Assembly-CSharp-Editor");

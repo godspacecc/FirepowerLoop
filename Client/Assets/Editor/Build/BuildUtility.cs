@@ -25,11 +25,10 @@ namespace Game.Editor
         private const string Il2CppDebugInformationSuffix = "_BackUpThisFolder_ButDontShipItWithYourGame";
         private static bool s_isBuilding;
         /// <summary>仅在当前编辑器会话保存待恢复入口；不序列化委托，重载后按白名单重新进入。</summary>
-        private const string PendingWorkflowKey = "FirepowerLoop.PCBuild.PendingWorkflow";
-        private const string ReloadCompletedKey = "FirepowerLoop.PCBuild.ReloadCompleted";
+        private static readonly BuildWorkflowSession WorkflowSession = new BuildWorkflowSession("PCBuild", "FirepowerLoop.PCBuild");
         /// <summary>运行中或等待重载期间占用编辑器构建入口，防止另一平台抢占目标。</summary>
         internal static bool HasActiveWorkflow => s_isBuilding ||
-            !string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, ""));
+            !string.IsNullOrEmpty(WorkflowSession.PendingWorkflow);
 
         [MenuItem("Tools/打包/PC/完整打包", false, 100)]
         private static void BuildLatestMenu()
@@ -376,8 +375,7 @@ namespace Game.Editor
                 try
                 {
                     // 切换返回时旧域仍可能带 UNITY_ANDROID；必须退出调用栈，让编译和重载完成。
-                    SessionState.SetString(PendingWorkflowKey, workflowName);
-                    SessionState.SetBool(ReloadCompletedKey, false);
+                    WorkflowSession.Schedule(workflowName);
                     EnsureWindowsBuildTarget();
                     Debug.Log($"[BuildUtility] 已暂停 {workflowName}，等待 Windows 编辑器程序集重载后自动继续。");
                 }
@@ -448,13 +446,12 @@ namespace Game.Editor
         [DidReloadScripts]
         private static void OnScriptsReloaded()
         {
-            if (!string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, "")))
-                SessionState.SetBool(ReloadCompletedKey, true);
+            WorkflowSession.MarkReloadCompleted();
         }
 
         private static void OnAssemblyCompilationFinished(string assemblyPath, CompilerMessage[] messages)
         {
-            if (string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, "")) ||
+            if (string.IsNullOrEmpty(WorkflowSession.PendingWorkflow) ||
                 !messages.Any(message => message.type == CompilerMessageType.Error))
                 return;
             ClearPendingWorkflow();
@@ -464,7 +461,7 @@ namespace Game.Editor
         /// <summary>编辑器空闲后一次性消费请求；失败不自动重试，避免重复构建或发布。</summary>
         private static void ResumePendingWorkflow()
         {
-            string workflow = SessionState.GetString(PendingWorkflowKey, "");
+            string workflow = WorkflowSession.PendingWorkflow;
             if (string.IsNullOrEmpty(workflow)) return;
             if (EditorApplication.isPlayingOrWillChangePlaymode)
             {
@@ -472,7 +469,7 @@ namespace Game.Editor
                 Debug.LogWarning("[BuildUtility] 已进入 PlayMode，取消待恢复的 PC 打包。");
                 return;
             }
-            if (!WindowsBuildSafety.CanResume(SessionState.GetBool(ReloadCompletedKey, false),
+            if (!WindowsBuildSafety.CanResume(WorkflowSession.ReloadCompleted,
                     EditorApplication.isCompiling, EditorApplication.isUpdating)) return;
 
             ClearPendingWorkflow();
@@ -504,8 +501,7 @@ namespace Game.Editor
 
         private static void ClearPendingWorkflow()
         {
-            SessionState.EraseString(PendingWorkflowKey);
-            SessionState.EraseBool(ReloadCompletedKey);
+            WorkflowSession.Clear();
         }
 
         /// <summary>

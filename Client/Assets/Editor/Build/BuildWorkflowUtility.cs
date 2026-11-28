@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Globalization;
+using UnityEditor;
 
 namespace Game.Editor
 {
@@ -21,6 +22,68 @@ namespace Game.Editor
             string retained = string.IsNullOrEmpty(retainedPath) ? string.Empty : $"\n已保留产物: {retainedPath}";
             return $"入口: {timing.WorkflowName}\n失败阶段: {timing.CurrentStage ?? "（无）"}\n原因: {error}" +
                 retained + "\n\n" + timing.BuildSummary();
+        }
+    }
+
+    /// <summary>Current and legacy state are scoped to the open Unity editor session.</summary>
+    internal sealed class BuildWorkflowSession
+    {
+        private readonly string pendingKey;
+        private readonly string reloadKey;
+        private readonly string legacyPendingKey;
+        private readonly string legacyReloadKey;
+
+        internal BuildWorkflowSession(string prefix, string legacyPrefix)
+        {
+            pendingKey = prefix + ".PendingWorkflow";
+            reloadKey = prefix + ".ReloadCompleted";
+            legacyPendingKey = legacyPrefix + ".PendingWorkflow";
+            legacyReloadKey = legacyPrefix + ".ReloadCompleted";
+        }
+
+        private string CurrentWorkflow => SessionState.GetString(pendingKey, string.Empty);
+        private string LegacyWorkflow => SessionState.GetString(legacyPendingKey, string.Empty);
+
+        internal string PendingWorkflow
+        {
+            get
+            {
+                string current = CurrentWorkflow;
+                return string.IsNullOrEmpty(current) ? LegacyWorkflow : current;
+            }
+        }
+
+        internal bool ReloadCompleted =>
+            !string.IsNullOrEmpty(CurrentWorkflow)
+                ? SessionState.GetBool(reloadKey, false)
+                : !string.IsNullOrEmpty(LegacyWorkflow) && SessionState.GetBool(legacyReloadKey, false);
+
+        internal void Schedule(string workflow)
+        {
+            SessionState.SetBool(reloadKey, false);
+            SessionState.SetString(pendingKey, workflow);
+            ClearLegacy();
+        }
+
+        internal void MarkReloadCompleted()
+        {
+            if (!string.IsNullOrEmpty(CurrentWorkflow))
+                SessionState.SetBool(reloadKey, true);
+            else if (!string.IsNullOrEmpty(LegacyWorkflow))
+                SessionState.SetBool(legacyReloadKey, true);
+        }
+
+        internal void Clear()
+        {
+            SessionState.EraseString(pendingKey);
+            SessionState.EraseBool(reloadKey);
+            ClearLegacy();
+        }
+
+        private void ClearLegacy()
+        {
+            SessionState.EraseString(legacyPendingKey);
+            SessionState.EraseBool(legacyReloadKey);
         }
     }
 }

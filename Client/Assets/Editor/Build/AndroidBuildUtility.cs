@@ -30,10 +30,9 @@ namespace Game.Editor
         internal const string BuiltinResourcesScriptingDefine = "FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES";
         private static bool s_isBuilding;
         /// <summary>只在本编辑器会话保存请求身份；真实重载后按白名单恢复一次，不保存委托。</summary>
-        private const string PendingWorkflowKey = "FirepowerLoop.AndroidBuild.PendingWorkflow";
-        private const string ReloadCompletedKey = "FirepowerLoop.AndroidBuild.ReloadCompleted";
+        private static readonly BuildWorkflowSession WorkflowSession = new BuildWorkflowSession("AndroidBuild", "FirepowerLoop.AndroidBuild");
         internal static bool HasActiveWorkflow => s_isBuilding ||
-            !string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, ""));
+            !string.IsNullOrEmpty(WorkflowSession.PendingWorkflow);
 
         [MenuItem("Tools/打包/Android/完整打包", false, 150)]
         private static void BuildLatestMenu()
@@ -1027,8 +1026,7 @@ namespace Game.Editor
             var timing = new BuildStageTiming(workflowName);
             try
             {
-                SessionState.SetString(PendingWorkflowKey, workflowName);
-                SessionState.SetBool(ReloadCompletedKey, false);
+                WorkflowSession.Schedule(workflowName);
                 timing.Run("EnsureAndroidBuildTarget", EnsureAndroidBuildTarget);
                 Debug.Log($"[AndroidBuildUtility] 已暂停 {workflowName}，等待 Android 脚本重载后自动继续。");
                 return false;
@@ -1059,8 +1057,7 @@ namespace Game.Editor
         [DidReloadScripts]
         private static void OnScriptsReloaded()
         {
-            if (!string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, "")))
-                SessionState.SetBool(ReloadCompletedKey, true);
+            WorkflowSession.MarkReloadCompleted();
         }
 
         private static void OnAssemblyCompilationFinished(string assemblyPath, CompilerMessage[] messages)
@@ -1072,14 +1069,14 @@ namespace Game.Editor
         /// <summary>空闲后消费请求一次，未知入口和错误平台一律取消；异常不安排自动重试。</summary>
         private static void ResumePendingWorkflow()
         {
-            string workflow = SessionState.GetString(PendingWorkflowKey, "");
+            string workflow = WorkflowSession.PendingWorkflow;
             if (string.IsNullOrEmpty(workflow)) return;
             if (EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 CancelPendingWorkflow("ResumeAfterPlatformReload", "已进入 PlayMode，取消待恢复的 Android 打包。");
                 return;
             }
-            if (!BuildWorkflowUtility.CanResume(SessionState.GetBool(ReloadCompletedKey, false),
+            if (!BuildWorkflowUtility.CanResume(WorkflowSession.ReloadCompleted,
                     EditorApplication.isCompiling, EditorApplication.isUpdating)) return;
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android)
             {
@@ -1122,7 +1119,7 @@ namespace Game.Editor
 
         private static void CancelPendingWorkflow(string stage, string reason)
         {
-            string workflow = SessionState.GetString(PendingWorkflowKey, "");
+            string workflow = WorkflowSession.PendingWorkflow;
             if (string.IsNullOrEmpty(workflow)) return;
             ClearPendingWorkflow();
             var timing = new BuildStageTiming(workflow);
@@ -1134,8 +1131,7 @@ namespace Game.Editor
 
         private static void ClearPendingWorkflow()
         {
-            SessionState.EraseString(PendingWorkflowKey);
-            SessionState.EraseBool(ReloadCompletedKey);
+            WorkflowSession.Clear();
         }
 
         /// <summary>释放所有菜单共用的工作区锁；失败和平台切换路径同样收尾。</summary>
