@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using YooAsset;
+using SharedBoot;
 using Boot.UI;
 
 namespace Boot
@@ -51,6 +52,7 @@ namespace Boot
         private float _lastDownloadTime;
         /// <summary>指数平滑后的下载速度，单位为字节/秒；0 表示尚无可用样本。</summary>
         private double _smoothedDownloadBytesPerSecond;
+        private readonly ResourceVersionActivation _versionActivation = CreateVersionActivation();
         private string _pendingHostVersion;
         private BootResourceSource _pendingResourceSource;
         private string _detectedHostVersion;
@@ -134,10 +136,6 @@ namespace Boot
                     return packageResult;
 
                 if (InstallerExitRequested) return Success();
-                BootOperationResult validationResult = ValidateRequiredLocations();
-                if (!validationResult.Succeeded)
-                    return validationResult;
-
                 BootResourceStartupState.Publish(new BootResourceStartupInfo(
                     _pendingResourceSource,
                     _resourceServer,
@@ -162,6 +160,7 @@ namespace Boot
 
         public async UniTask<BootOperationResult> ReinitializeForRetryAsync()
         {
+            _versionActivation.Cancel();
             _isReady = false;
             return await InitializeAsync();
         }
@@ -383,7 +382,7 @@ namespace Boot
             }
 
             RefreshVersion();
-            return ValidateStartupResources();
+            return ValidateRequiredLocations();
         }
 
         /// <summary>
@@ -421,7 +420,8 @@ namespace Boot
             }
 
             if (InstallerExitRequested) return Success();
-            string lastSuccessVersion = PlayerPrefs.GetString(LAST_SUCCESSFUL_HOST_VERSION_KEY, "");
+            _versionActivation.RecoverInterrupted();
+            string lastSuccessVersion = _versionActivation.LastGoodVersion;
             bool hasCachedVersion = !string.IsNullOrEmpty(lastSuccessVersion);
 
             SetStatus("正在初始化资源系统...");
@@ -449,10 +449,10 @@ namespace Boot
                 await versionOp.WaitAsync();
                 if (_serverChangeRequested) return hostFailure;
 
-                if (versionOp.Status == EOperationStatus.Succeed)
+                string remoteVersion = versionOp.Status == EOperationStatus.Succeed ? versionOp.PackageVersion : null;
+                _detectedHostVersion = remoteVersion ?? string.Empty;
+                if (versionOp.Status == EOperationStatus.Succeed && _versionActivation.CanTry(remoteVersion))
                 {
-                    string remoteVersion = versionOp.PackageVersion;
-                    _detectedHostVersion = remoteVersion ?? string.Empty;
                     SetStatus("正在加载资源清单...");
                     var manifestOp = _package.UpdatePackageManifestAsync(
                         remoteVersion,
@@ -479,7 +479,9 @@ namespace Boot
                 {
                     hostFailure = Fail(BootFailureCode.PackageVersionRequestFailed,
                         BootFailureStage.ResourceVersion, BootRetryScope.ResourceInitialization,
-                        ("operationError", versionOp.Error));
+                        ("operationError", versionOp.Status == EOperationStatus.Succeed
+                            ? "资源版本为空或此前启动失败，已跳过。" : versionOp.Error),
+                        ("resourceVersion", remoteVersion));
                 }
             }
 
@@ -553,11 +555,12 @@ namespace Boot
             _downloader = CreateStartupResourceDownloader();
             if (_downloader.TotalDownloadCount == 0)
             {
-                BootOperationResult availabilityResult = ValidateStartupResources();
+                BootOperationResult availabilityResult = ValidateRequiredLocations();
                 if (!availabilityResult.Succeeded)
                     return availabilityResult;
 
-                _pendingHostVersion = version;
+                if (!TrySelectHostVersion(version))
+                    return FailUnavailableHostVersion(version);
                 _pendingResourceSource = BootResourceSource.HostLatest;
                 SetStatus("资源已是最新版本");
                 RefreshVersion();
@@ -590,11 +593,12 @@ namespace Boot
                     ("operationError", _downloader.Error));
             }
 
-            BootOperationResult validationResult = ValidateStartupResources();
+            BootOperationResult validationResult = ValidateRequiredLocations();
             if (!validationResult.Succeeded)
                 return validationResult;
 
-            _pendingHostVersion = version;
+            if (!TrySelectHostVersion(version))
+                return FailUnavailableHostVersion(version);
             _pendingResourceSource = BootResourceSource.HostLatest;
             _updateView.RenderBusy("资源下载完成");
             RefreshVersion();
@@ -635,11 +639,12 @@ namespace Boot
                     ("resourceStage", "缓存资源"), ("missingFileCount", _downloader.TotalDownloadCount.ToString()));
             }
 
-            BootOperationResult validationResult = ValidateStartupResources();
+            BootOperationResult validationResult = ValidateRequiredLocations();
             if (!validationResult.Succeeded)
                 return validationResult;
 
-            _pendingHostVersion = version;
+            if (!TrySelectHostVersion(version))
+                return FailUnavailableHostVersion(version);
             _pendingResourceSource = BootResourceSource.HostCached;
             _detectedHostVersion = _detectedHostVersion ?? string.Empty;
             SetStatus($"已使用缓存版本 {version}");
@@ -678,13 +683,38 @@ namespace Boot
             return Success();
         }
 
+        private static ResourceVersionActivation CreateVersionActivation() =>
+            new ResourceVersionActivation(LAST_SUCCESSFUL_HOST_VERSION_KEY + ".good",
+                LAST_SUCCESSFUL_HOST_VERSION_KEY, LAST_SUCCESSFUL_HOST_VERSION_KEY);
+
+        internal static void ClearHostVersionHistory(Func<bool> invalidateCache) =>
+            CreateVersionActivation().Clear(invalidateCache);
+
+        private void OnDestroy() => _versionActivation.End();
+
+        private bool TrySelectHostVersion(string version)
+        {
+            if (!_versionActivation.Begin(version))
+                return false;
+
+            _pendingHostVersion = version;
+            return true;
+        }
+
+        private BootOperationResult FailUnavailableHostVersion(string version) =>
+            Fail(BootFailureCode.PackageVersionRequestFailed, BootFailureStage.ResourceVersion,
+                BootRetryScope.ResourceInitialization, ("resourceVersion", version),
+                ("operationError", "资源版本已被拒绝或正由另一个实例验证。"));
+
         public void CommitSuccessfulHostVersion()
         {
-            if (string.IsNullOrEmpty(_pendingHostVersion))
-                return;
+            _versionActivation.Commit(_pendingHostVersion);
+            _pendingHostVersion = null;
+        }
 
-            PlayerPrefs.SetString(LAST_SUCCESSFUL_HOST_VERSION_KEY, _pendingHostVersion);
-            PlayerPrefs.Save();
+        internal void RejectHostVersionActivation()
+        {
+            _versionActivation.Reject(_pendingHostVersion);
             _pendingHostVersion = null;
         }
 
@@ -792,35 +822,22 @@ namespace Boot
                 if (textAsset == null)
                     return FailAotValidation(BootFailureCode.AotListInvalid, aotListAddress);
 
-                var lines = textAsset.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                int validCount = 0;
+                if (!AotAssemblyManifest.TryParse(textAsset.text, "Game", allowLegacyEntries: true,
+                        out var dlls, out string invalidName))
+                    return FailAotValidation(BootFailureCode.AotListInvalid, invalidName ?? aotListAddress);
 
-                foreach (var line in lines)
+                var checkedPaths = new HashSet<string>(StringComparer.Ordinal);
+                foreach (string dllName in dlls)
                 {
-                    string dllName = line.Trim();
-                    if (string.IsNullOrEmpty(dllName) || dllName.StartsWith("//"))
-                        continue;
-
-                    if (dllName.Equals("Game.dll", StringComparison.OrdinalIgnoreCase) ||
-                        dllName.Equals("Game", StringComparison.OrdinalIgnoreCase))
-                        return FailAotValidation(BootFailureCode.AotListInvalid, "Game.dll");
-
-                    if (!dllName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-                        dllName += ".dll";
-
-                    if (!seen.Add(dllName))
-                        return FailAotValidation(BootFailureCode.AotListInvalid, dllName);
-
-                    string dllAddress = ToDllBytesAddress(dllName);
+                    string dllAddress = dllName + ".bytes";
                     if (!_package.CheckLocationValid(dllAddress))
                         return Fail(BootFailureCode.AotDllMissing, BootFailureStage.AotList, BootRetryScope.None, ("dllName", dllName));
 
-                    validCount++;
+                    BootOperationResult available = ValidateAvailableAsset(_package.GetAssetInfo(dllAddress), checkedPaths);
+                    if (!available.Succeeded)
+                        return available;
                 }
 
-                if (validCount == 0)
-                    return FailAotValidation(BootFailureCode.AotListInvalid, aotListAddress);
                 return Success();
             }
             finally
@@ -839,13 +856,6 @@ namespace Boot
             yield return "tbitem.bytes";
             yield return "Game.dll.bytes";
             yield return "HybridCLRAssemblyList.bytes";
-        }
-
-        private static string ToDllBytesAddress(string dllName)
-        {
-            if (dllName.EndsWith(".bytes", StringComparison.OrdinalIgnoreCase))
-                return dllName;
-            return $"{dllName}.bytes";
         }
 
         private void OnDownloadUpdate(DownloadUpdateData data)

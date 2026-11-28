@@ -42,7 +42,9 @@ namespace Game.Tests.Flow
 
                 var background = canvasObject.transform.GetChild(0);
                 Assert.That(background.name, Is.EqualTo("Background"));
-                Assert.That(canvasObject.transform.GetChild(1).name, Is.EqualTo("Panel"));
+                var panel = canvasObject.transform.Find("Panel");
+                Assert.That(panel, Is.Not.Null);
+                Assert.That(panel.GetSiblingIndex(), Is.GreaterThan(background.GetSiblingIndex()));
 
                 var rect = background.GetComponent<RectTransform>();
                 Assert.NotNull(rect);
@@ -165,6 +167,59 @@ namespace Game.Tests.Flow
             {
                 UnityEngine.Object.DestroyImmediate(fixture.Root);
                 UnityEngine.Object.DestroyImmediate(fixture.CanvasRoot);
+            }
+        }
+
+        [TestCase(true, false)]
+        [TestCase(false, false)]
+        [TestCase(false, true)]
+        public void HostVersionIsCommittedOnlyWhenMainBecomesReady(bool mainIsReady, bool useLegacyCandidate)
+        {
+            const string key = "FirepowerLoop.LastSuccessfulHostVersion";
+            string[] keys = { key, key + ".pending", key + ".rejected", key + ".good" };
+            var original = new (bool Exists, string Value)[keys.Length];
+            for (int i = 0; i < keys.Length; i++)
+                original[i] = (PlayerPrefs.HasKey(keys[i]), PlayerPrefs.GetString(keys[i]));
+
+            var fixture = CreateLauncherFixture();
+            try
+            {
+                string previousVersion = useLegacyCandidate ? "candidate" : "known-good";
+                PlayerPrefs.SetString(key, previousVersion);
+                PlayerPrefs.DeleteKey(keys[1]);
+                PlayerPrefs.DeleteKey(keys[2]);
+                if (useLegacyCandidate)
+                    PlayerPrefs.DeleteKey(keys[3]);
+                else
+                    PlayerPrefs.SetString(keys[3], previousVersion);
+                SetCurrentLauncher(fixture.Launcher);
+                var resources = fixture.Root.GetComponent<ResourceBoot>();
+                var select = typeof(ResourceBoot).GetMethod("TrySelectHostVersion",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                Assert.NotNull(select);
+                Assert.That(select.Invoke(resources, new object[] { "candidate" }), Is.True);
+
+                Assert.That(PlayerPrefs.GetString(key), Is.EqualTo(previousVersion));
+                Assert.That(PlayerPrefs.GetString(keys[1]), Is.EqualTo("candidate"));
+                Assert.That(mainIsReady ? Launcher.TryReportMainReady() : Launcher.TryReportMainFailure(), Is.True);
+                string expected = mainIsReady ? "candidate" : useLegacyCandidate ? "" : "known-good";
+                Assert.That(PlayerPrefs.GetString(key), Is.EqualTo(expected));
+                Assert.That(PlayerPrefs.GetString(keys[3]), Is.EqualTo(expected));
+                Assert.That(PlayerPrefs.HasKey(keys[1]), Is.False);
+                Assert.That(PlayerPrefs.GetString(keys[2]), Is.EqualTo(mainIsReady ? "" : "candidate"));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(fixture.Root);
+                UnityEngine.Object.DestroyImmediate(fixture.CanvasRoot);
+                for (int i = 0; i < keys.Length; i++)
+                {
+                    if (original[i].Exists)
+                        PlayerPrefs.SetString(keys[i], original[i].Value);
+                    else
+                        PlayerPrefs.DeleteKey(keys[i]);
+                }
+                PlayerPrefs.Save();
             }
         }
 
@@ -393,6 +448,12 @@ namespace Game.Tests.Flow
             var field = typeof(Launcher).GetField("current", BindingFlags.Static | BindingFlags.NonPublic);
             Assert.NotNull(field);
             field.SetValue(null, launcher);
+            if (launcher != null)
+            {
+                var resources = typeof(Launcher).GetField("_resourceBoot", BindingFlags.Instance | BindingFlags.NonPublic);
+                Assert.NotNull(resources);
+                resources.SetValue(launcher, launcher.GetComponent<ResourceBoot>());
+            }
         }
 
         private static Launcher GetCurrentLauncher()

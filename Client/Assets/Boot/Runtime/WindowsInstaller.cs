@@ -111,12 +111,15 @@ namespace Boot
             if (installed == null) return;
             const string key = "FirepowerLoop.WindowsHostRelease";
             if (PlayerPrefs.GetInt(key, -1) == installed.releaseNumber) return;
-            string root = Path.GetFullPath(Path.Combine(Application.dataPath, "yoo"));
-            // 路径来自当前 Player 的固定缓存目录，清理失败则抛出并阻止旧缓存启动。
-            if (Directory.Exists(root)) Directory.Delete(root, true);
-            PlayerPrefs.DeleteKey("FirepowerLoop.LastSuccessfulHostVersion");
-            PlayerPrefs.SetInt(key, installed.releaseNumber);
-            PlayerPrefs.Save();
+            ResourceBoot.ClearHostVersionHistory(() =>
+            {
+                if (PlayerPrefs.GetInt(key, -1) == installed.releaseNumber) return false;
+                string root = Path.GetFullPath(Path.Combine(Application.dataPath, "yoo"));
+                // 只清理当前 Player 的缓存，失败时保留宿主版本记录以便重试。
+                if (Directory.Exists(root)) Directory.Delete(root, true);
+                PlayerPrefs.SetInt(key, installed.releaseNumber);
+                return true;
+            });
         }
     }
 }

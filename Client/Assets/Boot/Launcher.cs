@@ -114,6 +114,7 @@ namespace Boot
                 return false;
             }
 
+            owner._resourceBoot.CommitSuccessfulHostVersion();
             owner._terminalState = StartupTerminalState.ReadyPendingRelease;
             owner._startupLog?.RecordStage("Main:Ready");
             owner._startupLog?.Dispose();
@@ -135,6 +136,7 @@ namespace Boot
                 return false;
             }
 
+            owner._resourceBoot.RejectHostVersionActivation();
             owner._terminalState = StartupTerminalState.Failed;
             owner._updateView.gameObject.SetActive(true);
             owner.ShowFailure(BootFailure.Create(
@@ -298,16 +300,17 @@ namespace Boot
                 BootOperationResult codeResult = await CodeLoader.LoadAsync(package);
                 if (!RequireResult(codeResult, BootFailureStage.GameAssembly, out codeResult))
                 {
+                    _resourceBoot.RejectHostVersionActivation();
                     return;
                 }
 
                 if (!codeResult.Succeeded)
                 {
+                    _resourceBoot.RejectHostVersionActivation();
                     ShowFailure(codeResult.Failure);
                     return;
                 }
 
-                _resourceBoot.CommitSuccessfulHostVersion();
                 _startupLog?.RecordStage("Assemblies:Completed");
                 _updateView.RenderNormal("正在进入游戏……");
 

@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Debug = UnityEngine.Debug;
 using TextAsset = UnityEngine.TextAsset;
 using YooAsset;
+using SharedBoot;
 using HybridCLR;
 
 namespace Boot
@@ -70,33 +71,10 @@ namespace Boot
             }
 
             string content = System.Text.Encoding.UTF8.GetString(aotListBytes);
-            var lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var dlls = new List<string>();
-            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var line in lines)
-            {
-                string dllName = line.Trim();
-                if (string.IsNullOrEmpty(dllName) || dllName.StartsWith("//"))
-                    continue;
-
-                if (dllName.Equals("Game.dll", StringComparison.OrdinalIgnoreCase) ||
-                    dllName.Equals("Game", StringComparison.OrdinalIgnoreCase))
-                {
-                    return Failure(BootFailureCode.AotListInvalid, BootFailureStage.AotList, ("dllName", "Game.dll"));
-                }
-
-                if (!dllName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-                    dllName += ".dll";
-
-                if (!seen.Add(dllName))
-                    return Failure(BootFailureCode.AotListInvalid, BootFailureStage.AotList, ("dllName", dllName));
-
-                dlls.Add(dllName);
-            }
-
-            if (dlls.Count == 0)
-                return Failure(BootFailureCode.AotListInvalid, BootFailureStage.AotList, ("dllName", AOT_LIST_ADDRESS));
+            if (!AotAssemblyManifest.TryParse(content, "Game", allowLegacyEntries: true, out var dlls,
+                    out string invalidName))
+                return Failure(BootFailureCode.AotListInvalid, BootFailureStage.AotList,
+                    ("dllName", invalidName ?? AOT_LIST_ADDRESS));
 
             foreach (var dllName in dlls)
             {
@@ -208,38 +186,10 @@ namespace Boot
             }
 
             string content = System.Text.Encoding.UTF8.GetString(bytes);
-            var lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-
-            var dlls = new List<string>();
-            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var line in lines)
-            {
-                string dllName = line.Trim();
-                if (string.IsNullOrEmpty(dllName) || dllName.StartsWith("//"))
-                    continue;
-
-                if (dllName.Equals("Game.dll", StringComparison.OrdinalIgnoreCase) ||
-                    dllName.Equals("Game", StringComparison.OrdinalIgnoreCase))
-                {
-                    return (Failure(BootFailureCode.AotListInvalid, BootFailureStage.AotList, ("dllName", "Game.dll")), null);
-                }
-
-                if (!dllName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-                    dllName += ".dll";
-
-                if (!seen.Add(dllName))
-                {
-                    return (Failure(BootFailureCode.AotListInvalid, BootFailureStage.AotList, ("dllName", dllName)), null);
-                }
-
-                dlls.Add(dllName);
-            }
-
-            if (dlls.Count == 0)
-            {
-                return (Failure(BootFailureCode.AotListInvalid, BootFailureStage.AotList, ("dllName", AOT_LIST_ADDRESS)), null);
-            }
+            if (!AotAssemblyManifest.TryParse(content, "Game", allowLegacyEntries: true, out var dlls,
+                    out string invalidName))
+                return (Failure(BootFailureCode.AotListInvalid, BootFailureStage.AotList,
+                    ("dllName", invalidName ?? AOT_LIST_ADDRESS)), null);
             return (BootOperationResult.Success(), dlls);
         }
 
