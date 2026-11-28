@@ -212,6 +212,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: startup;arcade
         UserData:
+      - CollectPath: Assets/Game/Prefabs/UI/Inventory/QuickBarHud.prefab
+        CollectorGUID: 591390542a88c9f4aa562ee010173b08
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData:
     - GroupName: PrefabsCharacters
       GroupDesc: "\u89D2\u8272\u9884\u5236\u4F53"
       AssetTags: 
