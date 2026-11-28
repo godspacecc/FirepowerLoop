@@ -121,77 +121,15 @@ namespace Game
         [MenuItem("Tools/本地化/重建中文字体图集", false, 326)]
         public static void UpdateChineseTmpFontAsset()
         {
-            TMP_FontAsset candidate = null;
             try
             {
-                if (EditorApplication.isPlayingOrWillChangePlaymode)
-                    throw new InvalidOperationException("请退出运行模式后再预览字体重建。");
-                var original = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontAssetPath);
-                if (original == null) throw new InvalidOperationException("正式TMP字体不存在。");
-                EnsureFontIsSaved();
-                var source = ResolveSourceFont(original);
-                if (source == null) throw new InvalidOperationException("源字体不存在。");
-                string fontPath = Path.GetFullPath(Path.Combine(Application.dataPath, "..", FontAssetPath));
-                string sourcePath = Path.GetFullPath(AssetDatabase.GetAssetPath(source));
-                byte[] sourceMeta = File.ReadAllBytes(sourcePath + ".meta");
-                byte[] before = File.ReadAllBytes(fontPath);
-                byte[] beforeMeta = File.ReadAllBytes(fontPath + ".meta");
-                byte[] sourceBytes = File.ReadAllBytes(sourcePath);
-                string charset = LoadNormalizedCharsetFromFile();
-                if (string.IsNullOrEmpty(charset)) throw new InvalidOperationException("字符清单为空。");
-                candidate = TMP_FontAsset.CreateFontAsset(source, (int)original.faceInfo.pointSize,
-                    original.atlasPadding, original.atlasRenderMode, original.atlasWidth, original.atlasHeight,
-                    AtlasPopulationMode.Dynamic, true);
-                if (candidate == null) throw new InvalidOperationException("无法创建临时字体。");
-                if (!candidate.TryAddCharacters(charset, out string missing) || !string.IsNullOrEmpty(missing) ||
-                    GetMissingCodePoints(candidate, EnumerateCodePoints(charset)).Length > 0)
-                    throw new InvalidOperationException("临时字体重建有缺字，停止正式写入：" + missing);
-                // 采用原字体材质表现，但纹理只绑定临时图集。
-                candidate.material.CopyPropertiesFromMaterial(original.material);
-                candidate.material.mainTexture = candidate.atlasTextures[0];
-                candidate.atlasPopulationMode = AtlasPopulationMode.Static;
-                string directory = CreateFontArtifactDirectory("FontPreview");
-                string sample = "火力循环 中文字体预览\n得分 0123456789  ABC abc\n生命 强化 暂停 返回 确定 取消";
-                // 只显示本次实际字符清单内的字，不依靠回退字体伪装覆盖成功。
-                var available = new HashSet<int>(EnumerateCodePoints(charset));
-                sample = string.Concat(EnumerateCodePoints(sample).Where(code => code == 10 || available.Contains(code)).Select(char.ConvertFromUtf32));
-                sample += "\n" + string.Concat(EnumerateCodePoints(charset).Where(code => code >= 0x4E00 && code <= 0x9FFF).Take(40).Select(char.ConvertFromUtf32));
-                string imagePath = Path.Combine(directory, "font-preview.png");
-                Texture2D image = RenderFontPreview(candidate, sample);
-                File.WriteAllBytes(imagePath, image.EncodeToPNG());
-                string summary = $"独立临时字体预览，未修改正式资源。\n字符：{candidate.characterTable.Count}，缺字：0\n" +
-                    $"图集：{original.atlasTextures.Length} → {candidate.atlasTextures.Length}；多图集：{original.isMultiAtlasTexturesEnabled} → True\n" +
-                    "确认后按相同字符清单重建正式字体，保留原填充模式并开启多图集。样例不代表全部界面验收。\n" + imagePath;
-                File.WriteAllText(Path.Combine(directory, "README.txt"), summary, Encoding.UTF8);
-                FontRebuildPreviewWindow.ShowPreview(image, summary, () =>
-                {
-                    try
-                    {
-                        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("运行中不能更新字体。");
-                        EnsureFontIsSaved();
-                        if (!File.ReadAllBytes(fontPath).SequenceEqual(before) ||
-                            !File.ReadAllBytes(fontPath + ".meta").SequenceEqual(beforeMeta) ||
-                            !File.ReadAllBytes(sourcePath).SequenceEqual(sourceBytes) ||
-                            !File.ReadAllBytes(sourcePath + ".meta").SequenceEqual(sourceMeta) || LoadNormalizedCharsetFromFile() != charset)
-                            throw new IOException("字体、源字体或字符清单已变化，请重新生成预览。");
-                        ApplyConfirmedFontRebuild();
-                    }
-                    catch (Exception exception) { ShowFontFailure(exception.Message); }
-                });
+                var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontAssetPath);
+                Shared.UnityTools.SelectedFontAtlas.PreviewRebuild(font, font == null ? null : ResolveSourceFont(font),
+                    LoadNormalizedCharsetFromFile, _ => ApplyConfirmedFontRebuild(), multiAtlas: true);
             }
-            catch (Exception exception) { ShowFontFailure(exception.Message); }
-            finally
-            {
-                if (candidate != null)
-                {
-                    foreach (var texture in candidate.atlasTextures) if (texture != null) UnityEngine.Object.DestroyImmediate(texture);
-                    if (candidate.material != null) UnityEngine.Object.DestroyImmediate(candidate.material);
-                    UnityEngine.Object.DestroyImmediate(candidate);
-                }
-            }
+            catch (Exception error) { ShowFontFailure(error.GetBaseException().Message); }
         }
 
-        /// <summary>拒绝丢弃正式字体及子资源的未保存编辑。</summary>
         private static void EnsureFontIsSaved()
         {
             if (AssetDatabase.LoadAllAssetsAtPath(FontAssetPath).Any(EditorUtility.IsDirty))
@@ -207,45 +145,6 @@ namespace Game
             return path;
         }
 
-        /// <summary>在隔离预览场景渲染真实TMP文字，不能用图集数量替代效果预览。</summary>
-        private static Texture2D RenderFontPreview(TMP_FontAsset font, string sample)
-        {
-            var preview = new PreviewRenderUtility();
-            try
-            {
-                var go = new GameObject("临时字体文字预览");
-                preview.AddSingleGO(go);
-                var text = go.AddComponent<TextMeshPro>();
-                text.font = font;
-                text.fontSize = 7;
-                text.color = Color.white;
-                text.alignment = TextAlignmentOptions.Center;
-                text.enableWordWrapping = true;
-                text.rectTransform.sizeDelta = new Vector2(18, 8);
-                text.text = sample;
-                text.ForceMeshUpdate();
-                preview.camera.orthographic = true;
-                preview.camera.orthographicSize = 5;
-                preview.camera.transform.position = new Vector3(0, 0, -10);
-                preview.camera.transform.rotation = Quaternion.identity;
-                preview.camera.clearFlags = CameraClearFlags.SolidColor;
-                preview.camera.backgroundColor = new Color(0.08f, 0.08f, 0.08f);
-                preview.BeginStaticPreview(new Rect(0, 0, 1200, 600));
-                preview.camera.Render();
-                Texture2D image = preview.EndStaticPreview();
-                Color32[] pixels = image.GetPixels32();
-                Color32 background = pixels[0];
-                if (!pixels.Any(pixel => Math.Abs(pixel.r - background.r) > 20 || Math.Abs(pixel.g - background.g) > 20 || Math.Abs(pixel.b - background.b) > 20))
-                {
-                    UnityEngine.Object.DestroyImmediate(image);
-                    throw new InvalidOperationException("文字预览为空白，禁止继续正式写入。");
-                }
-                return image;
-            }
-            finally { preview.Cleanup(); }
-        }
-
-        /// <summary>所有准备阶段异常统一提示，不继续写入正式字体。</summary>
         private static void ShowFontFailure(string message)
         {
             Debug.LogError("[本地化] 字体重建未完成：" + message);

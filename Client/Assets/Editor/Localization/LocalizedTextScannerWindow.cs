@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -50,12 +50,10 @@ namespace Game
 
     public sealed class LocalizedTextScannerWindow : EditorWindow
     {
-        private const string MenuPath = "Tools/本地化/检查界面本地化";
+        private const string MenuPath = Shared.UnityTools.TextTableAudit.ScanMenu;
         private const string DefaultLanguageCode = "zh-CN";
         private static readonly Regex CSharpStringRegex =
             new Regex("\"(?<text>(?:\\\\.|[^\"\\\\])*)\"", RegexOptions.Compiled);
-        private static readonly Regex UiKeyRegex =
-            new Regex("^ui\\.[a-z0-9_.-]+$", RegexOptions.Compiled);
 
         private readonly List<LocalizedTextScanCandidate> candidates = new List<LocalizedTextScanCandidate>();
         private Vector2 scrollPosition;
@@ -69,15 +67,7 @@ namespace Game
             window.Scan();
         }
 
-        public static bool ContainsChinese(string text)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return false;
-            }
-
-            return text.Any(character => character >= 0x4E00 && character <= 0x9FFF);
-        }
+        public static bool ContainsChinese(string text) => Shared.UnityTools.TextTableAudit.ContainsChinese(text);
 
         public static List<LocalizedTextScanCandidate> ScanGameObject(
             GameObject root,
@@ -292,79 +282,11 @@ namespace Game
                           !string.IsNullOrWhiteSpace(enabledLocalizedTexts[0].Key);
             var hasComponentTexts = enabledLocalizedTexts.Any(item => item.Texts != null && item.Texts.Count > 0);
             var textValue = text.text ?? string.Empty;
-            var isUiKey = UiKeyRegex.IsMatch(textValue);
-            var containsChinese = ContainsChinese(textValue);
-            var diagnostics = new List<string>();
-            LocalizedTextScanStatus status;
-            string expectedDefaultText = string.Empty;
-
-            if (isUiKey)
-            {
-                diagnostics.Add("内部 Key 泄漏：TMP 默认文本保存了 ui.*");
-            }
-
-            if (enabledLocalizedTexts.Length > 1)
-            {
-                diagnostics.Add("同对象存在多个启用的 LocalizedText");
-            }
-            else if (enabledLocalizedTexts.Length == 1)
-            {
-                var localizedText = enabledLocalizedTexts[0];
-                var key = localizedText.Key ?? string.Empty;
-                var hasTexts = localizedText.Texts != null && localizedText.Texts.Count > 0;
-                if (string.IsNullOrWhiteSpace(key))
-                {
-                    if (!hasTexts)
-                    {
-                        diagnostics.Add("LocalizedText Key 为空且 Texts 为空");
-                    }
-                }
-                else if (hasTexts)
-                {
-                    diagnostics.Add("Key 非空时 Texts 必须为空");
-                }
-                else if (!context.IsValid)
-                {
-                    diagnostics.Add(context.Error);
-                }
-                else if (!context.ContainsAllLanguages(key))
-                {
-                    diagnostics.Add("任一正式语言缺少 Key");
-                }
-                else
-                {
-                    expectedDefaultText = context.GetDefaultText(key);
-                    if (textValue != expectedDefaultText)
-                    {
-                        diagnostics.Add("TMP 默认文本与默认语言不一致");
-                    }
-                }
-            }
-
-            if (isUiKey)
-            {
-                status = LocalizedTextScanStatus.InternalKeyLeak;
-            }
-            else if (diagnostics.Count > 0)
-            {
-                status = expectedDefaultText.Length > 0 && diagnostics.Count == 1 &&
-                         diagnostics[0] == "TMP 默认文本与默认语言不一致"
-                    ? LocalizedTextScanStatus.PreviewTextMismatch
-                    : LocalizedTextScanStatus.KeyModeInvalid;
-            }
-            else if (keyMode)
-            {
-                status = LocalizedTextScanStatus.ReadableKeyMode;
-                diagnostics.Add("可读 Key 模式");
-            }
-            else if (containsChinese)
-            {
-                status = LocalizedTextScanStatus.ChineseText;
-            }
-            else
-            {
-                return false;
-            }
+            var classified = Shared.UnityTools.TextTableAudit.Classify(textValue, enabledLocalizedTexts.Length,
+                keyMode ? enabledLocalizedTexts[0].Key : string.Empty, hasComponentTexts, context.Error,
+                context.ContainsAllLanguages, context.GetDefaultText);
+            if (classified.Status == Shared.UnityTools.TextTableAudit.TextStatus.None) return false;
+            var status = (LocalizedTextScanStatus)Enum.Parse(typeof(LocalizedTextScanStatus), classified.Status.ToString());
 
             candidate = new LocalizedTextScanCandidate
             {
@@ -377,8 +299,8 @@ namespace Game
                 LocalizedTextKey = keyMode ? enabledLocalizedTexts[0].Key : string.Empty,
                 LocalizedTextCount = enabledLocalizedTexts.Length,
                 HasComponentTexts = hasComponentTexts,
-                ExpectedDefaultText = expectedDefaultText,
-                Diagnostic = string.Join("；", diagnostics),
+                ExpectedDefaultText = classified.Expected,
+                Diagnostic = classified.Diagnostic,
                 Status = status,
                 Selected = status == LocalizedTextScanStatus.ChineseText
             };

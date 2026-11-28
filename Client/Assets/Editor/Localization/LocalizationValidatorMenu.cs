@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Game
 {
-    /// <summary>保留兼容调用与测试接口，读取磁盘原始语言表；不再注册独立菜单。</summary>
+    /// <summary>保留兼容调用与测试接口，读取并校验磁盘原始语言表。</summary>
     public static class LocalizationValidatorMenu
     {
         /// <summary>供代码调用的只读校验，读取失败明确返回false，不使用编辑器合并数据。</summary>
+        [MenuItem(Shared.UnityTools.TextTableAudit.TableMenu, false, 322)]
+        private static void ValidateTablesFromMenu() => ValidateTables();
+
         public static bool ValidateTables()
         {
             try
             {
                 var jsonByLanguage = LoadJsonTables();
+                if (!Shared.UnityTools.TextTableAudit.ValidateAndLog(jsonByLanguage)) return false;
                 var report = LocalizationValidator.ValidateJsonTables(jsonByLanguage);
                 foreach (var issue in report.Issues)
                     Debug.LogError($"[本地化] {issue}");

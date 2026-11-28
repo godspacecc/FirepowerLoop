@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using Shared.UnityTools;
 using System.IO;
 using System.Linq;
 using Game.Network;
@@ -47,10 +48,10 @@ namespace Game.Editor
             }
         }
 
-        [MenuItem("Tools/打包/Android/构建热更新（代码+资源）", false, 153)]
+        [MenuItem(HotUpdateMenu.Android, false, 153)]
         private static void BuildHostUpdateMenu()
         {
-            BuildHostCodeAndResourcesBatch();
+            HotUpdateMenu.BuildAndPublish(BuildTarget.Android, BuildHostCodeAndResourcesBatch);
         }
 
         [MenuItem("Tools/打包/Android/启动包（首次下载资源）", false, 151)]
@@ -66,15 +67,8 @@ namespace Game.Editor
             }
         }
 
-        [MenuItem("Tools/打包/Android/快速打包/复用全部打包", false, 170)]
-        private static void BuildQuickReuseApkMenu()
-        {
-            if (Application.isBatchMode || EditorUtility.DisplayDialog(
-                    "Android 复用全部打包",
-                    "复用已准备好的玩法代码、AOT和资源，沿用完整包或启动包类型，只重新生成 APK 并发布。输入变化时停止，避免遗漏后续修改。",
-                    "开始打包", "取消"))
-                BuildQuickReuseApkBatch();
-        }
+        [MenuItem(QuickBuildMenu.AndroidAll, false, 170)]
+        private static void BuildQuickReuseApkMenu() => QuickBuildMenu.ConfirmAndBuild(true, BuildQuickReuseApkBatch);
 
         [MenuItem("Tools/渠道发行/Android/渠道打包", false, 190)]
         private static void BuildChannelCandidateMenu()
@@ -109,7 +103,7 @@ namespace Game.Editor
         [MenuItem("Tools/服务器/Android/更新资源服", false, 211)]
         private static void UpdateAndroidResourceServerMenu()
         {
-            ShowResourceServerResult(ResourceServerPublishUtility.UpdateLatestAndroidBundle());
+            ShowResourceServerResult(ResourceServerPublishUtility.UpdateCurrentPlayer(BuildTarget.Android));
         }
 
         [MenuItem("Tools/服务器/Android/启动资源服", false, 212)]
@@ -168,13 +162,8 @@ namespace Game.Editor
         /// <summary>重新编译玩法和资源，但只使用可信记录中的冻结 AOT。</summary>
         public static void BuildQuickReuseAotBatch() => BuildQuickApk(true);
 
-        [MenuItem("Tools/打包/Android/快速打包/复用 AOT 打包", false, 169)]
-        private static void BuildQuickReuseAotMenu()
-        {
-            if (Application.isBatchMode || EditorUtility.DisplayDialog("Android 复用 AOT 打包",
-                "重新编译玩法并重建资源，复用可靠准备记录中的 AOT，沿用完整包或启动包类型生成 APK。底层、桥接或原生需求不兼容时停止，并提示重新完整准备。",
-                "开始打包", "取消")) BuildQuickReuseAotBatch();
-        }
+        [MenuItem(QuickBuildMenu.AndroidAot, false, 169)]
+        private static void BuildQuickReuseAotMenu() => QuickBuildMenu.ConfirmAndBuild(false, BuildQuickReuseAotBatch);
 
         /// <summary>两种快速包共用最终 APK 与发布事务。</summary>
         private static void BuildQuickApk(bool rebuildResources)
@@ -886,6 +875,10 @@ namespace Game.Editor
             }
 
             BuildStateStore.Save(state);
+            Shared.UnityTools.ResourceReleaseSelection.Record(BuildTarget.Android.ToString(),
+                state.LastAndroidPlayer?.PlayerPath, version, packageDirectory);
+            if (!string.IsNullOrEmpty(playerPath))
+                Shared.UnityTools.HostBaselineProject.RegisterInstalledHost(BuildTarget.Android);
         }
 
         /// <summary>

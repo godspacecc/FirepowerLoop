@@ -20,6 +20,7 @@ namespace Game.Editor
         public string Platform;
         public string BuildType;
         public string ExpectedCommit;
+        public string HostBaseline;
         public string BaselineDirectory;
         public string PublishDirectory;
         /// <summary>CI显式安装器编译器路径，避免读取开发者账户EditorPrefs。</summary>
@@ -57,9 +58,19 @@ namespace Game.Editor
             if (BuildType != "FirstPackage" && BuildType != "HostUpdate") throw new ArgumentException("只支持首包或Host更新");
             if (BuildType == "HostUpdate")
             {
+                if (!string.IsNullOrEmpty(HostBaseline))
+                {
+                    if (!string.IsNullOrEmpty(BaselineDirectory) || !Path.IsPathRooted(HostBaseline) || !File.Exists(HostBaseline))
+                        throw new ArgumentException("请指定一份已存在的安装包记录文件。");
+                    WorkspaceBuildLock.EnsureNoLinks(HostBaseline);
+                    BaselineDirectory = Shared.UnityTools.HostBaselineProject.ResolveDirectory(HostBaseline,
+                        Platform == "PC" ? UnityEditor.BuildTarget.StandaloneWindows64 : UnityEditor.BuildTarget.Android);
+                    HostBaseline = null;
+                }
                 if (!Path.IsPathRooted(BaselineDirectory ?? "") || !Directory.Exists(BaselineDirectory)) throw new ArgumentException("Host更新必须指定现有宿主基线目录");
                 WorkspaceBuildLock.EnsureNoLinks(BaselineDirectory);
             }
+            else if (!string.IsNullOrEmpty(HostBaseline)) throw new ArgumentException("首包不得指定安装包记录。");
             if (Publish)
             {
                 if (!Path.IsPathRooted(PublishDirectory ?? "")) throw new ArgumentException("发布必须明确目标目录");

@@ -69,6 +69,15 @@ namespace Game.Editor
         /// <summary>
         /// 构建 DefaultPackage；完整打包会清理并复制全部内置资源，Host 流程只产出远端包。
         /// </summary>
+        [MenuItem(Shared.UnityTools.ResourcePackageBuild.Menu)]
+        private static void BuildResourcePackageFromMenu()
+        {
+            string version = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", System.Globalization.CultureInfo.InvariantCulture);
+            var result = BuildPackage(version, EBuildinFileCopyOption.None, null, false, standalone: true);
+            if (!result.Success)
+                Debug.LogError("[资源包] " + result.Error);
+        }
+
         public static BuildResult BuildDefaultPackage(string version, bool fullBuiltin)
         {
             return BuildPackage(
@@ -94,7 +103,7 @@ namespace Game.Editor
             string version,
             EBuildinFileCopyOption buildinFileCopyOption,
             string buildinFileCopyParams,
-            bool validateBuiltinManifest)
+            bool validateBuiltinManifest, bool standalone = false)
         {
             Debug.Log(
                 $"[YooAssetBuildUtility] 开始构建资源包：{PACKAGE_NAME}，version={version}，" +
@@ -124,7 +133,7 @@ namespace Game.Editor
                     PackageName = PACKAGE_NAME,
                     PackageVersion = version,
                     BuildTarget = EditorUserBuildSettings.activeBuildTarget,
-                    BuildOutputRoot = AssetBundleBuilderHelper.GetDefaultBuildOutputRoot(),
+                    BuildOutputRoot = standalone ? Shared.UnityTools.ResourcePackageBuild.StandaloneOutputRoot : AssetBundleBuilderHelper.GetDefaultBuildOutputRoot(),
                     BuildinFileRoot = AssetBundleBuilderHelper.GetStreamingAssetsRoot(),
                     BuildPipeline = BUILD_PIPELINE,
                     BuildBundleType = (int)YooAsset.EBuildBundleType.AssetBundle,
@@ -140,8 +149,7 @@ namespace Game.Editor
                     BuiltinShadersBundleName = "unity_builtin_shaders"
                 };
 
-                var pipeline = new ScriptableBuildPipeline();
-                var buildResult = pipeline.Run(parameters, true);
+                var buildResult = Shared.UnityTools.ResourcePackageBuild.Run(parameters);
                 if (!buildResult.Success)
                 {
                     result.Success = false;

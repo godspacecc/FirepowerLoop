@@ -86,7 +86,7 @@ namespace Game.Tests
                 "Tools/打包/PC/快速打包/复用 AOT 打包",
                 "Tools/打包/PC/完整打包",
                 "Tools/打包/PC/启动包（首次下载资源）",
-                "Tools/打包/PC/快速打包/生成安装器"
+                "Tools/打包/PC/生成安装器"
             }.OrderBy(x => x).ToArray();
 
             CollectionAssert.AreEqual(expected, packagingMenus);

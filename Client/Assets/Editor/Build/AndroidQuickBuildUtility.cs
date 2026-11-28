@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -140,6 +140,8 @@ namespace Game.Editor
         {
             var player = state?.LastAndroidPlayer;
             var aot = state?.LastAndroidAotBaseline;
+            if (CiBuildSession.Current != null)
+                return ReadArchivedHost(player, aot);
             if (player == null || aot == null || string.IsNullOrEmpty(player.AndroidApkFingerprint) ||
                 !File.Exists(player.PlayerPath) || string.IsNullOrEmpty(aot.AotDirectory))
                 throw new InvalidOperationException("缺少与成功APK绑定的可信基线。" + RebuildHint);
@@ -157,6 +159,24 @@ namespace Game.Editor
                 saved.FrozenFingerprint != FingerprintFiles(Directory.GetFiles(saved.AotDirectory)))
                 throw new InvalidOperationException("宿主代码、插件、设置、桥接或冻结资料已变化。" + RebuildHint);
             return saved;
+        }
+
+        private static AndroidQuickBuildInputs ReadArchivedHost(PlayerBuildRecord player, AotBaselineRecord aot)
+        {
+            string record = CiBuildSession.Current.AndroidPreparedPath;
+            if (player == null || aot == null || !File.Exists(record))
+                throw new InvalidOperationException("归档缺少可验证的 Android 准备记录。" + RebuildHint);
+            // 归档恢复已独立验证 Player 与冻结 AOT 的相对路径和内容 SHA256。
+            var inputs = JsonUtility.FromJson<AndroidQuickBuildInputs>(File.ReadAllText(record));
+            if (inputs == null)
+                throw new InvalidOperationException("归档中的 Android 准备记录不可读取。");
+            ValidateIdentity(inputs.Schema, inputs.Platform, inputs.Kind);
+            if (inputs.Version != player.Version || inputs.Kind != player.BuildKind ||
+                inputs.BootFingerprint != player.BootFingerprint || inputs.UnityVersion != Application.unityVersion ||
+                inputs.SettingsFingerprint != SettingsFingerprint() || inputs.HostFingerprint != AndroidQuickAotUtility.HostFingerprint())
+                throw new InvalidOperationException("归档与当前底层输入不兼容。" + RebuildHint);
+            inputs.AotDirectory = aot.AotDirectory;
+            return inputs;
         }
 
         /// <summary>在本轮 Game DLL 编译前登记手写输入，正常生成的 HybridCLR 文件单独在资源完成后登记。</summary>

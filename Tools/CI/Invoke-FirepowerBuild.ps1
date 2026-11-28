@@ -6,6 +6,7 @@ param(
     [string]$WorkspaceRoot = (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent),
     [string]$UnityExe = $env:FIREPOWER_UNITY_EXE,
     [string]$InstallerCompiler = $env:FIREPOWER_ISCC,
+    [string]$HostBaseline,
     [string]$BaselineDirectory,
     [string]$PublishDirectory,
     [switch]$Publish,
@@ -23,7 +24,15 @@ $version = Get-Content -LiteralPath (Join-Path $client 'ProjectSettings/ProjectV
 if ($version -notmatch '2022\.3\.55f1c1') { throw 'Unity version must match this project: 2022.3.55f1c1.' }
 $actual = & git -C $repo rev-parse HEAD
 if ($LASTEXITCODE -ne 0 -or $actual.Trim() -ine $ExpectedCommit) { throw 'Workspace commit does not match ExpectedCommit.' }
-if ($BuildType -eq 'HostUpdate' -and (-not [IO.Path]::IsPathRooted($BaselineDirectory) -or -not (Test-Path -LiteralPath (Join-Path $BaselineDirectory 'baseline.json') -PathType Leaf))) { throw 'HostUpdate requires an explicit archived baseline.' }
+if ($BuildType -eq 'HostUpdate') {
+    if ($HostBaseline -and $BaselineDirectory) { throw 'Specify only one host baseline.' }
+    if ($HostBaseline) {
+        $HostBaseline = [IO.Path]::GetFullPath($HostBaseline)
+        if (-not (Test-Path -LiteralPath $HostBaseline -PathType Leaf)) { throw "Host baseline record not found: $HostBaseline" }
+    } elseif (-not $BaselineDirectory -or -not [IO.Path]::IsPathRooted($BaselineDirectory) -or -not (Test-Path -LiteralPath (Join-Path $BaselineDirectory 'baseline.json') -PathType Leaf)) {
+        throw 'Specify a host record with -hostBaseline <file>.'
+    }
+} elseif ($HostBaseline) { throw '-hostBaseline is for HostUpdate.' }
 if ($Publish -and (-not [IO.Path]::IsPathRooted($PublishDirectory) -or (Test-Path -LiteralPath $PublishDirectory))) { throw 'Publishing requires a new absolute destination.' }
 
 $id = 'ci-' + [Guid]::NewGuid().ToString('N')
@@ -33,7 +42,10 @@ $requestPath = Join-Path $output 'request.json'
 $reportPath = Join-Path $output 'report.json'
 $logPath = Join-Path $output 'unity.log'
 $request = [ordered]@{ SchemaVersion=1; ProjectId='FirepowerLoop'; RequestId=$id; ProjectPath=$client; Platform=$Platform; BuildType=$BuildType; ExpectedCommit=$ExpectedCommit; ValidateOnly=(-not $Build); Publish=[bool]$Publish }
-if ($BuildType -eq 'HostUpdate') { $request.BaselineDirectory = [IO.Path]::GetFullPath($BaselineDirectory) }
+if ($BuildType -eq 'HostUpdate') {
+    if ($HostBaseline) { $request.HostBaseline = $HostBaseline }
+    else { $request.BaselineDirectory = [IO.Path]::GetFullPath($BaselineDirectory) }
+}
 if ($Publish) { $request.PublishDirectory = [IO.Path]::GetFullPath($PublishDirectory) }
 if ($InstallerCompiler) { $request.InstallerCompiler = [IO.Path]::GetFullPath($InstallerCompiler) }
 $request.CancellationFile = Join-Path $output 'cancel.request'

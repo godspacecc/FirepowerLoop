@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Shared.UnityTools;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,13 +16,14 @@ namespace Game.Editor
         private static bool running;
 
         /// <summary>选择已有游戏，仅补做安装器，输出到统一发布目录。</summary>
-        [MenuItem("Tools/打包/PC/快速打包/生成安装器", false, 122)]
+        [MenuItem(WindowsPlayerSelection.Menu, false, 122)]
         private static async void Generate()
         {
             if (running) return;
             string exe = EditorUtility.OpenFilePanel("选择正式 Player 的 FirepowerLoop.exe", GetPlayerSelectionDirectory(), "exe");
             if (string.IsNullOrEmpty(exe)) return;
-            if (Path.GetFileName(exe) != "FirepowerLoop.exe") { UnityEngine.Debug.LogError("请选择 FirepowerLoop.exe。"); return; }
+            try { WindowsPlayerSelection.RequirePlayerDirectory(exe, "FirepowerLoop", "com.firepowerloop.game", 1); }
+            catch (Exception error) { UnityEngine.Debug.LogError(error.Message); return; }
             string output = WindowsInstallerPublishUtility.CreateOutputDirectory();
             string repo = Directory.GetParent(Application.dataPath).Parent.FullName;
             string script = Path.Combine(repo, "Tools", "WindowsInstaller", "build_installer.ps1");

@@ -19,6 +19,10 @@ namespace Game
         MissingAnimatorController,
         MissingImageSprite,
         MissingSpriteRendererSprite,
+        ReferenceCollectorDuplicateKey,
+        BrokenReference,
+        Material,
+        Collection,
     }
 
     public sealed class EditorDiagnosticIssue
@@ -68,10 +72,12 @@ namespace Game
     {
         public static IReadOnlyList<EditorDiagnosticIssue> ScanProject()
         {
-            var issues = new List<EditorDiagnosticIssue>();
-            issues.AddRange(ScanPrefabAssets(GetPrefabAssetPaths()));
-            issues.AddRange(ScanSceneAssets(GetSceneAssetPaths()));
-            return SortIssues(issues);
+            string[] required = new[] { "Scenes/Main", "tbitem.bytes", "Game.dll.bytes", "HybridCLRAssemblyList.bytes" };
+            return Shared.UnityTools.ResourceInspection.Scan(GetSceneAssetPaths(), GetPrefabAssetPaths(),
+                    "DefaultPackage", required.Select(address => (string.Empty, address)), urp: true)
+                .Select(finding => new EditorDiagnosticIssue(
+                    (EditorDiagnosticIssueType)Enum.Parse(typeof(EditorDiagnosticIssueType), finding.Kind),
+                    finding.Path, finding.Object, finding.Message)).ToArray();
         }
 
         public static IReadOnlyList<EditorDiagnosticIssue> ScanPrefabAssets(IEnumerable<string> prefabPaths)

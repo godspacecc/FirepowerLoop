@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
+using Shared.UnityTools;
 using UnityEngine;
 namespace Game.Editor
 {
@@ -34,21 +34,7 @@ namespace Game.Editor
             Path.GetFullPath(HybridCLR.Editor.SettingsUtil.GeneratedCppDir), Path.Combine(Root, "Assets", "HybridCLRGenerate") }
             .SelectMany(path => System.IO.Directory.GetFiles(path, "*", SearchOption.AllDirectories)).ToArray());
         /// <summary>按路径及内容识别增删、重命名和同长度变更。</summary>
-        internal static string Fingerprint(string[] files)
-        {
-            using (var sha = SHA256.Create())
-            using (var content = new MemoryStream())
-            using (var writer = new BinaryWriter(content, Encoding.UTF8, true))
-            {
-                foreach (string file in files.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(p => p, StringComparer.Ordinal))
-                {
-                    writer.Write(file);
-                    using (var input = File.OpenRead(file)) writer.Write(sha.ComputeHash(input));
-                }
-                writer.Flush(); content.Position = 0;
-                return Convert.ToBase64String(sha.ComputeHash(content));
-            }
-        }
+        internal static string Fingerprint(string[] files) => PreparedBuildFingerprint.Capture(files);
         /// <summary>归档记录本身不参与自身的内容指纹。</summary>
         private static string Tree(string directory) => Fingerprint(System.IO.Directory.GetFiles(directory, "*", SearchOption.AllDirectories)
             .Where(path => Path.GetFileName(path) != "prepared.json").ToArray());

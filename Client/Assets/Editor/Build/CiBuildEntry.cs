@@ -56,6 +56,8 @@ namespace Game.Editor
             }, (route, baseline) =>
             {
                 var request = CiBuildRequest.Parse(json);
+                request.BaselineDirectory = baseline;
+                request.HostBaseline = null;
                 using (var session = new CiBuildSession(request, commit))
                 {
                     try { ResolveRoute(route).Invoke(null, null); }
@@ -83,7 +85,7 @@ namespace Game.Editor
             }
         }
         private static string Argument(string name) { var args = Environment.GetCommandLineArgs(); int i = Array.IndexOf(args, name); return i >= 0 && i + 1 < args.Length ? args[i + 1] : null; }
-        private static string ReadCommit(string repo)
+        internal static string ReadCommit(string repo)
         {
             using (var process = Process.Start(new ProcessStartInfo("git", "rev-parse HEAD") { WorkingDirectory = repo, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true }))
             {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Shared.UnityTools;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -29,16 +30,7 @@ namespace Game
         }
 
         /// <summary>只列出Assets内场景，搜索范围与窗口提示保持一致。</summary>
-        public static IReadOnlyList<string> GetScenePaths()
-        {
-            return AssetDatabase.FindAssets("t:Scene", new[] { "Assets" })
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Where(path => path.EndsWith(".unity", StringComparison.OrdinalIgnoreCase))
-                .Distinct(StringComparer.Ordinal)
-                .OrderBy(path => Path.GetFileNameWithoutExtension(path), StringComparer.OrdinalIgnoreCase)
-                .ThenBy(path => path, StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-        }
+        public static IReadOnlyList<string> GetScenePaths() => SceneSearch.Find("Assets");
 
         public static string[] GetFavoriteScenePathsForTests()
         {
@@ -57,7 +49,7 @@ namespace Game
 
         private void OnEnable()
         {
-            _searchText = EditorPrefs.GetString(SearchPrefsKey, string.Empty);
+            _searchText = SceneSearch.Load(SearchPrefsKey);
             _favoriteScenePaths.Clear();
             foreach (string scenePath in LoadFavoriteScenePaths())
             {
@@ -69,7 +61,7 @@ namespace Game
 
         private void OnDisable()
         {
-            EditorPrefs.SetString(SearchPrefsKey, _searchText ?? string.Empty);
+            SceneSearch.Save(SearchPrefsKey, _searchText);
         }
 
         private void OnProjectChange()
@@ -89,12 +81,7 @@ namespace Game
             }
 
             IEnumerable<string> filteredScenePaths = _scenePaths;
-            if (!string.IsNullOrWhiteSpace(_searchText))
-            {
-                filteredScenePaths = filteredScenePaths.Where(path =>
-                    Path.GetFileNameWithoutExtension(path).IndexOf(_searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    path.IndexOf(_searchText, StringComparison.OrdinalIgnoreCase) >= 0);
-            }
+            filteredScenePaths = filteredScenePaths.Where(path => SceneSearch.Matches(path, _searchText));
 
             DrawBuildSceneQuickBar();
 
@@ -120,7 +107,7 @@ namespace Game
             if (newSearchText != _searchText)
             {
                 _searchText = newSearchText;
-                EditorPrefs.SetString(SearchPrefsKey, _searchText ?? string.Empty);
+                SceneSearch.Save(SearchPrefsKey, _searchText);
             }
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();

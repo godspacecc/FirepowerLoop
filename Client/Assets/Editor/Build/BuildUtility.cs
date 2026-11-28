@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using Shared.UnityTools;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,19 +38,11 @@ namespace Game.Editor
                 BuildLatestCodeAndResourcesBatch();
         }
 
-        [MenuItem("Tools/打包/PC/快速打包/复用全部打包", false, 121)]
-        private static void BuildRecentHostMenu()
-        {
-            if (Confirm("复用全部打包", "复用已准备好的玩法代码、AOT和资源，沿用原包型，只重新生成游戏程序及安装器；输入变化时停止。", "开始打包"))
-                BuildQuickReusePlayerBatch();
-        }
+        [MenuItem(QuickBuildMenu.PcAll, false, 121)]
+        private static void BuildRecentHostMenu() => QuickBuildMenu.ConfirmAndBuild(true, BuildQuickReusePlayerBatch);
 
-        [MenuItem("Tools/打包/PC/快速打包/复用 AOT 打包", false, 120)]
-        private static void BuildQuickAotMenu()
-        {
-            if (Confirm("复用 AOT 打包", "重新编译玩法代码、重打资源，复用AOT并沿用完整包或启动包类型。用于日常测试；底层不兼容时停止，正式发布前仍需完整验证。", "开始打包"))
-                BuildQuickAotPlayerBatch();
-        }
+        [MenuItem(QuickBuildMenu.PcAot, false, 120)]
+        private static void BuildQuickAotMenu() => QuickBuildMenu.ConfirmAndBuild(false, BuildQuickAotPlayerBatch);
 
         [MenuItem("Tools/打包/PC/启动包（首次下载资源）", false, 101)]
         private static void BuildSmallHostBaseMenu()
@@ -63,10 +56,10 @@ namespace Game.Editor
             }
         }
 
-        [MenuItem("Tools/打包/PC/构建热更新（代码+资源）", false, 102)]
+        [MenuItem(HotUpdateMenu.Pc, false, 102)]
         private static void BuildHostMenu()
         {
-            BuildHostCodeAndResourcesBatch();
+            HotUpdateMenu.BuildAndPublish(BuildTarget.StandaloneWindows64, BuildHostCodeAndResourcesBatch);
         }
 
         [MenuItem("Tools/服务器/PC/启动资源服", false, 200)]
@@ -85,7 +78,7 @@ namespace Game.Editor
         [MenuItem("Tools/服务器/PC/更新资源服", false, 202)]
         private static void UpdateResourceServerMenu()
         {
-            var result = ResourceServerPublishUtility.UpdateLatestBundle();
+            var result = ResourceServerPublishUtility.UpdateCurrentPlayer(BuildTarget.StandaloneWindows64);
             ShowResourceServerPublishResult(result);
         }
 
@@ -783,6 +776,10 @@ namespace Game.Editor
             if (!string.IsNullOrEmpty(playerPath))
                 state.LastPlayer = NewPlayerRecord(version, buildKind, playerPath);
             BuildStateStore.Save(state);
+            Shared.UnityTools.ResourceReleaseSelection.Record(BuildTarget.StandaloneWindows64.ToString(),
+                state.LastPlayer?.PlayerPath, version, packageDirectory);
+            if (!string.IsNullOrEmpty(playerPath))
+                Shared.UnityTools.HostBaselineProject.RegisterInstalledHost(BuildTarget.StandaloneWindows64);
         }
 
         /// <summary>只在新宿主通过检查后归档本次AOT；输入中途变化时拒绝把它记成可热更基线。</summary>

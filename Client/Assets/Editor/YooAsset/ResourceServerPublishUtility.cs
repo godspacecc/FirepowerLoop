@@ -69,6 +69,47 @@ namespace Game.Editor
             return result;
         }
 
+        /// <summary>只更新当前安装包的发布目录；未建立关联时继续保留服务器上的文件。</summary>
+        internal static ResourceServerPublishResult UpdateCurrentPlayer(BuildTarget target)
+        {
+            string project = GetWorkspaceRoot();
+            string root = YooAssetBuildUtility.GetPackageRoot(target);
+            string release = Path.Combine(project, "Release", "ResourceServer");
+            if (target == BuildTarget.Android)
+                release = Path.Combine(release, "Android");
+            var state = BuildStateStore.Load(out string warning);
+            var player = target == BuildTarget.Android ? state?.LastAndroidPlayer : state?.LastPlayer;
+            if (player == null || !File.Exists(player.PlayerPath))
+                return Fail(UpdateOperation, "匹配安装包", root, release, warning ?? "找不到当前平台的安装包记录。");
+
+            var entries = Shared.UnityTools.ResourceReleaseSelection.ForHost(target.ToString(), player.PlayerPath).ToList();
+            // 兼容已安装的旧完整包，已有记录中的初始版本仍属于当前 Player。
+            if (!string.IsNullOrWhiteSpace(player.Version) && player.Version == Path.GetFileName(player.Version))
+                entries.Add(new Shared.UnityTools.ResourceReleaseSelection.Entry
+                    { version = player.Version, package = Path.Combine(root, player.Version) });
+            var selected = Shared.UnityTools.ResourceReleaseSelection.LatestValid(entries, entry => entry.version, entry =>
+                entry.version == Path.GetFileName(entry.version) &&
+                string.Equals(FullPath(entry.package), FullPath(Path.Combine(root, entry.version)), StringComparison.OrdinalIgnoreCase) &&
+                Shared.UnityTools.ResourcePackageBuild.IsComplete(entry.package, "DefaultPackage", entry.version));
+            if (selected == null)
+                return Fail(UpdateOperation, "匹配安装包", root, release, "当前安装包没有有效资源产物。");
+
+            var versions = entries.Select(entry => entry.version).ToHashSet(StringComparer.Ordinal);
+            string bundle = Directory.Exists(release) ? Directory.EnumerateDirectories(release, "ResourceServerBundle_*")
+                .OrderByDescending(path => path, StringComparer.Ordinal).FirstOrDefault(path =>
+                {
+                    try { return versions.Contains(ReadPackageVersion(Path.Combine(path, ResourceFilesName))); }
+                    catch (Exception error) when (error is IOException || error is InvalidOperationException) { return false; }
+                }) : null;
+            if (bundle == null)
+                return Fail(UpdateOperation, "匹配资源服", selected.package, release, "尚未找到与当前安装包对应的资源服发布目录。");
+            string activeVersion = ReadPackageVersion(Path.Combine(bundle, ResourceFilesName));
+            if (string.CompareOrdinal(selected.version, activeVersion) < 0)
+                return Fail(UpdateOperation, "匹配资源服", selected.package, bundle, "当前资源服已经使用更新版本。");
+            return UpdatePackage(root, release, selected.version, verifyCompleteResources: true, selectedBundle: bundle);
+        }
+
+
         public static ResourceServerPublishResult UpdateLatestBundle()
         {
             var workspaceRoot = GetWorkspaceRoot();
@@ -287,7 +328,7 @@ namespace Game.Editor
             string packageRoot,
             string releaseRoot,
             string requiredVersion,
-            bool verifyCompleteResources = false)
+            bool verifyCompleteResources = false, string selectedBundle = null)
         {
             string source = null;
             string bundle = null;
@@ -299,7 +340,9 @@ namespace Game.Editor
                 packageRoot = FullPath(packageRoot);
                 releaseRoot = FullPath(releaseRoot);
                 EnsureDirectoryExists(packageRoot, "Host 资源根目录");
-                if (!TryFindLatestBundle(releaseRoot, out bundle, out var bundleError))
+                bundle = selectedBundle == null ? null : FullPath(selectedBundle);
+                if (bundle != null) EnsureWithin(bundle, releaseRoot, "选定发布包目录");
+                if (bundle == null && !TryFindLatestBundle(releaseRoot, out bundle, out var bundleError))
                 {
                     return Fail(UpdateOperation, "查找发布包", packageRoot, releaseRoot, bundleError);
                 }

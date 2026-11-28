@@ -12,6 +12,7 @@ namespace Game.Editor
         internal static CiBuildSession Current { get; private set; }
         internal string StatePath => Path.Combine(root, "build-state.json");
         internal string ArtifactPath { get; private set; }
+        internal string AndroidPreparedPath => Path.Combine(root, "baseline-input", "AndroidPrepared.json");
         internal string InstallerCompiler => request.InstallerCompiler;
         private readonly CiBuildRequest request;
         private readonly string root, commit, boot;
@@ -39,6 +40,9 @@ namespace Game.Editor
             {
                 baseline = Path.Combine(root, "baseline");
                 HostBaselineArchive.Create(baseline, request.Platform, commit, Application.unityVersion, boot, File.ReadAllText(StatePath), Path.Combine(request.ProjectPath, "Assets/HybridCLRGenerate"));
+                Shared.UnityTools.HostBaselineCommand.WriteReference(Path.Combine(baseline, "baseline.json"),
+                    Shared.UnityTools.HostBaselineProject.ProjectId, request.Platform == "Android"
+                        ? UnityEditor.BuildTarget.Android : UnityEditor.BuildTarget.StandaloneWindows64);
                 player = Path.Combine(baseline, "Player", Path.GetFileName(player));
                 if (!string.IsNullOrEmpty(installer))
                 {

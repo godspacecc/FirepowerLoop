@@ -21,7 +21,7 @@ namespace Game.Editor
         }
 
         /// <summary>只归档选定平台成功首包及生成输入；先在同父目录暂存验证，最后发布为新目录。</summary>
-        public static void Create(string destination, string platform, string commit, string unityVersion, string bootFingerprint, string stateJson, string generatedDirectory)
+        public static void Create(string destination, string platform, string commit, string unityVersion, string bootFingerprint, string stateJson, string generatedDirectory, bool allowComplete = false)
         {
             RequireNewDestination(destination);
             CheckIdentity(platform, commit, unityVersion, bootFingerprint);
@@ -31,8 +31,12 @@ namespace Game.Editor
             var package = platform == "Android" ? state.LastAndroidPackage : state.LastPackage;
             var player = platform == "Android" ? state.LastAndroidPlayer : state.LastPlayer;
             string target = platform == "Android" ? "Android" : "StandaloneWindows64";
+            bool complete = allowComplete && package?.BuildKind == (platform == "Android" ? "HostBase" : "Full");
+            if (complete && aot != null)
+                host = new HostBuildRecord { BuildTarget = target, Version = package.Version,
+                    OutputPackageDirectory = package.OutputPackageDirectory, GameDllDirectory = aot.GameDllDirectory };
             if (aot == null || host == null || package == null || player == null || aot.BuildTarget != target || host.BuildTarget != target || package.BuildTarget != target ||
-                host.Version != package.Version || player.Version != package.Version || string.IsNullOrWhiteSpace(package.Version) || package.BuildKind != "SmallHostBase")
+                host.Version != package.Version || player.Version != package.Version || string.IsNullOrWhiteSpace(package.Version) || (package.BuildKind != "SmallHostBase" && !complete))
                 throw new InvalidOperationException("只能归档同平台同版本的成功首包");
             bool valid = platform == "Android" ? BuildStateStore.TryValidateAndroidAotBaseline(state, UnityEditor.BuildTarget.Android, out _) :
                 BuildStateStore.TryValidateAotBaseline(state, UnityEditor.BuildTarget.StandaloneWindows64, out _);
@@ -46,6 +50,8 @@ namespace Game.Editor
                 CopyTree(aot.GameDllDirectory, Path.Combine(staging, "Dlls"));
                 CopyTree(package.OutputPackageDirectory, Path.Combine(staging, "Package"));
                 CopyTree(generatedDirectory, Path.Combine(staging, "Generated"));
+                if (platform == "Android" && File.Exists(aot.AotDirectory + ".json"))
+                    File.Copy(aot.AotDirectory + ".json", Path.Combine(staging, "AndroidPrepared.json"));
                 // 新PC宿主携带独立热更基线；旧归档仍能读取，但热更门禁会要求重新出包。
                 if (platform == "PC" && !string.IsNullOrEmpty(state.PcHotUpdateBaselineDirectory))
                     CopyTree(state.PcHotUpdateBaselineDirectory, Path.Combine(staging, "PcHostBaseline"));
