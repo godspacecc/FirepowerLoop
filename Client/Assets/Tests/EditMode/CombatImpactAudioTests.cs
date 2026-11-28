@@ -27,7 +27,7 @@ namespace Game.Tests
             ResourceLoader.SetLoaderForTests(new ClipLoader());
             audioRoot = new GameObject("ImpactAudioRoot");
             var binding = audioRoot.AddComponent<AudioRootBindings>();
-            binding.Mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/FirepowerLoopAudioMixer.mixer");
+            binding.Mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/GameAudioMixer.mixer");
             binding.MusicGroup = binding.Mixer.FindMatchingGroups("Music").First();
             binding.SoundGroup = binding.Mixer.FindMatchingGroups("Sound").First();
             binding.SoundPoolRoot = Child("Pool").transform;

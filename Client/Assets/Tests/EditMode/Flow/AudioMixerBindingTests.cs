@@ -13,13 +13,13 @@ namespace Game.Tests
         [Test]
         public void MixerContainsRequiredGroupsAndExposedParameters()
         {
-            var mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/FirepowerLoopAudioMixer.mixer");
+            var mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/GameAudioMixer.mixer");
             Assert.NotNull(mixer);
             Assert.NotNull(mixer.FindMatchingGroups("Master").FirstOrDefault());
             Assert.NotNull(mixer.FindMatchingGroups("Music").FirstOrDefault());
             Assert.NotNull(mixer.FindMatchingGroups("Sound").FirstOrDefault());
 
-            var yaml = File.ReadAllText(Path.Combine(ProjectRoot, "Assets/Game/Audio/FirepowerLoopAudioMixer.mixer"));
+            var yaml = File.ReadAllText(Path.Combine(ProjectRoot, "Assets/Game/Audio/GameAudioMixer.mixer"));
             Assert.That(Count(yaml, "MasterVolumeDb"), Is.EqualTo(1));
             Assert.That(Count(yaml, "MusicVolumeDb"), Is.EqualTo(1));
             Assert.That(Count(yaml, "SoundVolumeDb"), Is.EqualTo(1));
